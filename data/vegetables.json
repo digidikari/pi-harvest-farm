@@ -1,1 +1,70 @@
-
+{
+  "beet": {
+    "en": "Beetroot",
+    "id": "Bit"
+  },
+  "cabbage": {
+    "en": "Cabbage",
+    "id": "Kubis"
+  },
+  "carrot": {
+    "en": "Carrot",
+    "id": "Wortel"
+  },
+  "corn": {
+    "en": "Corn",
+    "id": "Jagung"
+  },
+  "cucumber": {
+    "en": "Cucumber",
+    "id": "Mentimun"
+  },
+  "eggplant": {
+    "en": "Eggplant",
+    "id": "Terong"
+  },
+  "onion": {
+    "en": "Onion",
+    "id": "Bawang Merah"
+  },
+  "peas": {
+    "en": "Peas",
+    "id": "Kacang Polong"
+  },
+  "pepper": {
+    "en": "Pepper",
+    "id": "Paprika"
+  },
+  "potato": {
+    "en": "Potato",
+    "id": "Kentang"
+  },
+  "pumpkin": {
+    "en": "Pumpkin",
+    "id": "Labu"
+  },
+  "radish": {
+    "en": "Radish",
+    "id": "Lobak"
+  },
+  "salad": {
+    "en": "Lettuce",
+    "id": "Selada"
+  },
+  "spinach": {
+    "en": "Spinach",
+    "id": "Bayam"
+  },
+  "tomat": {
+    "en": "Tomato",
+    "id": "Tomat"
+  },
+  "watermelon": {
+    "en": "Watermelon",
+    "id": "Semangka"
+  },
+  "wheat": {
+    "en": "Wheat",
+    "id": "Gandum"
+  }
+}
