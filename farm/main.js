@@ -1,4 +1,4 @@
-console.log('Starting Pi Harvest Farm v12...');
+console.log('Starting Pi Harvest Farm v13...');
 
 // Init buttons
 try {
@@ -96,9 +96,7 @@ async function loadData() {
     if (invRes) inventory = await invRes.json();
     console.log('Loaded JSON:', { vegetablesCount: vegetables.vegetables.length, inventory });
     vegetables.vegetables.forEach(veg => {
-      if (!veg.id || !veg.frames) {
-        console.warn('Invalid vegetable:', veg);
-      }
+      if (!veg.id || !veg.frames) console.warn('Invalid vegetable:', veg);
     });
     loadLanguage();
   } catch (e) {
@@ -201,9 +199,16 @@ function switchTab(tab) {
   console.log('Switching to tab:', tab);
   try {
     document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+      btn.onclick = () => switchTab(btn.getAttribute('data-tab')); // Reset listener
+    });
     document.getElementById(tab).style.display = 'block';
-    document.querySelector(`button[onclick="switchTab('${tab}')"]`).classList.add('active');
+    const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+      activeBtn.setAttribute('data-tab', tab);
+    }
     if (tab === 'farm') {
       renderFarm();
       renderBag();
@@ -234,7 +239,9 @@ function renderFarm() {
         const frameIndex = Math.min(plot.stage, plot.veg.frames);
         const spriteUrl = `/pi-harvest-farm/assets/img/plant/${plot.veg.id}/${plot.veg.id}_${frameIndex}.png`;
         console.log('Setting sprite:', spriteUrl);
-        plotDiv.style.backgroundImage = `url(${spriteUrl})`;
+        const img = document.createElement('img');
+        img.src = spriteUrl;
+        plotDiv.appendChild(img);
         const timerSpan = document.createElement('span');
         timerSpan.className = 'plot-timer';
         if (plot.stage >= plot.veg.frames) {
@@ -266,10 +273,17 @@ function renderShop() {
         console.warn('Skipping vegetable without id:', veg);
         return;
       }
-      const li = document.createElement('li');
-      li.textContent = `${veg.name[currentLang]} - ${veg.price} ${langData[currentLang].coinLabel} / ${veg.piPrice} Pi`;
-      li.addEventListener('click', () => buySeed(veg));
-      seedList.appendChild(li);
+      const div = document.createElement('div');
+      div.className = 'seed-item';
+      const img = document.createElement('img');
+      img.src = `/pi-harvest-farm/assets/img/plant/${veg.id}/${veg.id}_${veg.frames}.png`;
+      img.alt = veg.name[currentLang];
+      div.appendChild(img);
+      const span = document.createElement('span');
+      span.textContent = `${veg.name[currentLang]} - ${veg.price} ${langData[currentLang].coinLabel} / ${veg.piPrice} Pi`;
+      div.appendChild(span);
+      div.addEventListener('click', () => buySeed(veg));
+      seedList.appendChild(div);
     });
   } catch (e) {
     console.error('Render shop failed:', e);
@@ -285,9 +299,16 @@ function renderInventory() {
     for (const [itemId, qty] of Object.entries(inventory.items)) {
       const veg = vegetables.vegetables.find(v => v.id === itemId);
       if (!veg) continue;
-      const li = document.createElement('li');
-      li.textContent = `${veg.name[currentLang]} x${qty}`;
-      invList.appendChild(li);
+      const div = document.createElement('div');
+      div.className = 'seed-item';
+      const img = document.createElement('img');
+      img.src = `/pi-harvest-farm/assets/img/plant/${veg.id}/${veg.id}_${veg.frames}.png`;
+      img.alt = veg.name[currentLang];
+      div.appendChild(img);
+      const span = document.createElement('span');
+      span.textContent = `${veg.name[currentLang]} x${qty}`;
+      div.appendChild(span);
+      invList.appendChild(div);
     }
   } catch (e) {
     console.error('Render inventory failed:', e);
@@ -302,17 +323,25 @@ function renderBag() {
     bagList.innerHTML = '';
     const hasItems = Object.keys(inventory.items).length > 0;
     if (!hasItems) {
-      const li = document.createElement('li');
-      li.textContent = langData[currentLang].bagEmpty;
-      bagList.appendChild(li);
+      const div = document.createElement('div');
+      div.className = 'seed-item';
+      div.textContent = langData[currentLang].bagEmpty;
+      bagList.appendChild(div);
     } else {
       for (const [itemId, qty] of Object.entries(inventory.items)) {
         const veg = vegetables.vegetables.find(v => v.id === itemId);
         if (!veg || qty <= 0) continue;
-        const li = document.createElement('li');
-        li.textContent = `${veg.name[currentLang]} x${qty}`;
-        li.addEventListener('click', () => plantSeed(veg));
-        bagList.appendChild(li);
+        const div = document.createElement('div');
+        div.className = 'seed-item';
+        const img = document.createElement('img');
+        img.src = `/pi-harvest-farm/assets/img/plant/${veg.id}/${veg.id}_${veg.frames}.png`;
+        img.alt = veg.name[currentLang];
+        div.appendChild(img);
+        const span = document.createElement('span');
+        span.textContent = `${veg.name[currentLang]} x${qty}`;
+        div.appendChild(span);
+        div.addEventListener('click', () => plantSeed(veg));
+        bagList.appendChild(div);
       }
     }
     document.getElementById('bag').querySelector('img').onclick = () => {
@@ -367,7 +396,7 @@ function handlePlotClick(plot) {
       const yieldBoost = userData.upgrades.yieldBoost || 1;
       userData.coinBalance += plot.veg.yield * yieldBoost;
       console.log('Harvest yield:', plot.veg.yield, 'Boost:', yieldBoost, 'Coins:', userData.coinBalance);
-      inventory.items[plot.veg.id] = (inventory.items[plot.veg.id] || 0) + 1;
+      inventory.items[plot.veg.id] = (inventory.items[veg.id] || 0) + 1;
       if (Math.random() < 0.1) userData.piBalance += 0.01;
       plot.planted = false;
       delete plot.veg;
