@@ -1,1 +1,241 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 10px;
+  background: linear-gradient(to bottom, #a8e063, #56ab2f);
+  color: #333;
+}
 
+#start-screen, #game-container {
+  text-align: center;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+h1, h2 {
+  color: #fff;
+  text-shadow: 1px 1px 2px #333;
+}
+
+#start-screen button {
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 14px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#start-screen button:hover {
+  background: #45a049;
+}
+
+#menu-bar {
+  display: flex;
+  justify-content: space-around;
+  background: #4CAF50;
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px;
+  font-size: 12px;
+  background: #388E3C;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.tab-btn:hover {
+  background: #2E7D32;
+}
+
+.tab-btn.active {
+  background: #1B5E20;
+}
+
+.tab-content {
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: opacity 0.3s ease;
+}
+
+#farm-area {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  margin: 10px 0;
+}
+
+.plot {
+  width: 50px;
+  height: 40px;
+  position: relative;
+  background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.2s ease;
+}
+
+.plot.planted {
+  background: none;
+}
+
+.plot.locked {
+  background: #666;
+  opacity: 0.5;
+}
+
+.plot:hover {
+  transform: scale(1.05);
+}
+
+.plot-timer {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 1px 3px;
+  font-size: 8px;
+  border-radius: 2px;
+}
+
+#wallet {
+  margin: 10px 0;
+  font-size: 12px;
+  color: #fff;
+}
+
+#bag {
+  margin: 10px 0;
+  position: relative;
+}
+
+#bag img {
+  width: 30px;
+  cursor: pointer;
+}
+
+#bag-list {
+  display: none;
+  position: absolute;
+  top: 35px;
+  left: 0;
+  background: #e0e0e0;
+  padding: 5px;
+  border-radius: 5px;
+  list-style: none;
+  z-index: 10;
+}
+
+#bag-list.show {
+  display: block;
+}
+
+#bag-list li {
+  padding: 5px;
+  cursor: pointer;
+}
+
+#bag-list li:hover {
+  background: #d0d0d0;
+}
+
+#notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 100, 0, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 1000;
+}
+
+#notification.show {
+  opacity: 1;
+}
+
+#seed-list, #inventory-list {
+  list-style: none;
+  padding: 0;
+}
+
+#seed-list li, #inventory-list li {
+  cursor: pointer;
+  padding: 8px;
+  margin: 5px 0;
+  background: #e0e0e0;
+  border-radius: 5px;
+  font-size: 12px;
+  transition: background 0.2s ease;
+}
+
+#seed-list li:hover, #inventory-list li:hover {
+  background: #d0d0d0;
+}
+
+button {
+  padding: 8px 16px;
+  margin: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Animasi */
+@keyframes splash {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: scale(0); }
+}
+
+.splash {
+  animation: splash 0.3s ease;
+}
+
+.bounce {
+  animation: bounce 0.6s ease;
+}
+
+.shake {
+  animation: shake 0.3s ease 2;
+                   }
