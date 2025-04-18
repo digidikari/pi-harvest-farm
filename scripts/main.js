@@ -1,10 +1,18 @@
 console.log('Starting Pi Harvest Farm...');
 
-import vegetables from '../data/vegetables.json' assert { type: 'json' };
-import en from '../lang/en.json' assert { type: 'json' };
-import id from '../lang/id.json' assert { type: 'json' };
-
-console.log('Loaded JSON:', { vegetablesCount: vegetables.vegetables.length, en, id });
+let vegetables, en, id;
+try {
+  vegetables = await fetch('data/vegetables.json').then(res => res.json());
+  en = await fetch('lang/en.json').then(res => res.json());
+  id = await fetch('lang/id.json').then(res => res.json());
+  console.log('Loaded JSON:', { vegetablesCount: vegetables.vegetables.length, en, id });
+} catch (e) {
+  console.error('JSON load failed:', e);
+  alert('Error loading game data. Please check your files.');
+  vegetables = { vegetables: [] }; // Fallback kosong
+  en = { title: 'Pi Harvest Farm', shop: 'Shop', upgrades: 'Upgrades', langToggle: 'Switch Language (EN/ID)', wateringCan: 'Watering Can', extraPlot: 'Extra Plot', yieldBoost: 'Yield Boost' };
+  id = { title: 'Pi Harvest Farm', shop: 'Toko', upgrades: 'Peningkatan', langToggle: 'Ganti Bahasa (EN/ID)', wateringCan: 'Gembor', extraPlot: 'Lahan Ekstra', yieldBoost: 'Peningkatan Hasil' };
+}
 
 let currentLang = 'en';
 const langData = { en, id };
@@ -20,10 +28,10 @@ let userData = {
 // Audio
 let bgm, ambient;
 try {
-  bgm = new Audio('/pi-harvest-farm/assets/sfx/music/main-bgm.mp3');
+  bgm = new Audio('assets/sfx/music/main-bgm.mp3');
   bgm.loop = true;
   bgm.volume = 0.5;
-  ambient = new Audio('/pi-harvest-farm/assets/sfx/voice/main-bgv.mp3');
+  ambient = new Audio('assets/sfx/voice/main-bgv.mp3');
   ambient.loop = true;
   ambient.volume = 0.3;
   console.log('Audio setup done');
@@ -33,7 +41,7 @@ try {
 
 function playSound(file) {
   try {
-    const sound = new Audio(`/pi-harvest-farm/${file}`);
+    const sound = new Audio(file);
     sound.volume = 0.7;
     sound.play();
     console.log('Playing:', file);
@@ -46,12 +54,8 @@ function startGame() {
   console.log('Start Game clicked');
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game-container').style.display = 'block';
-  try {
-    bgm.play().catch(e => console.error('BGM failed:', e));
-    ambient.play().catch(e => console.error('Ambient failed:', e));
-  } catch (e) {
-    console.error('Audio play failed:', e);
-  }
+  if (bgm) bgm.play().catch(e => console.error('BGM failed:', e));
+  if (ambient) ambient.play().catch(e => console.error('Ambient failed:', e));
   renderFarm();
   renderShop();
   updateWallet();
@@ -90,7 +94,7 @@ function renderFarm() {
     if (plot.planted) {
       plotDiv.className += ' planted';
       const frameIndex = Math.min(plot.stage, plot.veg.frames);
-      const spriteUrl = `/pi-harvest-farm/${plot.veg.sprite}/${plot.veg.id}_${frameIndex}.png`;
+      const spriteUrl = `assets/${plot.veg.sprite}/${plot.veg.id}_${frameIndex}.png`;
       console.log('Setting sprite:', spriteUrl);
       plotDiv.style.backgroundImage = `url(${spriteUrl})`;
     }
@@ -187,7 +191,7 @@ window.buyUpgrade = function(type) {
   console.log('Upgrade:', type);
   const upgrade = upgrades[type];
   if (userData.coinBalance >= upgrade.cost || userData.piBalance >= upgrade.piCost) {
-    const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - upgrade.piCost };
+    const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - veg.piPrice };
     userData.upgrades[type] = (userData.upgrades[type] || (type === 'extraPlot' ? 0 : 1)) * (type === 'extraPlot' ? 1 : upgrade.effect);
     if (type === 'extraPlot') {
       userData.plots.push({ id: userData.plots.length + 1, planted: false });
@@ -205,6 +209,7 @@ try {
   const langToggle = document.getElementById('lang-toggle');
   if (!startBtn || !langToggle) {
     console.error('Buttons not found:', { startBtn, langToggle });
+    alert('Error: Buttons not found. Please check HTML.');
   } else {
     startBtn.addEventListener('click', startGame);
     langToggle.addEventListener('click', toggleLanguage);
@@ -213,4 +218,5 @@ try {
   loadLanguage();
 } catch (e) {
   console.error('Init failed:', e);
-        }
+  alert('Error starting game. Please try again.');
+}
