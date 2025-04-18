@@ -8,7 +8,7 @@ body {
 
 #start-screen, #game-container {
   text-align: center;
-  max-width: 600px;
+  max-width: 360px;
   margin: 0 auto;
 }
 
@@ -21,15 +21,15 @@ h1, h2 {
   display: flex;
   justify-content: space-around;
   background: #4CAF50;
-  padding: 10px;
+  padding: 8px;
   border-radius: 10px;
   margin-bottom: 10px;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 10px;
-  font-size: 14px;
+  padding: 8px;
+  font-size: 12px;
   background: #388E3C;
   color: white;
   border: none;
@@ -57,19 +57,23 @@ h1, h2 {
 #farm-area {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
+  gap: 4px;
   margin: 10px 0;
 }
 
 .plot {
   width: 50px;
-  height: 50px;
+  height: 40px;
   position: relative;
   background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
-  clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
   background-size: cover;
   background-position: center;
   transition: transform 0.2s ease;
+}
+
+.plot.planted {
+  background: none;
 }
 
 .plot:hover {
@@ -87,6 +91,47 @@ h1, h2 {
   border-radius: 2px;
 }
 
+#wallet {
+  margin: 10px 0;
+  font-size: 12px;
+  color: #fff;
+}
+
+#bag {
+  margin: 10px 0;
+  position: relative;
+}
+
+#bag img {
+  width: 30px;
+  cursor: pointer;
+}
+
+#bag-list {
+  display: none;
+  position: absolute;
+  top: 35px;
+  left: 0;
+  background: #e0e0e0;
+  padding: 5px;
+  border-radius: 5px;
+  list-style: none;
+  z-index: 10;
+}
+
+#bag-list.show {
+  display: block;
+}
+
+#bag-list li {
+  padding: 5px;
+  cursor: pointer;
+}
+
+#bag-list li:hover {
+  background: #d0d0d0;
+}
+
 #notification {
   position: fixed;
   top: 20px;
@@ -96,7 +141,7 @@ h1, h2 {
   color: white;
   padding: 8px 16px;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 12px;
   opacity: 0;
   transition: opacity 0.5s ease;
   z-index: 1000;
@@ -104,12 +149,6 @@ h1, h2 {
 
 #notification.show {
   opacity: 1;
-}
-
-#wallet {
-  margin: 10px 0;
-  font-size: 14px;
-  color: #fff;
 }
 
 #seed-list, #inventory-list {
@@ -123,7 +162,7 @@ h1, h2 {
   margin: 5px 0;
   background: #e0e0e0;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 12px;
   transition: background 0.2s ease;
 }
 
@@ -134,7 +173,7 @@ h1, h2 {
 button {
   padding: 8px 16px;
   margin: 5px;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   background-color: #4CAF50;
   color: white;
@@ -149,22 +188,22 @@ button:hover {
 
 /* Animasi */
 @keyframes splash {
-  0% { background: linear-gradient(135deg, #654321 0%, #8B4513 100%); }
-  50% { background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%); }
-  100% { background: linear-gradient(135deg, #654321 0%, #8B4513 100%); }
-}
-
-@keyframes bounce {
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 
+@keyframes bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
 @keyframes shake {
   0% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  50% { transform: translateX(2px); }
-  75% { transform: translateX(-2px); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
   100% { transform: translateX(0); }
 }
 
@@ -177,5 +216,5 @@ button:hover {
 }
 
 .shake {
-  animation: shake 0.2s ease 2;
+  animation: shake 0.3s ease 2;
 }
