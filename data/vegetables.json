@@ -7,7 +7,8 @@
       "price": 10,
       "piPrice": 0.1,
       "yield": 20,
-      "sprite": "assets/img/plant/beet"
+      "sprite": "assets/img/plant/beet",
+      "frames": 13
     },
     {
       "id": "cabbage",
@@ -16,7 +17,8 @@
       "price": 20,
       "piPrice": 0.2,
       "yield": 50,
-      "sprite": "assets/img/plant/cabbage"
+      "sprite": "assets/img/plant/cabbage",
+      "frames": 20
     },
     {
       "id": "carrot",
@@ -25,7 +27,8 @@
       "price": 15,
       "piPrice": 0.15,
       "yield": 30,
-      "sprite": "assets/img/plant/carrot"
+      "sprite": "assets/img/plant/carrot",
+      "frames": 16
     },
     {
       "id": "corn",
@@ -34,7 +37,8 @@
       "price": 25,
       "piPrice": 0.25,
       "yield": 60,
-      "sprite": "assets/img/plant/corn"
+      "sprite": "assets/img/plant/corn",
+      "frames": 20
     },
     {
       "id": "cucumber",
@@ -43,7 +47,8 @@
       "price": 18,
       "piPrice": 0.18,
       "yield": 40,
-      "sprite": "assets/img/plant/cucumber"
+      "sprite": "assets/img/plant/cucumber",
+      "frames": 20
     },
     {
       "id": "eggplant",
@@ -52,7 +57,8 @@
       "price": 22,
       "piPrice": 0.22,
       "yield": 55,
-      "sprite": "assets/img/plant/eggplant"
+      "sprite": "assets/img/plant/eggplant",
+      "frames": 9
     },
     {
       "id": "onion",
@@ -61,7 +67,8 @@
       "price": 12,
       "piPrice": 0.12,
       "yield": 25,
-      "sprite": "assets/img/plant/onion"
+      "sprite": "assets/img/plant/onion",
+      "frames": 6
     },
     {
       "id": "peas",
@@ -70,7 +77,8 @@
       "price": 16,
       "piPrice": 0.16,
       "yield": 35,
-      "sprite": "assets/img/plant/peas"
+      "sprite": "assets/img/plant/peas",
+      "frames": 8
     },
     {
       "id": "pepper",
@@ -79,7 +87,8 @@
       "price": 20,
       "piPrice": 0.2,
       "yield": 45,
-      "sprite": "assets/img/plant/pepper"
+      "sprite": "assets/img/plant/pepper",
+      "frames": 12
     },
     {
       "id": "potato",
@@ -88,16 +97,18 @@
       "price": 18,
       "piPrice": 0.18,
       "yield": 40,
-      "sprite": "assets/img/plant/potato"
+      "sprite": "assets/img/plant/potato",
+      "frames": 7
     },
     {
-      "id": "pumpkin",
+      "id guided": "pumpkin",
       "name": { "en": "Pumpkin", "id": "Labu" },
       "growthTime": 420,
       "price": 30,
       "piPrice": 0.3,
       "yield": 70,
-      "sprite": "assets/img/plant/pumpkin"
+      "sprite": "assets/img/plant/pumpkin",
+      "frames": 20
     },
     {
       "id": "radish",
@@ -106,7 +117,8 @@
       "price": 12,
       "piPrice": 0.12,
       "yield": 25,
-      "sprite": "assets/img/plant/radish"
+      "sprite": "assets/img/plant/radish",
+      "frames": 8
     },
     {
       "id": "salad",
@@ -115,7 +127,8 @@
       "price": 15,
       "piPrice": 0.15,
       "yield": 30,
-      "sprite": "assets/img/plant/salad"
+      "sprite": "assets/img/plant/salad",
+      "frames": 7
     },
     {
       "id": "spinach",
@@ -124,7 +137,8 @@
       "price": 10,
       "piPrice": 0.1,
       "yield": 20,
-      "sprite": "assets/img/plant/spinach"
+      "sprite": "assets/img/plant/spinach",
+      "frames": 5
     },
     {
       "id": "tomato",
@@ -133,7 +147,8 @@
       "price": 18,
       "piPrice": 0.18,
       "yield": 40,
-      "sprite": "assets/img/plant/tomato"
+      "sprite": "assets/img/plant/tomato",
+      "frames": 20
     },
     {
       "id": "watermelon",
@@ -142,7 +157,8 @@
       "price": 35,
       "piPrice": 0.35,
       "yield": 80,
-      "sprite": "assets/img/plant/watermelon"
+      "sprite": "assets/img/plant/watermelon",
+      "frames": 19
     },
     {
       "id": "wheat",
@@ -151,7 +167,8 @@
       "price": 22,
       "piPrice": 0.22,
       "yield": 50,
-      "sprite": "assets/img/plant/wheat"
+      "sprite": "assets/img/plant/wheat",
+      "frames": 7
     }
   ]
 }
