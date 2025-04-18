@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="layout/style.css">
+  <link rel="stylesheet" href="/pi-harvest-farm/layout/style.css">
 </head>
 <body>
   <div id="start-screen">
@@ -13,23 +13,36 @@
     <button id="lang-toggle">Switch Language (EN/ID)</button>
   </div>
   <div id="game-container" style="display: none;">
-    <h1 id="game-title">Pi Harvest Farm</h1>
-    <div id="farm-area"></div>
-    <div id="shop">
+    <div id="menu-bar">
+      <button class="tab-btn active" onclick="switchTab('lahan')">Lahan</button>
+      <button class="tab-btn" onclick="switchTab('toko')">Toko</button>
+      <button class="tab-btn" onclick="switchTab('upgrade')">Peningkatan</button>
+      <button class="tab-btn" onclick="switchTab('inventory')">Inventori</button>
+    </div>
+    <div id="lahan" class="tab-content">
+      <h2 id="game-title">Pi Harvest Farm</h2>
+      <div id="wallet">
+        <span id="coin-label">Coins</span>: <span id="coin-balance">100</span> | 
+        Pi: <span id="pi-balance">0.00</span>
+      </div>
+      <div id="farm-area"></div>
+    </div>
+    <div id="toko" class="tab-content" style="display: none;">
       <h2 id="shop-title">Shop</h2>
       <ul id="seed-list"></ul>
     </div>
-    <div id="upgrades">
+    <div id="upgrade" class="tab-content" style="display: none;">
       <h2 id="upgrades-title">Upgrades</h2>
-      <button onclick="buyUpgrade('wateringCan')" id="wateringCan-btn">Watering Can (50 Coins / 0.2 Pi)</button>
-      <button onclick="buyUpgrade('extraPlot')" id="extraPlot-btn">Extra Plot (200 Coins / 1 Pi)</button>
-      <button onclick="buyUpgrade('yieldBoost')" id="yieldBoost-btn">Yield Boost (100 Coins / 0.5 Pi)</button>
+      <button id="wateringCan-btn">Watering Can (50 Coins / 0.2 Pi)</button>
+      <button id="extraPlot-btn">Extra Plot (200 Coins / 1 Pi)</button>
+      <button id="yieldBoost-btn">Yield Boost (100 Coins / 0.5 Pi)</button>
     </div>
-    <div id="wallet">
-      <p>Pi Coin: <span id="pi-balance">0</span></p>
-      <p>In-Game Coin: <span id="coin-balance">0</span></p>
+    <div id="inventory" class="tab-content" style="display: none;">
+      <h2 id="inventory-title">Inventory</h2>
+      <ul id="inventory-list"></ul>
     </div>
+    <div id="notification"></div>
   </div>
-  <script src="scripts/main.js?v=2"></script>
+  <script src="/pi-harvest-farm/scripts/main.js"></script>
 </body>
 </html>
