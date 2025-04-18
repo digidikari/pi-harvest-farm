@@ -7,12 +7,13 @@ body {
   min-height: 100vh;
   margin: 0;
 }
-#game-container {
+#start-screen, #game-container {
   width: 800px;
   padding: 20px;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
 }
 #farm-area {
   display: grid;
@@ -34,7 +35,7 @@ body {
 .plot:hover {
   transform: scale(1.05);
 }
-#shop, #wallet {
+#shop, #upgrades, #wallet {
   margin-top: 20px;
 }
 button {
