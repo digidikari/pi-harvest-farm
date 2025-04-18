@@ -1,10 +1,10 @@
-console.log('Loading main.js...');
+console.log('Starting Pi Harvest Farm...');
 
 import vegetables from '../data/vegetables.json' assert { type: 'json' };
 import en from '../lang/en.json' assert { type: 'json' };
 import id from '../lang/id.json' assert { type: 'json' };
 
-console.log('JSON files loaded:', { vegetables, en, id });
+console.log('Loaded JSON:', { vegetablesCount: vegetables.vegetables.length, en, id });
 
 let currentLang = 'en';
 const langData = { en, id };
@@ -20,37 +20,37 @@ let userData = {
 // Audio
 let bgm, ambient;
 try {
-  bgm = new Audio('../assets/sfx/music/main-bgm.mp3');
+  bgm = new Audio('/pi-harvest-farm/assets/sfx/music/main-bgm.mp3');
   bgm.loop = true;
   bgm.volume = 0.5;
-  ambient = new Audio('../assets/sfx/voice/main-bgv.mp3');
+  ambient = new Audio('/pi-harvest-farm/assets/sfx/voice/main-bgv.mp3');
   ambient.loop = true;
   ambient.volume = 0.3;
-  console.log('Audio initialized');
+  console.log('Audio setup done');
 } catch (e) {
-  console.error('Audio init error:', e);
+  console.error('Audio setup failed:', e);
 }
 
 function playSound(file) {
   try {
-    const sound = new Audio(file);
+    const sound = new Audio(`/pi-harvest-farm/${file}`);
     sound.volume = 0.7;
     sound.play();
-    console.log('Playing sound:', file);
+    console.log('Playing:', file);
   } catch (e) {
-    console.error('Sound error:', e);
+    console.error('Sound failed:', file, e);
   }
 }
 
 function startGame() {
-  console.log('Start game clicked');
+  console.log('Start Game clicked');
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game-container').style.display = 'block';
   try {
-    bgm.play().catch(e => console.error('BGM play error:', e));
-    ambient.play().catch(e => console.error('Ambient play error:', e));
+    bgm.play().catch(e => console.error('BGM failed:', e));
+    ambient.play().catch(e => console.error('Ambient failed:', e));
   } catch (e) {
-    console.error('Audio play error:', e);
+    console.error('Audio play failed:', e);
   }
   renderFarm();
   renderShop();
@@ -70,18 +70,18 @@ function loadLanguage() {
     document.getElementById('yieldBoost-btn').textContent = `${langData[currentLang].yieldBoost} (100 Coins / 0.5 Pi)`;
     renderShop();
   } catch (e) {
-    console.error('Language load error:', e);
+    console.error('Language load failed:', e);
   }
 }
 
 function toggleLanguage() {
-  console.log('Toggling language');
+  console.log('Switching language to:', currentLang === 'en' ? 'id' : 'en');
   currentLang = currentLang === 'en' ? 'id' : 'en';
   loadLanguage();
 }
 
 function renderFarm() {
-  console.log('Rendering farm');
+  console.log('Rendering farm with plots:', userData.plots.length);
   const farmArea = document.getElementById('farm-area');
   farmArea.innerHTML = '';
   userData.plots.forEach(plot => {
@@ -90,7 +90,9 @@ function renderFarm() {
     if (plot.planted) {
       plotDiv.className += ' planted';
       const frameIndex = Math.min(plot.stage, plot.veg.frames);
-      plotDiv.style.backgroundImage = `url(${plot.veg.sprite}/${plot.veg.id}_${frameIndex}.png)`;
+      const spriteUrl = `/pi-harvest-farm/${plot.veg.sprite}/${plot.veg.id}_${frameIndex}.png`;
+      console.log('Setting sprite:', spriteUrl);
+      plotDiv.style.backgroundImage = `url(${spriteUrl})`;
     }
     plotDiv.addEventListener('click', () => handlePlotClick(plot));
     farmArea.appendChild(plotDiv);
@@ -110,21 +112,21 @@ function renderShop() {
 }
 
 function updateWallet() {
-  console.log('Updating wallet');
+  console.log('Wallet:', userData.piBalance, userData.coinBalance);
   document.getElementById('pi-balance').textContent = userData.piBalance.toFixed(2);
   document.getElementById('coin-balance').textContent = userData.coinBalance;
 }
 
 function handlePlotClick(plot) {
-  console.log('Plot clicked:', plot);
+  console.log('Plot clicked:', plot.id);
   if (!plot.planted) return;
-  playSound('../assets/sfx/voice/watering-bgv.mp3');
+  playSound('assets/sfx/voice/watering-bgv.mp3');
   if (plot.stage < plot.veg.frames) {
     plot.watered = true;
     plot.growthTime *= 0.9;
     renderFarm();
   } else {
-    playSound('../assets/sfx/voice/harvesting-bgv.mp3');
+    playSound('assets/sfx/voice/harvesting-bgv.mp3');
     userData.coinBalance += plot.veg.yield * (userData.upgrades.yieldBoost || 1);
     if (Math.random() < 0.1) userData.piBalance += 0.01;
     plot.planted = false;
@@ -135,7 +137,7 @@ function handlePlotClick(plot) {
 }
 
 function buySeed(veg) {
-  console.log('Buying seed:', veg.name[currentLang]);
+  console.log('Buying:', veg.name[currentLang]);
   if (userData.coinBalance >= veg.price || userData.piBalance >= veg.piPrice) {
     const cost = userData.coinBalance >= veg.price ? { coinBalance: userData.coinBalance - veg.price } : { piBalance: userData.piBalance - veg.piPrice };
     const plot = userData.plots.find(p => !p.planted);
@@ -153,7 +155,7 @@ function buySeed(veg) {
 }
 
 function startGrowth(plot) {
-  console.log('Starting growth for plot:', plot);
+  console.log('Growth started for:', plot.veg.id);
   const interval = setInterval(() => {
     if (plot.stage < plot.veg.frames) {
       plot.stage++;
@@ -165,12 +167,13 @@ function startGrowth(plot) {
 }
 
 function checkLevelUp() {
-  console.log('Checking level up');
+  console.log('Panen count:', userData.panenCount + 1);
   userData.panenCount++;
   if (userData.panenCount % 10 === 0) {
     userData.level++;
     userData.coinBalance += 50;
     updateWallet();
+    console.log('Level up:', userData.level);
   }
 }
 
@@ -181,7 +184,7 @@ const upgrades = {
 };
 
 window.buyUpgrade = function(type) {
-  console.log('Buying upgrade:', type);
+  console.log('Upgrade:', type);
   const upgrade = upgrades[type];
   if (userData.coinBalance >= upgrade.cost || userData.piBalance >= upgrade.piCost) {
     const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - upgrade.piCost };
@@ -197,10 +200,17 @@ window.buyUpgrade = function(type) {
 
 // Init
 try {
-  console.log('Initializing game');
-  document.getElementById('start-btn').addEventListener('click', startGame);
-  document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
+  console.log('Adding event listeners');
+  const startBtn = document.getElementById('start-btn');
+  const langToggle = document.getElementById('lang-toggle');
+  if (!startBtn || !langToggle) {
+    console.error('Buttons not found:', { startBtn, langToggle });
+  } else {
+    startBtn.addEventListener('click', startGame);
+    langToggle.addEventListener('click', toggleLanguage);
+    console.log('Event listeners added');
+  }
   loadLanguage();
 } catch (e) {
-  console.error('Init error:', e);
-}
+  console.error('Init failed:', e);
+        }
