@@ -1,68 +1,115 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f8e6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
   margin: 0;
-  padding: 10px;
-  box-sizing: border-box;
+  padding: 20px;
+  background-color: #f0f0f0;
 }
+
 #start-screen, #game-container {
-  width: 100%;
-  max-width: 600px;
-  padding: 15px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   text-align: center;
 }
+
 #farm-area {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
+
 .plot {
-  width: 80px;
-  height: 80px;
-  background-color: #d4a373;
-  border: 2px solid #8b5e3c;
-  cursor: pointer;
-  transition: transform 0.2s;
-  margin: auto;
-}
-.plot.planted {
+  width: 100px;
+  height: 100px;
+  background-color: #8B4513;
+  border: 2px solid #654321;
+  position: relative;
   background-size: cover;
+  background-position: center;
 }
-.plot:hover {
-  transform: scale(1.05);
-}
-#shop, #upgrades, #wallet {
-  margin-top: 20px;
-}
-button {
-  padding: 10px 20px;
-  background-color: #4caf50;
+
+.plot-timer {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: rgba(0, 0, 0, 0.7);
   color: white;
-  border: none;
-  cursor: pointer;
-  margin: 5px;
+  padding: 2px 5px;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
+#notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 100, 0, 0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
   font-size: 16px;
-  z-index: 10; /* Pastiin tombol bisa di-tap */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 1000;
 }
-button:hover {
-  background-color: #45a049;
+
+#notification.show {
+  opacity: 1;
 }
-ul {
+
+#shop, #upgrades, #wallet {
+  margin: 20px 0;
+}
+
+#seed-list {
   list-style: none;
   padding: 0;
 }
-li {
-  padding: 5px;
+
+#seed-list li {
   cursor: pointer;
+  padding: 10px;
+  background: #e0e0e0;
+  margin: 5px 0;
+  border-radius: 5px;
 }
-li:hover {
-  background-color: #f0f0f0;
+
+#seed-list li:hover {
+  background: #d0d0d0;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Animasi */
+@keyframes splash {
+  0% { background-color: #8B4513; transform: scale(1); }
+  50% { background-color: #4682B4; transform: scale(1.1); }
+  100% { background-color: #8B4513; transform: scale(1); }
+}
+
+@keyframes shine {
+  0% { box-shadow: 0 0 0 rgba(255, 255, 0, 0); transform: scale(1); }
+  50% { box-shadow: 0 0 10px rgba(255, 255, 0, 1); transform: scale(1.05); }
+  100% { box-shadow: 0 0 0 rgba(255, 255, 0, 0); transform: scale(1); }
+}
+
+.splash {
+  animation: splash 0.5s ease;
+}
+
+.shine {
+  animation: shine 0.7s ease;
 }
