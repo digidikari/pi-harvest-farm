@@ -1,70 +1,157 @@
 {
-"beet": {
-    "en": "Beet",
-    "id": "Bit"
-  },
-  "cabbage": {
-    "en": "Cabbage",
-    "id": "Kubis"
-  },
-  "carrot": {
-    "en": "Carrot",
-    "id": "Wortel"
-  },
-  "corn": {
-    "en": "Corn",
-    "id": "Jagung"
-  },
-  "cucumber": {
-    "en": "Cucumber",
-    "id": "Mentimun"
-  },
-  "eggplant": {
-    "en": "Eggplant",
-    "id": "Terong"
-  },
-  "onion": {
-    "en": "Onion",
-    "id": "Bawang Merah"
-  },
-  "peas": {
-    "en": "Peas",
-    "id": "Kacang Polong"
-  },
-  "pepper": {
-    "en": "Pepper",
-    "id": "Paprika"
-  },
-  "potato": {
-    "en": "Potato",
-    "id": "Kentang"
-  },
-  "pumpkin": {
-    "en": "Pumpkin",
-    "id": "Labu"
-  },
-  "radish": {
-    "en": "Radish",
-    "id": "Lobak"
-  },
-  "salad": {
-    "en": "Lettuce",
-    "id": "Selada"
-  },
-  "spinach": {
-    "en": "Spinach",
-    "id": "Bayam"
-  },
-  "tomato": {
-    "en": "Tomato",
-    "id": "Tomat"
-  },
-  "watermelon": {
-    "en": "Watermelon",
-    "id": "Semangka"
-  },
-  "wheat": {
-    "en": "Wheat",
-    "id": "Gandum"
-  }
+  "vegetables": [
+    {
+      "id": "beet",
+      "name": { "en": "Beet", "id": "Bit" },
+      "growthTime": 120,
+      "price": 10,
+      "piPrice": 0.1,
+      "yield": 20,
+      "sprite": "assets/img/plant/beet"
+    },
+    {
+      "id": "cabbage",
+      "name": { "en": "Cabbage", "id": "Kubis" },
+      "growthTime": 300,
+      "price": 20,
+      "piPrice": 0.2,
+      "yield": 50,
+      "sprite": "assets/img/plant/cabbage"
+    },
+    {
+      "id": "carrot",
+      "name": { "en": "Carrot", "id": "Wortel" },
+      "growthTime": 180,
+      "price": 15,
+      "piPrice": 0.15,
+      "yield": 30,
+      "sprite": "assets/img/plant/carrot"
+    },
+    {
+      "id": "corn",
+      "name": { "en": "Corn", "id": "Jagung" },
+      "growthTime": 360,
+      "price": 25,
+      "piPrice": 0.25,
+      "yield": 60,
+      "sprite": "assets/img/plant/corn"
+    },
+    {
+      "id": "cucumber",
+      "name": { "en": "Cucumber", "id": "Mentimun" },
+      "growthTime": 240,
+      "price": 18,
+      "piPrice": 0.18,
+      "yield": 40,
+      "sprite": "assets/img/plant/cucumber"
+    },
+    {
+      "id": "eggplant",
+      "name": { "en": "Eggplant", "id": "Terong" },
+      "growthTime": 300,
+      "price": 22,
+      "piPrice": 0.22,
+      "yield": 55,
+      "sprite": "assets/img/plant/eggplant"
+    },
+    {
+      "id": "onion",
+      "name": { "en": "Onion", "id": "Bawang Merah" },
+      "growthTime": 150,
+      "price": 12,
+      "piPrice": 0.12,
+      "yield": 25,
+      "sprite": "assets/img/plant/onion"
+    },
+    {
+      "id": "peas",
+      "name": { "en": "Peas", "id": "Kacang Polong" },
+      "growthTime": 200,
+      "price": 16,
+      "piPrice": 0.16,
+      "yield": 35,
+      "sprite": "assets/img/plant/peas"
+    },
+    {
+      "id": "pepper",
+      "name": { "en": "Pepper", "id": "Paprika" },
+      "growthTime": 270,
+      "price": 20,
+      "piPrice": 0.2,
+      "yield": 45,
+      "sprite": "assets/img/plant/pepper"
+    },
+    {
+      "id": "potato",
+      "name": { "en": "Potato", "id": "Kentang" },
+      "growthTime": 240,
+      "price": 18,
+      "piPrice": 0.18,
+      "yield": 40,
+      "sprite": "assets/img/plant/potato"
+    },
+    {
+      "id": "pumpkin",
+      "name": { "en": "Pumpkin", "id": "Labu" },
+      "growthTime": 420,
+      "price": 30,
+      "piPrice": 0.3,
+      "yield": 70,
+      "sprite": "assets/img/plant/pumpkin"
+    },
+    {
+      "id": "radish",
+      "name": { "en": "Radish", "id": "Lobak" },
+      "growthTime": 150,
+      "price": 12,
+      "piPrice": 0.12,
+      "yield": 25,
+      "sprite": "assets/img/plant/radish"
+    },
+    {
+      "id": "salad",
+      "name": { "en": "Lettuce", "id": "Selada" },
+      "growthTime": 180,
+      "price": 15,
+      "piPrice": 0.15,
+      "yield": 30,
+      "sprite": "assets/img/plant/salad"
+    },
+    {
+      "id": "spinach",
+      "name": { "en": "Spinach", "id": "Bayam" },
+      "growthTime": 120,
+      "price": 10,
+      "piPrice": 0.1,
+      "yield": 20,
+      "sprite": "assets/img/plant/spinach"
+    },
+    {
+      "id": "tomato",
+      "name": { "en": "Tomato", "id": "Tomat" },
+      "growthTime": 240,
+      "price": 18,
+      "piPrice": 0.18,
+      "yield": 40,
+      "sprite": "assets/img/plant/tomato"
+    },
+    {
+      "id": "watermelon",
+      "name": { "en": "Watermelon", "id": "Semangka" },
+      "growthTime": 480,
+      "price": 35,
+      "piPrice": 0.35,
+      "yield": 80,
+      "sprite": "assets/img/plant/watermelon"
+    },
+    {
+      "id": "wheat",
+      "name": { "en": "Wheat", "id": "Gandum" },
+      "growthTime": 300,
+      "price": 22,
+      "piPrice": 0.22,
+      "yield": 50,
+      "sprite": "assets/img/plant/wheat"
+    }
+  ]
 }
