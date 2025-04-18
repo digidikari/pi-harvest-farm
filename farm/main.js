@@ -15,6 +15,7 @@ try {
   }
 } catch (e) {
   console.error('Button init failed:', e);
+  alert('JS error: ' + e.message);
 }
 
 // Data
@@ -54,7 +55,6 @@ let id = {
   inventory: 'Inventori',
   langToggle: 'Ganti Bahasa (EN/ID)',
   wateringCan: 'Gembor',
-  extra mo: true,
   extraPlotCoins: 'Lahan Ekstra',
   extraPlotPi: 'Lahan Ekstra',
   yieldBoost: 'Peningkatan Hasil',
@@ -103,6 +103,7 @@ async function loadData() {
     loadLanguage();
   } catch (e) {
     console.error('JSON load failed:', e);
+    alert('JSON error: ' + e.message);
   }
 }
 
@@ -161,6 +162,7 @@ function startGame() {
     switchTab('farm');
   } catch (e) {
     console.error('Start game failed:', e);
+    alert('Start game error: ' + e.message);
   }
 }
 
@@ -185,6 +187,7 @@ function loadLanguage() {
     renderBag();
   } catch (e) {
     console.error('Language load failed:', e);
+    alert('Language error: ' + e.message);
   }
 }
 
@@ -211,6 +214,7 @@ function switchTab(tab) {
     }
   } catch (e) {
     console.error('Tab switch failed:', e);
+    alert('Tab error: ' + e.message);
   }
 }
 
@@ -248,6 +252,7 @@ function renderFarm() {
     }
   } catch (e) {
     console.error('Render farm failed:', e);
+    alert('Farm render error: ' + e.message);
   }
 }
 
@@ -268,6 +273,7 @@ function renderShop() {
     });
   } catch (e) {
     console.error('Render shop failed:', e);
+    alert('Shop render error: ' + e.message);
   }
 }
 
@@ -285,6 +291,7 @@ function renderInventory() {
     }
   } catch (e) {
     console.error('Render inventory failed:', e);
+    alert('Inventory render error: ' + e.message);
   }
 }
 
@@ -313,6 +320,7 @@ function renderBag() {
     };
   } catch (e) {
     console.error('Render bag failed:', e);
+    alert('Bag render error: ' + e.message);
   }
 }
 
@@ -323,6 +331,7 @@ function updateWallet() {
     document.getElementById('coin-balance').textContent = userData.coinBalance;
   } catch (e) {
     console.error('Update wallet failed:', e);
+    alert('Wallet error: ' + e.message);
   }
 }
 
@@ -373,6 +382,7 @@ function handlePlotClick(plot) {
     }
   } catch (e) {
     console.error('Plot click failed:', e);
+    alert('Plot error: ' + e.message);
   }
 }
 
@@ -395,6 +405,7 @@ function buySeed(veg) {
     }
   } catch (e) {
     console.error('Buy seed failed:', e);
+    alert('Buy seed error: ' + e.message);
   }
 }
 
@@ -423,6 +434,7 @@ function plantSeed(veg) {
     }
   } catch (e) {
     console.error('Plant seed failed:', e);
+    alert('Plant seed error: ' + e.message);
   }
 }
 
@@ -451,6 +463,7 @@ function startGrowth(plot) {
     }, 100);
   } catch (e) {
     console.error('Growth failed:', e);
+    alert('Growth error: ' + e.message);
   }
 }
 
@@ -472,6 +485,7 @@ function checkLevelUp() {
     }
   } catch (e) {
     console.error('Level up failed:', e);
+    alert('Level up error: ' + e.message);
   }
 }
 
@@ -510,6 +524,7 @@ window.buyUpgrade = function(type) {
     }
   } catch (e) {
     console.error('Buy upgrade failed:', e);
+    alert('Upgrade error: ' + e.message);
   }
 };
 
