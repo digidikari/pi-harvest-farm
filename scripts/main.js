@@ -1,4 +1,4 @@
-console.log('Starting Pi Harvest Farm v6...');
+console.log('Starting Pi Harvest Farm v7...');
 
 // Init buttons first
 try {
@@ -161,7 +161,12 @@ function renderFarm() {
         // Timer
         const timerSpan = document.createElement('span');
         timerSpan.className = 'plot-timer';
-        timerSpan.textContent = plot.waitingForWater ? 'Water!' : '';
+        if (plot.waitingForWater) {
+          timerSpan.textContent = 'Water!';
+        } else if (plot.nextWaterTime) {
+          const timeLeft = Math.max(0, (plot.nextWaterTime - Date.now()) / 1000);
+          timerSpan.textContent = timeLeft > 0 ? `${timeLeft.toFixed(1)}s` : 'Water!';
+        }
         plotDiv.appendChild(timerSpan);
       }
       plotDiv.addEventListener('click', () => handlePlotClick(plot));
@@ -218,7 +223,7 @@ function handlePlotClick(plot) {
       const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
       if (plotDiv) {
         plotDiv.classList.add('splash');
-        setTimeout(() => plotDiv.classList.remove('splash'), 400);
+        setTimeout(() => plotDiv.classList.remove('splash'), 300);
       }
       showNotification(`Watered ${plot.veg.name[currentLang]}!`);
       startGrowth(plot);
@@ -236,6 +241,7 @@ function handlePlotClick(plot) {
       delete plot.stage;
       delete plot.growthTime;
       delete plot.waitingForWater;
+      delete plot.nextWaterTime;
       checkLevelUp();
       renderFarm();
       updateWallet();
@@ -285,11 +291,23 @@ function startGrowth(plot) {
   try {
     if (plot.stage >= plot.veg.frames) return;
     // Transisi sprite cepat
-    setTimeout(() => {
-      if (plot.planted && plot.veg) {
-        plot.waitingForWater = true;
-        renderFarm();
+    renderFarm();
+    // Set waktu buat stage berikutnya (2 detik per stage, adjust via growthTime)
+    const timePerStage = (plot.growthTime * 1000) / plot.veg.frames;
+    plot.nextWaterTime = Date.now() + timePerStage;
+    plot.waitingForWater = false;
+    // Update countdown
+    const interval = setInterval(() => {
+      if (!plot.planted || !plot.veg || plot.waitingForWater) {
+        clearInterval(interval);
+        return;
       }
+      const timeLeft = (plot.nextWaterTime - Date.now()) / 1000;
+      if (timeLeft <= 0) {
+        plot.waitingForWater = true;
+        clearInterval(interval);
+      }
+      renderFarm();
     }, 100);
   } catch (e) {
     console.error('Growth failed:', e);
@@ -323,7 +341,7 @@ window.buyUpgrade = function(type) {
   try {
     const upgrade = upgrades[type];
     if (userData.coinBalance >= upgrade.cost || userData.piBalance >= upgrade.piCost) {
-      const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - upgrade.piCost };
+      const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - veg.piPrice };
       userData.upgrades[type] = (userData.upgrades[type] || (type === 'extraPlot' ? 0 : 1)) * (type === 'extraPlot' ? 1 : upgrade.effect);
       if (type === 'extraPlot') {
         userData.plots.push({ id: userData.plots.length + 1, planted: false });
