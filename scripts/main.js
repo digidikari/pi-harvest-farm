@@ -9,7 +9,7 @@ try {
 } catch (e) {
   console.error('JSON load failed:', e);
   alert('Error loading game data. Please check your files.');
-  vegetables = { vegetables: [] }; // Fallback kosong
+  vegetables = { vegetables: [] };
   en = { title: 'Pi Harvest Farm', shop: 'Shop', upgrades: 'Upgrades', langToggle: 'Switch Language (EN/ID)', wateringCan: 'Watering Can', extraPlot: 'Extra Plot', yieldBoost: 'Yield Boost' };
   id = { title: 'Pi Harvest Farm', shop: 'Toko', upgrades: 'Peningkatan', langToggle: 'Ganti Bahasa (EN/ID)', wateringCan: 'Gembor', extraPlot: 'Lahan Ekstra', yieldBoost: 'Peningkatan Hasil' };
 }
@@ -94,9 +94,16 @@ function renderFarm() {
     if (plot.planted) {
       plotDiv.className += ' planted';
       const frameIndex = Math.min(plot.stage, plot.veg.frames);
-      const spriteUrl = `assets/${plot.veg.sprite}/${plot.veg.id}_${frameIndex}.png`;
+      const spriteUrl = `assets/img/plant/${plot.veg.id}/${plot.veg.id}_${frameIndex}.png`;
       console.log('Setting sprite:', spriteUrl);
       plotDiv.style.backgroundImage = `url(${spriteUrl})`;
+      // Cek apakah sprite load
+      const img = new Image();
+      img.src = spriteUrl;
+      img.onerror = () => {
+        console.error('Sprite failed:', spriteUrl);
+        alert(`Sprite not found: ${plot.veg.id}_${frameIndex}.png`);
+      };
     }
     plotDiv.addEventListener('click', () => handlePlotClick(plot));
     farmArea.appendChild(plotDiv);
@@ -154,7 +161,11 @@ function buySeed(veg) {
       Object.assign(userData, cost);
       renderFarm();
       updateWallet();
+    } else {
+      alert('No empty plots available!');
     }
+  } else {
+    alert('Not enough coins or Pi!');
   }
 }
 
@@ -178,6 +189,7 @@ function checkLevelUp() {
     userData.coinBalance += 50;
     updateWallet();
     console.log('Level up:', userData.level);
+    alert(`Level up! You are now level ${userData.level}. Bonus: 50 coins!`);
   }
 }
 
@@ -191,7 +203,7 @@ window.buyUpgrade = function(type) {
   console.log('Upgrade:', type);
   const upgrade = upgrades[type];
   if (userData.coinBalance >= upgrade.cost || userData.piBalance >= upgrade.piCost) {
-    const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - veg.piPrice };
+    const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - veg.price } : { piBalance: userData.piBalance - veg.piPrice };
     userData.upgrades[type] = (userData.upgrades[type] || (type === 'extraPlot' ? 0 : 1)) * (type === 'extraPlot' ? 1 : upgrade.effect);
     if (type === 'extraPlot') {
       userData.plots.push({ id: userData.plots.length + 1, planted: false });
@@ -199,6 +211,9 @@ window.buyUpgrade = function(type) {
     Object.assign(userData, cost);
     renderFarm();
     updateWallet();
+    alert(`Purchased ${type}!`);
+  } else {
+    alert('Not enough coins or Pi for upgrade!');
   }
 };
 
