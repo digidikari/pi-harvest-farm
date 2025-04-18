@@ -1,4 +1,4 @@
-console.log('Starting Pi Harvest Farm v8...');
+console.log('Starting Pi Harvest Farm v9...');
 
 // Init buttons first
 try {
@@ -31,6 +31,7 @@ let en = {
   planted: 'Planted {0}!',
   watered: 'Watered {0}!',
   noWater: '{0} doesn\'t need water yet!',
+  waterNow: 'Water!',
   harvested: 'Harvested! Gained coins.',
   levelUp: 'Level up! You are now level {0}. Bonus: 50 coins!',
   purchased: 'Purchased {0}!'
@@ -46,6 +47,7 @@ let id = {
   planted: 'Ditanam {0}!',
   watered: 'Disiram {0}!',
   noWater: '{0} belum perlu disiram!',
+  waterNow: 'Siram!',
   harvested: 'Panen! Dapat koin.',
   levelUp: 'Naik level! Sekarang level {0}. Bonus: 50 koin!',
   purchased: 'Membeli {0}!'
@@ -253,11 +255,10 @@ function handlePlotClick(plot) {
       }
       playSound('assets/sfx/voice/watering-bgv.mp3');
       plot.waitingForWater = false;
-      plot.stage++;
       const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
       if (plotDiv) {
-        plotDiv.classList.add('splash');
-        setTimeout(() => plotDiv.classList.remove('splash'), 300);
+        plotDiv.classList.add('splash', 'shake');
+        setTimeout(() => plotDiv.classList.remove('splash', 'shake'), 300);
       }
       showNotification('watered', [plot.veg.name[currentLang]]);
       startGrowth(plot);
@@ -265,8 +266,8 @@ function handlePlotClick(plot) {
       playSound('assets/sfx/voice/harvesting-bgv.mp3');
       const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
       if (plotDiv) {
-        plotDiv.classList.add('bounce');
-        setTimeout(() => plotDiv.classList.remove('bounce'), 600);
+        plotDiv.classList.add('bounce', 'shake');
+        setTimeout(() => plotDiv.classList.remove('bounce', 'shake'), 600);
       }
       userData.coinBalance += plot.veg.yield * (userData.upgrades.yieldBoost || 1);
       if (Math.random() < 0.1) userData.piBalance += 0.01;
@@ -303,9 +304,8 @@ function buySeed(veg) {
         plot.stage = 1;
         plot.growthTime = veg.growthTime * (userData.upgrades.wateringCan || 1);
         plot.waitingForWater = true;
-        startGrowth(plot);
-        Object.assign(userData, cost);
         renderFarm();
+        Object.assign(userData, cost);
         updateWallet();
         showNotification('planted', [veg.name[currentLang]]);
       } else {
@@ -324,12 +324,11 @@ function startGrowth(plot) {
   console.log('Growth started for:', plot.veg.id, 'Stage:', plot.stage);
   try {
     if (plot.stage >= plot.veg.frames) return;
-    // Transisi sprite cepat
-    renderFarm();
     // Set waktu buat stage berikutnya (2 detik per stage, adjust via growthTime)
     const timePerStage = (plot.growthTime * 1000) / plot.veg.frames;
     plot.nextWaterTime = Date.now() + timePerStage;
     plot.waitingForWater = false;
+    renderFarm();
     // Update countdown
     const interval = setInterval(() => {
       if (!plot.planted || !plot.veg || plot.waitingForWater) {
@@ -338,8 +337,10 @@ function startGrowth(plot) {
       }
       const timeLeft = (plot.nextWaterTime - Date.now()) / 1000;
       if (timeLeft <= 0) {
+        plot.stage++;
         plot.waitingForWater = true;
         clearInterval(interval);
+        renderFarm();
       }
       renderFarm();
     }, 100);
