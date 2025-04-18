@@ -1,4 +1,4 @@
-console.log('Starting Pi Harvest Farm v4...');
+console.log('Starting Pi Harvest Farm v5...');
 
 // Init buttons first
 try {
@@ -84,6 +84,21 @@ function playSound(file) {
   }
 }
 
+function showNotification(message) {
+  try {
+    const notif = document.getElementById('notification') || document.createElement('div');
+    if (!notif.id) {
+      notif.id = 'notification';
+      document.body.appendChild(notif);
+    }
+    notif.textContent = message;
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 2000);
+  } catch (e) {
+    console.error('Notification failed:', e);
+  }
+}
+
 function startGame() {
   console.log('Start Game clicked');
   try {
@@ -143,6 +158,11 @@ function renderFarm() {
           console.error('Sprite failed:', spriteUrl);
           alert(`Sprite not found: ${plot.veg.id}_${frameIndex}.png for ${plot.veg.name[currentLang]}`);
         };
+        // Timer
+        const timerSpan = document.createElement('span');
+        timerSpan.className = 'plot-timer';
+        timerSpan.textContent = plot.timeLeft ? `${plot.timeLeft.toFixed(1)}s` : '';
+        plotDiv.appendChild(timerSpan);
       }
       plotDiv.addEventListener('click', () => handlePlotClick(plot));
       farmArea.appendChild(plotDiv);
@@ -159,7 +179,7 @@ function renderShop() {
     const seedList = document.getElementById('seed-list');
     seedList.innerHTML = '';
     vegetables.vegetables.forEach(veg => {
-      if (!veg.id) return; // Skip invalid veg
+      if (!veg.id) return;
       const li = document.createElement('li');
       li.textContent = `${veg.name[currentLang]} - ${veg.price} Coins / ${veg.piPrice} Pi`;
       li.addEventListener('click', () => buySeed(veg));
@@ -187,8 +207,13 @@ function handlePlotClick(plot) {
     if (!plot.watered && plot.stage < plot.veg.frames) {
       playSound('assets/sfx/voice/watering-bgv.mp3');
       plot.watered = true;
-      plot.growthTime *= 0.8; // Boost growth
-      alert(`Watered ${plot.veg.name[currentLang]}!`);
+      plot.growthTime *= 0.8;
+      const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
+      if (plotDiv) {
+        plotDiv.classList.add('splash');
+        setTimeout(() => plotDiv.classList.remove('splash'), 500);
+      }
+      showNotification(`Watered ${plot.veg.name[currentLang]}!`);
     } else if (plot.stage >= plot.veg.frames) {
       playSound('assets/sfx/voice/harvesting-bgv.mp3');
       userData.coinBalance += plot.veg.yield * (userData.upgrades.yieldBoost || 1);
@@ -198,10 +223,11 @@ function handlePlotClick(plot) {
       delete plot.stage;
       delete plot.growthTime;
       delete plot.watered;
+      delete plot.timeLeft;
       checkLevelUp();
       renderFarm();
       updateWallet();
-      alert('Harvested! Gained coins.');
+      showNotification('Harvested! Gained coins.');
     }
   } catch (e) {
     console.error('Plot click failed:', e);
@@ -229,7 +255,7 @@ function buySeed(veg) {
         Object.assign(userData, cost);
         renderFarm();
         updateWallet();
-        alert(`Planted ${veg.name[currentLang]}!`);
+        showNotification(`Planted ${veg.name[currentLang]}!`);
       } else {
         alert('No empty plots available! Panen or buy extra plot.');
       }
@@ -246,19 +272,35 @@ function startGrowth(plot) {
   console.log('Growth started for:', plot.veg.id);
   try {
     const timePerStage = (plot.growthTime * 1000) / plot.veg.frames;
+    let timeLeft = timePerStage;
+    const startTime = Date.now();
+    plot.timeLeft = timeLeft / 1000;
+    renderFarm();
     const interval = setInterval(() => {
       if (!plot.planted || !plot.veg) {
         clearInterval(interval);
         return;
       }
-      if (plot.stage < plot.veg.frames) {
+      const elapsed = Date.now() - startTime;
+      timeLeft = Math.max(0, timePerStage - (elapsed % timePerStage));
+      plot.timeLeft = timeLeft / 1000;
+      if (plot.stage < plot.veg.frames && elapsed >= timePerStage * plot.stage) {
         plot.stage++;
-        plot.watered = false; // Reset water untuk stage baru
+        plot.watered = false;
+        const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
+        if (plotDiv) {
+          plotDiv.classList.add('shine');
+          setTimeout(() => plotDiv.classList.remove('shine'), 700);
+        }
+        showNotification(`${plot.veg.name[currentLang]} grown to stage ${plot.stage}!`);
         renderFarm();
-      } else {
+      } else if (plot.stage >= plot.veg.frames) {
         clearInterval(interval);
+        delete plot.timeLeft;
+        renderFarm();
       }
-    }, timePerStage);
+      renderFarm();
+    }, 100);
   } catch (e) {
     console.error('Growth failed:', e);
   }
@@ -273,7 +315,7 @@ function checkLevelUp() {
       userData.coinBalance += 50;
       updateWallet();
       console.log('Level up:', userData.level);
-      alert(`Level up! You are now level ${userData.level}. Bonus: 50 coins!`);
+      showNotification(`Level up! You are now level ${userData.level}. Bonus: 50 coins!`);
     }
   } catch (e) {
     console.error('Level up failed:', e);
@@ -299,7 +341,7 @@ window.buyUpgrade = function(type) {
       Object.assign(userData, cost);
       renderFarm();
       updateWallet();
-      alert(`Purchased ${type}!`);
+      showNotification(`Purchased ${type}!`);
     } else {
       alert('Not enough coins or Pi for upgrade!');
     }
