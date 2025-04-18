@@ -96,18 +96,18 @@ button:hover {
 /* Animasi */
 @keyframes splash {
   0% { background-color: #8B4513; transform: scale(1); }
-  50% { background-color: #87CEEB; transform: scale(1.05); }
+  50% { background-color: #87CEEB; transform: scale(1.03); }
   100% { background-color: #8B4513; transform: scale(1); }
 }
 
 @keyframes bounce {
   0% { background-color: #8B4513; transform: scale(1); }
-  50% { background-color: #32CD32; transform: scale(1.2); }
+  50% { background-color: #32CD32; transform: scale(1.15); }
   100% { background-color: #8B4513; transform: scale(1); }
 }
 
 .splash {
-  animation: splash 0.4s ease;
+  animation: splash 0.3s ease;
 }
 
 .bounce {
