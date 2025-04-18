@@ -1,46 +1,33 @@
-<!DOCTYPE html><html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="layout/style.css" />
-</head>
-<body>
-  <div id="game-container">
-    <header>
-      <h1>Pi Harvest Farm</h1>
-      <div id="language-switch">
-        <button id="lang-en">EN</button>
-        <button id="lang-id">ID</button>
-      </div>
-    </header><main>
-  <section id="farm-area">
-    <!-- Grid lahan tanam -->
-  </section>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pi Harvest Farm</title>
+    <link rel="stylesheet" href="layout/style.css" />
+  </head>
+  <body>
+    <div id="game-container">
+      <header>
+        <h1>Pi Harvest Farm</h1>
+      </header>
 
-  <section id="controls">
-    <button id="btn-plant">Tanam</button>
-    <button id="btn-water">Siram</button>
-    <button id="btn-harvest">Panen</button>
-    <button id="btn-upgrade">Upgrade</button>
-  </section>
+      <section class="language-switcher">
+        <button onclick="setLanguage('id')">Indonesia</button>
+        <button onclick="setLanguage('en')">English</button>
+      </section>
 
-  <section id="inventory">
-    <h2>Inventory</h2>
-    <div id="inventory-items"></div>
-  </section>
+      <section class="plant-grid" id="plant-grid">
+        <!-- Grid tanaman muncul di sini lewat JS -->
+      </section>
 
-  <section id="wallet">
-    <h2>Dompet</h2>
-    <p>Saldo Pi: <span id="pi-balance">0</span></p>
-    <button id="btn-topup">Top Up</button>
-    <button id="btn-withdraw">Withdraw</button>
-  </section>
-</main>
+      <section class="upgrade-panel">
+        <h2 id="upgrade-title">Upgrade</h2>
+        <!-- Upgrade list via JS -->
+      </section>
+    </div>
 
-<footer>
-  <p>by Pi Network x Developer</p>
-</footer>
-
-  </div>  <script src="scripts/main.js"></script></body>
+    <!-- Script -->
+    <script src="scripts/main.js"></script>
+  </body>
 </html>
