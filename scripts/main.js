@@ -1,4 +1,4 @@
-console.log('Starting Pi Harvest Farm v5...');
+console.log('Starting Pi Harvest Farm v6...');
 
 // Init buttons first
 try {
@@ -161,7 +161,7 @@ function renderFarm() {
         // Timer
         const timerSpan = document.createElement('span');
         timerSpan.className = 'plot-timer';
-        timerSpan.textContent = plot.timeLeft ? `${plot.timeLeft.toFixed(1)}s` : '';
+        timerSpan.textContent = plot.waitingForWater ? 'Water!' : '';
         plotDiv.appendChild(timerSpan);
       }
       plotDiv.addEventListener('click', () => handlePlotClick(plot));
@@ -179,7 +179,10 @@ function renderShop() {
     const seedList = document.getElementById('seed-list');
     seedList.innerHTML = '';
     vegetables.vegetables.forEach(veg => {
-      if (!veg.id) return;
+      if (!veg.id) {
+        console.warn('Skipping vegetable without id:', veg);
+        return;
+      }
       const li = document.createElement('li');
       li.textContent = `${veg.name[currentLang]} - ${veg.price} Coins / ${veg.piPrice} Pi`;
       li.addEventListener('click', () => buySeed(veg));
@@ -204,26 +207,35 @@ function handlePlotClick(plot) {
   console.log('Plot clicked:', plot.id, 'Planted:', plot.planted);
   if (!plot.planted || !plot.veg || !plot.veg.id) return;
   try {
-    if (!plot.watered && plot.stage < plot.veg.frames) {
+    if (plot.stage < plot.veg.frames) {
+      if (!plot.waitingForWater) {
+        showNotification(`${plot.veg.name[currentLang]} doesn't need water yet!`);
+        return;
+      }
       playSound('assets/sfx/voice/watering-bgv.mp3');
-      plot.watered = true;
-      plot.growthTime *= 0.8;
+      plot.waitingForWater = false;
+      plot.stage++;
       const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
       if (plotDiv) {
         plotDiv.classList.add('splash');
-        setTimeout(() => plotDiv.classList.remove('splash'), 500);
+        setTimeout(() => plotDiv.classList.remove('splash'), 400);
       }
       showNotification(`Watered ${plot.veg.name[currentLang]}!`);
-    } else if (plot.stage >= plot.veg.frames) {
+      startGrowth(plot);
+    } else {
       playSound('assets/sfx/voice/harvesting-bgv.mp3');
+      const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
+      if (plotDiv) {
+        plotDiv.classList.add('bounce');
+        setTimeout(() => plotDiv.classList.remove('bounce'), 600);
+      }
       userData.coinBalance += plot.veg.yield * (userData.upgrades.yieldBoost || 1);
       if (Math.random() < 0.1) userData.piBalance += 0.01;
       plot.planted = false;
       delete plot.veg;
       delete plot.stage;
       delete plot.growthTime;
-      delete plot.watered;
-      delete plot.timeLeft;
+      delete plot.waitingForWater;
       checkLevelUp();
       renderFarm();
       updateWallet();
@@ -250,7 +262,7 @@ function buySeed(veg) {
         plot.veg = veg;
         plot.stage = 1;
         plot.growthTime = veg.growthTime * (userData.upgrades.wateringCan || 1);
-        plot.watered = false;
+        plot.waitingForWater = true;
         startGrowth(plot);
         Object.assign(userData, cost);
         renderFarm();
@@ -269,37 +281,15 @@ function buySeed(veg) {
 }
 
 function startGrowth(plot) {
-  console.log('Growth started for:', plot.veg.id);
+  console.log('Growth started for:', plot.veg.id, 'Stage:', plot.stage);
   try {
-    const timePerStage = (plot.growthTime * 1000) / plot.veg.frames;
-    let timeLeft = timePerStage;
-    const startTime = Date.now();
-    plot.timeLeft = timeLeft / 1000;
-    renderFarm();
-    const interval = setInterval(() => {
-      if (!plot.planted || !plot.veg) {
-        clearInterval(interval);
-        return;
-      }
-      const elapsed = Date.now() - startTime;
-      timeLeft = Math.max(0, timePerStage - (elapsed % timePerStage));
-      plot.timeLeft = timeLeft / 1000;
-      if (plot.stage < plot.veg.frames && elapsed >= timePerStage * plot.stage) {
-        plot.stage++;
-        plot.watered = false;
-        const plotDiv = document.querySelector(`.plot:nth-child(${plot.id})`);
-        if (plotDiv) {
-          plotDiv.classList.add('shine');
-          setTimeout(() => plotDiv.classList.remove('shine'), 700);
-        }
-        showNotification(`${plot.veg.name[currentLang]} grown to stage ${plot.stage}!`);
-        renderFarm();
-      } else if (plot.stage >= plot.veg.frames) {
-        clearInterval(interval);
-        delete plot.timeLeft;
+    if (plot.stage >= plot.veg.frames) return;
+    // Transisi sprite cepat
+    setTimeout(() => {
+      if (plot.planted && plot.veg) {
+        plot.waitingForWater = true;
         renderFarm();
       }
-      renderFarm();
     }, 100);
   } catch (e) {
     console.error('Growth failed:', e);
