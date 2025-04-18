@@ -1,6 +1,14 @@
 {
   "title": "Pi Harvest Farm",
   "shop": "Shop",
+  "upgrades": "Upgrades",
+  "wallet": "Wallet",
+  "leaderboard": "Leaderboard",
   "topUp": "Top Up Pi Coin",
-  "watchAd": "Watch Ad for Bonus"
+  "withdraw": "Withdraw Pi Coin",
+  "watchAd": "Watch Ad for Bonus",
+  "langToggle": "Switch to Indonesian",
+  "wateringCan": "Watering Can",
+  "extraPlot": "Extra Plot",
+  "yieldBoost": "Yield Boost"
 }
