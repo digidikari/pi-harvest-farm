@@ -4,7 +4,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
 }
 #game-container {
@@ -34,7 +34,7 @@ body {
 .plot:hover {
   transform: scale(1.05);
 }
-#shop, #upgrades, #wallet, #leaderboard {
+#shop, #wallet {
   margin-top: 20px;
 }
 button {
