@@ -1,6 +1,14 @@
 {
   "title": "Pi Harvest Farm",
   "shop": "Toko",
+  "upgrades": "Peningkatan",
+  "wallet": "Dompet",
+  "leaderboard": "Papan Peringkat",
   "topUp": "Isi Ulang Pi Coin",
-  "watchAd": "Tonton Iklan untuk Bonus"
+  "withdraw": "Tarik Pi Coin",
+  "watchAd": "Tonton Iklan untuk Bonus",
+  "langToggle": "Ganti ke Inggris",
+  "wateringCan": "Penyiram",
+  "extraPlot": "Lahan Tambahan",
+  "yieldBoost": "Peningkat Hasil"
 }
