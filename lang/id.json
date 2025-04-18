@@ -2,15 +2,21 @@
   "title": "Pi Harvest Farm",
   "shop": "Toko",
   "upgrades": "Peningkatan",
+  "inventory": "Inventori",
   "langToggle": "Ganti Bahasa (EN/ID)",
   "wateringCan": "Gembor",
   "extraPlot": "Lahan Ekstra",
   "yieldBoost": "Peningkatan Hasil",
+  "coinLabel": "Koin",
   "planted": "Ditanam {0}!",
   "watered": "Disiram {0}!",
   "noWater": "{0} belum perlu disiram!",
   "waterNow": "Siram!",
-  "harvested": "Panen! Dapat koin.",
+  "harvestNow": "Panen!",
+  "harvested": "Panen {0}!",
   "levelUp": "Naik level! Sekarang level {0}. Bonus: 50 koin!",
-  "purchased": "Membeli {0}!"
+  "purchased": "Membeli {0}!",
+  "notEnough": "Koin atau Pi tidak cukup!",
+  "newPlotCoins": "Lahan baru (3) dibeli dengan koin!",
+  "newPlotPi": "Lahan baru (9) dibeli dengan Pi!"
 }
