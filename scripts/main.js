@@ -40,7 +40,7 @@ function renderGrid() {
 
     if (plot) {
       const img = document.createElement("img");
-      img.src = `assets/img/plant/${plot.id}/${plot.growthStage}.png`;
+      img.src = `assets/img/plant/${plot.id}/${plot.id}_${plot.growthStage}.png`;
       img.alt = plot.name[currentLanguage];
       container.appendChild(img);
     } else {
