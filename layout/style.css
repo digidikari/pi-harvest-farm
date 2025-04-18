@@ -1,31 +1,61 @@
 body {
-  font-family: sans-serif;
-  background: #dff0d8;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-
-#game-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-}
-
-#farm-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-gap: 10px;
+  font-family: Arial, sans-serif;
+  background-color: #f0f8e6;
+  display: flex;
   justify-content: center;
-  margin-top: 20px;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
-
-#farm-grid img {
+#game-container {
+  width: 800px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+#farm-area {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.plot {
   width: 100px;
   height: 100px;
-  background: #eee;
+  background-color: #d4a373;
+  border: 2px solid #8b5e3c;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
-
-#control-panel {
+.plot.planted {
+  background-size: cover;
+}
+.plot:hover {
+  transform: scale(1.05);
+}
+#shop, #upgrades, #wallet, #leaderboard {
   margin-top: 20px;
+}
+button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+}
+button:hover {
+  background-color: #45a049;
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  padding: 5px;
+  cursor: pointer;
+}
+li:hover {
+  background-color: #f0f0f0;
 }
