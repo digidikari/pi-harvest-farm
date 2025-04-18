@@ -91,18 +91,18 @@ function renderFarm() {
   userData.plots.forEach(plot => {
     const plotDiv = document.createElement('div');
     plotDiv.className = 'plot';
-    if (plot.planted) {
+    if (plot.planted && plot.veg) {
       plotDiv.className += ' planted';
       const frameIndex = Math.min(plot.stage, plot.veg.frames);
       const spriteUrl = `assets/img/plant/${plot.veg.id}/${plot.veg.id}_${frameIndex}.png`;
       console.log('Setting sprite:', spriteUrl);
       plotDiv.style.backgroundImage = `url(${spriteUrl})`;
-      // Cek apakah sprite load
+      // Cek sprite load
       const img = new Image();
       img.src = spriteUrl;
       img.onerror = () => {
         console.error('Sprite failed:', spriteUrl);
-        alert(`Sprite not found: ${plot.veg.id}_${frameIndex}.png`);
+        alert(`Sprite not found: ${plot.veg.id}_${frameIndex}.png. Check assets/img/plant/${plot.veg.id}/`);
       };
     }
     plotDiv.addEventListener('click', () => handlePlotClick(plot));
@@ -129,21 +129,27 @@ function updateWallet() {
 }
 
 function handlePlotClick(plot) {
-  console.log('Plot clicked:', plot.id);
-  if (!plot.planted) return;
+  console.log('Plot clicked:', plot.id, 'Planted:', plot.planted);
+  if (!plot.planted || !plot.veg) return;
   playSound('assets/sfx/voice/watering-bgv.mp3');
   if (plot.stage < plot.veg.frames) {
     plot.watered = true;
     plot.growthTime *= 0.9;
+    plot.stage++; // Langsung tambah stage biar cepet tes
     renderFarm();
   } else {
     playSound('assets/sfx/voice/harvesting-bgv.mp3');
     userData.coinBalance += plot.veg.yield * (userData.upgrades.yieldBoost || 1);
     if (Math.random() < 0.1) userData.piBalance += 0.01;
-    plot.planted = false;
+    plot.planted = falseေ" rel="nofollow">plot.planted = false;
+    delete plot.veg;
+    delete plot.stage;
+    delete plot.growthTime;
+    delete plot.watered;
     checkLevelUp();
     renderFarm();
     updateWallet();
+    alert('Harvested! Gained coins.');
   }
 }
 
@@ -161,8 +167,9 @@ function buySeed(veg) {
       Object.assign(userData, cost);
       renderFarm();
       updateWallet();
+      alert(`Planted ${veg.name[currentLang]}!`);
     } else {
-      alert('No empty plots available!');
+      alert('No empty plots available! Panen or buy extra plot.');
     }
   } else {
     alert('Not enough coins or Pi!');
@@ -203,7 +210,7 @@ window.buyUpgrade = function(type) {
   console.log('Upgrade:', type);
   const upgrade = upgrades[type];
   if (userData.coinBalance >= upgrade.cost || userData.piBalance >= upgrade.piCost) {
-    const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - veg.price } : { piBalance: userData.piBalance - veg.piPrice };
+    const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - upgrade.piCost };
     userData.upgrades[type] = (userData.upgrades[type] || (type === 'extraPlot' ? 0 : 1)) * (type === 'extraPlot' ? 1 : upgrade.effect);
     if (type === 'extraPlot') {
       userData.plots.push({ id: userData.plots.length + 1, planted: false });
