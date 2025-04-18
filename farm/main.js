@@ -1,22 +1,40 @@
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Starting Pi Harvest Farm v15...');
+// Log versi untuk debug
+console.log('Starting Pi Harvest Farm v16...');
 
-  // Init buttons
-  try {
-    console.log('Adding event listeners');
+// Pastikan DOM fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM fully loaded, initializing...');
+
+  // Fungsi untuk init button
+  function initButtons() {
+    console.log('Initializing buttons...');
     const startBtn = document.getElementById('start-btn');
     const langToggle = document.getElementById('lang-toggle');
+
+    // Debug: Pastikan tombol ketemu
     if (!startBtn || !langToggle) {
       console.error('Buttons not found:', { startBtn, langToggle });
-      alert('Error: Buttons not found. Check HTML.');
-    } else {
-      startBtn.addEventListener('click', startGame);
-      langToggle.addEventListener('click', toggleLanguage);
-      console.log('Event listeners added');
+      alert('Error: Start button or language toggle not found. Check HTML.');
+      return false;
     }
-  } catch (e) {
-    console.error('Button init failed:', e);
-    alert('JS error: ' + e.message);
+
+    // Attach event listeners
+    startBtn.addEventListener('click', startGame);
+    langToggle.addEventListener('click', toggleLanguage);
+    console.log('Event listeners attached to buttons');
+    return true;
+  }
+
+  // Coba init button, kalo gagal retry setelah delay
+  if (!initButtons()) {
+    console.warn('Initial button init failed, retrying after 500ms...');
+    setTimeout(() => {
+      if (initButtons()) {
+        console.log('Button init successful on retry');
+      } else {
+        console.error('Button init failed after retry');
+      }
+    }, 500);
   }
 
   // Data
@@ -160,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Error: Start screen or game container not found. Check HTML.');
         return;
       }
+      console.log('Hiding start screen, showing game container');
       startScreen.style.display = 'none';
       gameContainer.style.display = 'flex';
       try {
@@ -169,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Audio playback failed, skipping:', e);
       }
       loadLanguage();
+      console.log('Calling switchTab("farm")');
       switchTab('farm');
     } catch (e) {
       console.error('Start game failed:', e);
@@ -219,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
-        btn.onclick = () => switchTab(btn.getAttribute('data-tab')); // Reset listener
+        btn.onclick = () => switchTab(btn.getAttribute('data-tab'));
       });
       tabElement.style.display = 'flex';
       const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
@@ -279,8 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Render farm failed:', e);
       alert('Farm render error: ' + e.message);
     }
-  }
-
+    }
   function renderShop() {
     console.log('Rendering shop');
     try {
@@ -538,4 +557,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const upgrades = {
     wateringCan: { cost: 50, piCost: 0.2, effect: 0.8 },
-    yieldBoost: { cost: 100, piCo
+    yieldBoost: { cost: 100, piCost: 0.5, effect: 1.5 },
+    extraPlotCoins: { cost: 200, piCost: 0, effect: 1 },
+    extraPlotPi: { cost: 0, piCost: 1, effect: 5 }
+  };
+
+  window.buyUpgrade = function(type) {
+    console.log('Upgrade:', type);
+    try {
+      const upgrade = upgrades[type];
+      if (userData.coinBalance >= upgrade.cost && userData.piBalance >= upgrade.piCost && userData.unlockedPlots < 36) {
+        const cost = { 
+          coinBalance: userData.coinBalance - upgrade.cost,
+          piBalance: userData.piBalance - upgrade.piCost
+        };
+        if (type.startsWith('extraPlot')) {
+          const newPlots = upgrade.effect;
+          for (let i = 0; i < newPlots && userData.unlockedPlots < 36; i++) {
+            userData.unlockedPlots++;
+            userData.plots.push({ id: userData.plots.length + 1, planted: false });
+          }
+          showNotification(type === 'extraPlotCoins' ? 'newPlotCoins' : 'newPlotPi');
+        } else {
+          userData.upgrades[type] = (userData.upgrades[type] || 1) * upgrade.effect;
+          showNotification('purchased', [langData[currentLang][type]]);
+        }
+        Object.assign(userData, cost);
+        renderFarm();
+        updateWallet();
+      } else {
+        showNotification('notEnough');
+      }
+    } catch (e) {
+      console.error('Buy upgrade failed:', e);
+      alert('Upgrade error: ' + e.message);
+    }
+  };
+
+  // Load data after DOM loaded
+  loadData();
+});
