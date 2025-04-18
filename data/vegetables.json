@@ -101,7 +101,7 @@
       "frames": 7
     },
     {
-      "id guided": "pumpkin",
+      "id": "pumpkin",
       "name": { "en": "Pumpkin", "id": "Labu" },
       "growthTime": 420,
       "price": 30,
