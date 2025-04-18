@@ -1,91 +1,31 @@
-/* style.css - Pi Harvest Farm */
-
 body {
+  font-family: sans-serif;
+  background: #dff0d8;
   margin: 0;
   padding: 0;
-  font-family: "Arial", sans-serif;
-  background-color: #f4f4f4;
+  text-align: center;
 }
 
 #game-container {
-  max-width: 768px;
+  max-width: 600px;
   margin: auto;
-  padding: 1rem;
-  background-color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
-/* Header */
-header {
-  text-align: center;
-  padding: 1rem 0;
-}
-
-header h1 {
-  font-size: 2rem;
-  margin: 0;
-}
-
-/* Buttons */
-button {
-  padding: 0.5rem 1rem;
-  margin: 0.25rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background-color: #4caf50;
-  color: white;
-  transition: background-color 0.2s ease;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-/* Plant Grid */
-.plant-grid {
+#farm-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.plant-cell {
-  background-color: #d2f1d2;
-  border: 2px dashed #78c978;
-  border-radius: 12px;
-  padding: 8px;
-  display: flex;
-  align-items: center;
+  grid-template-columns: repeat(3, 100px);
+  grid-gap: 10px;
   justify-content: center;
-  height: 72px;
+  margin-top: 20px;
 }
 
-/* Upgrade Panel */
-.upgrade-panel {
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #e9ffe9;
-  border-radius: 12px;
+#farm-grid img {
+  width: 100px;
+  height: 100px;
+  background: #eee;
 }
 
-/* Language Switcher */
-.language-switcher {
-  margin-top: 1rem;
-  text-align: center;
-}
-
-.language-switcher button {
-  background-color: #2196f3;
-}
-
-.language-switcher button:hover {
-  background-color: #1976d2;
+#control-panel {
+  margin-top: 20px;
 }
