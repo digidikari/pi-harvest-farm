@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Starting Pi Harvest Farm v14...');
+  console.log('Starting Pi Harvest Farm v15...');
 
   // Init buttons
   try {
@@ -153,10 +153,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function startGame() {
     console.log('Start Game clicked');
     try {
-      document.getElementById('start-screen').style.display = 'none';
-      document.getElementById('game-container').style.display = 'block';
-      if (bgm) bgm.play().catch(e => console.error('BGM failed:', e));
-      if (ambient) ambient.play().catch(e => console.error('Ambient failed:', e));
+      const startScreen = document.getElementById('start-screen');
+      const gameContainer = document.getElementById('game-container');
+      if (!startScreen || !gameContainer) {
+        console.error('Start screen or game container not found:', { startScreen, gameContainer });
+        alert('Error: Start screen or game container not found. Check HTML.');
+        return;
+      }
+      startScreen.style.display = 'none';
+      gameContainer.style.display = 'flex';
+      try {
+        if (bgm) bgm.play().catch(e => console.error('BGM failed:', e));
+        if (ambient) ambient.play().catch(e => console.error('Ambient failed:', e));
+      } catch (e) {
+        console.warn('Audio playback failed, skipping:', e);
+      }
       loadLanguage();
       switchTab('farm');
     } catch (e) {
@@ -210,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.classList.remove('active');
         btn.onclick = () => switchTab(btn.getAttribute('data-tab')); // Reset listener
       });
-      tabElement.style.display = 'block';
+      tabElement.style.display = 'flex';
       const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
       if (activeBtn) {
         activeBtn.classList.add('active');
@@ -527,15 +538,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const upgrades = {
     wateringCan: { cost: 50, piCost: 0.2, effect: 0.8 },
-    yieldBoost: { cost: 100, piCost: 0.5, effect: 1.5 },
-    extraPlotCoins: { cost: 200, piCost: 0, effect: 1 },
-    extraPlotPi: { cost: 0, piCost: 1, effect: 5 }
-  };
-
-  window.buyUpgrade = function(type) {
-    console.log('Upgrade:', type);
-    try {
-      const upgrade = upgrades[type];
-      if (userData.coinBalance >= upgrade.cost && userData.piBalance >= upgrade.piCost && userData.unlockedPlots < 36) {
-        const cost = { 
-          coinBalance: user
+    yieldBoost: { cost: 100, piCo
