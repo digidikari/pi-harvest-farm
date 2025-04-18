@@ -1,4 +1,4 @@
-console.log('Starting Pi Harvest Farm v7...');
+console.log('Starting Pi Harvest Farm v8...');
 
 // Init buttons first
 try {
@@ -20,8 +20,36 @@ try {
 
 // Data
 let vegetables = { vegetables: [] };
-let en = { title: 'Pi Harvest Farm', shop: 'Shop', upgrades: 'Upgrades', langToggle: 'Switch Language (EN/ID)', wateringCan: 'Watering Can', extraPlot: 'Extra Plot', yieldBoost: 'Yield Boost' };
-let id = { title: 'Pi Harvest Farm', shop: 'Toko', upgrades: 'Peningkatan', langToggle: 'Ganti Bahasa (EN/ID)', wateringCan: 'Gembor', extraPlot: 'Lahan Ekstra', yieldBoost: 'Peningkatan Hasil' };
+let en = {
+  title: 'Pi Harvest Farm',
+  shop: 'Shop',
+  upgrades: 'Upgrades',
+  langToggle: 'Switch Language (EN/ID)',
+  wateringCan: 'Watering Can',
+  extraPlot: 'Extra Plot',
+  yieldBoost: 'Yield Boost',
+  planted: 'Planted {0}!',
+  watered: 'Watered {0}!',
+  noWater: '{0} doesn\'t need water yet!',
+  harvested: 'Harvested! Gained coins.',
+  levelUp: 'Level up! You are now level {0}. Bonus: 50 coins!',
+  purchased: 'Purchased {0}!'
+};
+let id = {
+  title: 'Pi Harvest Farm',
+  shop: 'Toko',
+  upgrades: 'Peningkatan',
+  langToggle: 'Ganti Bahasa (EN/ID)',
+  wateringCan: 'Gembor',
+  extraPlot: 'Lahan Ekstra',
+  yieldBoost: 'Peningkatan Hasil',
+  planted: 'Ditanam {0}!',
+  watered: 'Disiram {0}!',
+  noWater: '{0} belum perlu disiram!',
+  harvested: 'Panen! Dapat koin.',
+  levelUp: 'Naik level! Sekarang level {0}. Bonus: 50 koin!',
+  purchased: 'Membeli {0}!'
+};
 let currentLang = 'en';
 const langData = { en, id };
 let userData = {
@@ -42,8 +70,10 @@ async function loadData() {
       fetch('/pi-harvest-farm/lang/id.json')
     ]);
     vegetables = await vegRes.json();
-    en = await enRes.json();
-    id = await idRes.json();
+    const enLoaded = await enRes.json();
+    const idLoaded = await idRes.json();
+    Object.assign(en, enLoaded);
+    Object.assign(id, idLoaded);
     console.log('Loaded JSON:', { vegetablesCount: vegetables.vegetables.length, en, id });
     // Validate vegetables
     vegetables.vegetables.forEach(veg => {
@@ -84,8 +114,12 @@ function playSound(file) {
   }
 }
 
-function showNotification(message) {
+function showNotification(key, params = []) {
   try {
+    let message = langData[currentLang][key] || key;
+    params.forEach((param, i) => {
+      message = message.replace(`{${i}}`, param);
+    });
     const notif = document.getElementById('notification') || document.createElement('div');
     if (!notif.id) {
       notif.id = 'notification';
@@ -162,10 +196,10 @@ function renderFarm() {
         const timerSpan = document.createElement('span');
         timerSpan.className = 'plot-timer';
         if (plot.waitingForWater) {
-          timerSpan.textContent = 'Water!';
+          timerSpan.textContent = langData[currentLang].waterNow || 'Water!';
         } else if (plot.nextWaterTime) {
           const timeLeft = Math.max(0, (plot.nextWaterTime - Date.now()) / 1000);
-          timerSpan.textContent = timeLeft > 0 ? `${timeLeft.toFixed(1)}s` : 'Water!';
+          timerSpan.textContent = timeLeft > 0 ? `${timeLeft.toFixed(1)}s` : langData[currentLang].waterNow || 'Water!';
         }
         plotDiv.appendChild(timerSpan);
       }
@@ -214,7 +248,7 @@ function handlePlotClick(plot) {
   try {
     if (plot.stage < plot.veg.frames) {
       if (!plot.waitingForWater) {
-        showNotification(`${plot.veg.name[currentLang]} doesn't need water yet!`);
+        showNotification('noWater', [plot.veg.name[currentLang]]);
         return;
       }
       playSound('assets/sfx/voice/watering-bgv.mp3');
@@ -225,7 +259,7 @@ function handlePlotClick(plot) {
         plotDiv.classList.add('splash');
         setTimeout(() => plotDiv.classList.remove('splash'), 300);
       }
-      showNotification(`Watered ${plot.veg.name[currentLang]}!`);
+      showNotification('watered', [plot.veg.name[currentLang]]);
       startGrowth(plot);
     } else {
       playSound('assets/sfx/voice/harvesting-bgv.mp3');
@@ -245,7 +279,7 @@ function handlePlotClick(plot) {
       checkLevelUp();
       renderFarm();
       updateWallet();
-      showNotification('Harvested! Gained coins.');
+      showNotification('harvested');
     }
   } catch (e) {
     console.error('Plot click failed:', e);
@@ -273,7 +307,7 @@ function buySeed(veg) {
         Object.assign(userData, cost);
         renderFarm();
         updateWallet();
-        showNotification(`Planted ${veg.name[currentLang]}!`);
+        showNotification('planted', [veg.name[currentLang]]);
       } else {
         alert('No empty plots available! Panen or buy extra plot.');
       }
@@ -323,7 +357,7 @@ function checkLevelUp() {
       userData.coinBalance += 50;
       updateWallet();
       console.log('Level up:', userData.level);
-      showNotification(`Level up! You are now level ${userData.level}. Bonus: 50 coins!`);
+      showNotification('levelUp', [userData.level]);
     }
   } catch (e) {
     console.error('Level up failed:', e);
@@ -341,7 +375,7 @@ window.buyUpgrade = function(type) {
   try {
     const upgrade = upgrades[type];
     if (userData.coinBalance >= upgrade.cost || userData.piBalance >= upgrade.piCost) {
-      const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - veg.piPrice };
+      const cost = userData.coinBalance >= upgrade.cost ? { coinBalance: userData.coinBalance - upgrade.cost } : { piBalance: userData.piBalance - upgrade.piCost };
       userData.upgrades[type] = (userData.upgrades[type] || (type === 'extraPlot' ? 0 : 1)) * (type === 'extraPlot' ? 1 : upgrade.effect);
       if (type === 'extraPlot') {
         userData.plots.push({ id: userData.plots.length + 1, planted: false });
@@ -349,7 +383,7 @@ window.buyUpgrade = function(type) {
       Object.assign(userData, cost);
       renderFarm();
       updateWallet();
-      showNotification(`Purchased ${type}!`);
+      showNotification('purchased', [type]);
     } else {
       alert('Not enough coins or Pi for upgrade!');
     }
