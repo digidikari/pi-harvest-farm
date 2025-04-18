@@ -1,19 +1,27 @@
-console.log('Starting Pi Harvest Farm...');
+console.log('Starting Pi Harvest Farm v2...');
 
-let vegetables, en, id;
+// Init buttons first
 try {
-  vegetables = await fetch('data/vegetables.json').then(res => res.json());
-  en = await fetch('lang/en.json').then(res => res.json());
-  id = await fetch('lang/id.json').then(res => res.json());
-  console.log('Loaded JSON:', { vegetablesCount: vegetables.vegetables.length, en, id });
+  console.log('Adding event listeners');
+  const startBtn = document.getElementById('start-btn');
+  const langToggle = document.getElementById('lang-toggle');
+  if (!startBtn || !langToggle) {
+    console.error('Buttons not found:', { startBtn, langToggle });
+    alert('Error: Buttons not found. Check HTML.');
+  } else {
+    startBtn.addEventListener('click', startGame);
+    langToggle.addEventListener('click', toggleLanguage);
+    console.log('Event listeners added');
+  }
 } catch (e) {
-  console.error('JSON load failed:', e);
-  alert('Error loading game data. Please check your files.');
-  vegetables = { vegetables: [] };
-  en = { title: 'Pi Harvest Farm', shop: 'Shop', upgrades: 'Upgrades', langToggle: 'Switch Language (EN/ID)', wateringCan: 'Watering Can', extraPlot: 'Extra Plot', yieldBoost: 'Yield Boost' };
-  id = { title: 'Pi Harvest Farm', shop: 'Toko', upgrades: 'Peningkatan', langToggle: 'Ganti Bahasa (EN/ID)', wateringCan: 'Gembor', extraPlot: 'Lahan Ekstra', yieldBoost: 'Peningkatan Hasil' };
+  console.error('Button init failed:', e);
+  alert('Error setting up buttons.');
 }
 
+// Data
+let vegetables = { vegetables: [] };
+let en = { title: 'Pi Harvest Farm', shop: 'Shop', upgrades: 'Upgrades', langToggle: 'Switch Language (EN/ID)', wateringCan: 'Watering Can', extraPlot: 'Extra Plot', yieldBoost: 'Yield Boost' };
+let id = { title: 'Pi Harvest Farm', shop: 'Toko', upgrades: 'Peningkatan', langToggle: 'Ganti Bahasa (EN/ID)', wateringCan: 'Gembor', extraPlot: 'Lahan Ekstra', yieldBoost: 'Peningkatan Hasil' };
 let currentLang = 'en';
 const langData = { en, id };
 let userData = {
@@ -24,6 +32,25 @@ let userData = {
   panenCount: 0,
   level: 1
 };
+
+// Load JSON
+async function loadData() {
+  try {
+    const [vegRes, enRes, idRes] = await Promise.all([
+      fetch('data/vegetables.json'),
+      fetch('lang/en.json'),
+      fetch('lang/id.json')
+    ]);
+    vegetables = await vegRes.json();
+    en = await enRes.json();
+    id = await idRes.json();
+    console.log('Loaded JSON:', { vegetablesCount: vegetables.vegetables.length, en, id });
+    loadLanguage();
+  } catch (e) {
+    console.error('JSON load failed:', e);
+    alert('Error loading game data. Using fallback.');
+  }
+}
 
 // Audio
 let bgm, ambient;
@@ -97,12 +124,11 @@ function renderFarm() {
       const spriteUrl = `assets/img/plant/${plot.veg.id}/${plot.veg.id}_${frameIndex}.png`;
       console.log('Setting sprite:', spriteUrl);
       plotDiv.style.backgroundImage = `url(${spriteUrl})`;
-      // Cek sprite load
       const img = new Image();
       img.src = spriteUrl;
       img.onerror = () => {
         console.error('Sprite failed:', spriteUrl);
-        alert(`Sprite not found: ${plot.veg.id}_${frameIndex}.png. Check assets/img/plant/${plot.veg.id}/`);
+        alert(`Sprite not found: ${plot.veg.id}_${frameIndex}.png`);
       };
     }
     plotDiv.addEventListener('click', () => handlePlotClick(plot));
@@ -135,13 +161,13 @@ function handlePlotClick(plot) {
   if (plot.stage < plot.veg.frames) {
     plot.watered = true;
     plot.growthTime *= 0.9;
-    plot.stage++; // Langsung tambah stage biar cepet tes
+    plot.stage++;
     renderFarm();
   } else {
     playSound('assets/sfx/voice/harvesting-bgv.mp3');
     userData.coinBalance += plot.veg.yield * (userData.upgrades.yieldBoost || 1);
     if (Math.random() < 0.1) userData.piBalance += 0.01;
-    plot.planted = falseေ" rel="nofollow">plot.planted = false;
+    plot.planted = false;
     delete plot.veg;
     delete plot.stage;
     delete plot.growthTime;
@@ -224,21 +250,5 @@ window.buyUpgrade = function(type) {
   }
 };
 
-// Init
-try {
-  console.log('Adding event listeners');
-  const startBtn = document.getElementById('start-btn');
-  const langToggle = document.getElementById('lang-toggle');
-  if (!startBtn || !langToggle) {
-    console.error('Buttons not found:', { startBtn, langToggle });
-    alert('Error: Buttons not found. Please check HTML.');
-  } else {
-    startBtn.addEventListener('click', startGame);
-    langToggle.addEventListener('click', toggleLanguage);
-    console.log('Event listeners added');
-  }
-  loadLanguage();
-} catch (e) {
-  console.error('Init failed:', e);
-  alert('Error starting game. Please try again.');
-}
+// Load data after buttons
+loadData();
