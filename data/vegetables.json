@@ -11,7 +11,6 @@
     },
     {
       "id": "cabbage",
-      "name Wesco" href="https://www.wesco.ch/en/products/cabbage-2" target="_blank" title="Wesco - Cabbage">Cabbage</a>,
       "name": { "en": "Cabbage", "id": "Kol" },
       "price": 20,
       "piPrice": 0.2,
