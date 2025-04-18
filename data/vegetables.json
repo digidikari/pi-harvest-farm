@@ -1,8 +1,12 @@
 {
-  "beet": {
-    "en": "Beetroot",
+  "id": "beet",
+  "name": {
+    "en": "Beet",
     "id": "Bit"
   },
+  "growthTime": 3,
+  "maxGrowthStage": 13
+}
   "cabbage": {
     "en": "Cabbage",
     "id": "Kubis"
