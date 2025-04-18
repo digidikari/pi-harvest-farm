@@ -2,13 +2,15 @@
   "title": "Pi Harvest Farm",
   "shop": "Shop",
   "upgrades": "Upgrades",
-  "wallet": "Wallet",
-  "leaderboard": "Leaderboard",
-  "topUp": "Top Up Pi Coin",
-  "withdraw": "Withdraw Pi Coin",
-  "watchAd": "Watch Ad for Bonus",
-  "langToggle": "Switch to Indonesian",
+  "langToggle": "Switch Language (EN/ID)",
   "wateringCan": "Watering Can",
   "extraPlot": "Extra Plot",
-  "yieldBoost": "Yield Boost"
+  "yieldBoost": "Yield Boost",
+  "planted": "Planted {0}!",
+  "watered": "Watered {0}!",
+  "noWater": "{0} doesn't need water yet!",
+  "waterNow": "Water!",
+  "harvested": "Harvested! Gained coins.",
+  "levelUp": "Level up! You are now level {0}. Bonus: 50 coins!",
+  "purchased": "Purchased {0}!"
 }
