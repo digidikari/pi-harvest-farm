@@ -1,11 +1,13 @@
 {
   "title": "Pi Harvest Farm",
+  "farm": "Farm",
   "shop": "Shop",
   "upgrades": "Upgrades",
   "inventory": "Inventory",
   "langToggle": "Switch Language (EN/ID)",
   "wateringCan": "Watering Can",
-  "extraPlot": "Extra Plot",
+  "extraPlotCoins": "Extra Plot",
+  "extraPlotPi": "Extra Plots",
   "yieldBoost": "Yield Boost",
   "coinLabel": "Coins",
   "planted": "Planted {0}!",
@@ -17,6 +19,8 @@
   "levelUp": "Level up! You are now level {0}. Bonus: 50 coins!",
   "purchased": "Purchased {0}!",
   "notEnough": "Not enough coins or Pi!",
-  "newPlotCoins": "New plots (3) purchased with coins!",
-  "newPlotPi": "New plots (9) purchased with Pi!"
+  "newPlotCoins": "New plot purchased with coins!",
+  "newPlotPi": "New plots purchased with Pi!",
+  "newPlotLevel": "New plot unlocked at level {0}!",
+  "bagEmpty": "Bag is empty!"
 }
