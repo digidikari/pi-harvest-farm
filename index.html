@@ -1,33 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pi Harvest Farm</title>
-    <link rel="stylesheet" href="layout/style.css" />
-  </head>
-  <body>
-    <div id="game-container">
-      <header>
-        <h1>Pi Harvest Farm</h1>
-      </header>
-
-      <section class="language-switcher">
-        <button onclick="setLanguage('id')">Indonesia</button>
-        <button onclick="setLanguage('en')">English</button>
-      </section>
-
-      <section class="plant-grid" id="plant-grid">
-        <!-- Grid tanaman muncul di sini lewat JS -->
-      </section>
-
-      <section class="upgrade-panel">
-        <h2 id="upgrade-title">Upgrade</h2>
-        <!-- Upgrade list via JS -->
-      </section>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pi Harvest Farm</title>
+  <link rel="stylesheet" href="layout/style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <h1>Pi Harvest Farm</h1>
+    <div id="farm-grid"></div>
+    <div id="control-panel">
+      <button onclick="plantSeed()">Tanam</button>
+      <button onclick="waterPlants()">Siram</button>
     </div>
+  </div>
 
-    <!-- Script -->
-    <script src="scripts/main.js"></script>
-  </body>
+  <script src="scripts/main.js"></script>
+</body>
 </html>
