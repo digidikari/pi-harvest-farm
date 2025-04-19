@@ -145,11 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Tab button listeners attached');
 
     try {
-      initializeFirebaseAuth();
-      console.log('Firebase initialized successfully');
+      if (typeof initializeFirebaseAuth === 'function') {
+        initializeFirebaseAuth();
+        console.log('Firebase initialized successfully');
+      } else {
+        console.warn('initializeFirebaseAuth not found, skipping Firebase initialization');
+      }
     } catch (e) {
       console.error('Firebase initialization failed:', e.message);
-      alert('Firebase initialization failed. Game may not work properly.');
+      // Lanjutkan tanpa Firebase
     }
 
     loadData();
@@ -165,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadData() {
   console.log('Loading data...');
   try {
-    const langRes = await fetch('../data/lang.json');
+    const langRes = await fetch('/data/lang.json');
     if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
     langData = await langRes.json();
     console.log('Language data loaded:', langData);
@@ -176,10 +180,10 @@ async function loadData() {
   }
 
   try {
-    const vegRes = await fetch('../data/vegetables.json');
+    const vegRes = await fetch('/data/vegetables.json');
     if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
     const vegData = await vegRes.json();
-    vegetables = vegData.vegetables;
+    vegetables = vegData.vegetables || vegData;
     console.log('Vegetables data loaded:', vegetables);
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
@@ -188,7 +192,7 @@ async function loadData() {
   }
 
   try {
-    const invRes = await fetch('../data/inventory.json');
+    const invRes = await fetch('/data/inventory.json');
     if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
     inventory = await invRes.json();
     console.log('Inventory data loaded:', inventory);
