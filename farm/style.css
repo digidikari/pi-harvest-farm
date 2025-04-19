@@ -221,14 +221,17 @@ body {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(6, 80px);
+  grid-template-columns: repeat(6, 80px); /* 6 kolom, tiap kolom 80px */
+  grid-template-rows: repeat(6, 60px); /* 6 baris, tiap baris 60px */
   gap: 5px;
-  justify-content: center;
+  justify-content: center; /* Center secara horizontal */
+  align-content: center; /* Center secara vertikal */
   background: #8b4513;
   padding: 10px;
   border-radius: 10px;
-  width: 510px;
-  margin: 0 auto;
+  width: 510px; /* Lebar total: 6 kolom x 80px + 5 gap x 5px */
+  height: 390px; /* Tinggi total: 6 baris x 60px + 5 gap x 5px */
+  margin: 0 auto; /* Center di parent */
 }
 
 .plot {
