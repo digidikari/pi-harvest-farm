@@ -1,0 +1,42 @@
+{
+  "en": {
+    "title": "Pi Harvest Farm",
+    "startBtn": "Start Game",
+    "farmTab": "Farm",
+    "shopTab": "Shop",
+    "upgradesTab": "Upgrades",
+    "inventoryTab": "Inventory",
+    "leaderboardTab": "Leaderboard",
+    "coinLabel": "Coins",
+    "buyLabel": "Buy",
+    "emptyBag": "Bag is empty!",
+    "emptyInventory": "Inventory is empty!",
+    "notEnoughMoney": "Not enough money!",
+    "bought": "Bought",
+    "harvested": "Harvested",
+    "upgradeBought": "Upgrade bought",
+    "levelUp": "Level up to",
+    "claimPiBtn": "Claim Pi",
+    "claimedPi": "Claimed"
+  },
+  "id": {
+    "title": "Pi Harvest Farm",
+    "startBtn": "Mulai Permainan",
+    "farmTab": "Ladang",
+    "shopTab": "Toko",
+    "upgradesTab": "Peningkatan",
+    "inventoryTab": "Inventaris",
+    "leaderboardTab": "Papan Peringkat",
+    "coinLabel": "Koin",
+    "buyLabel": "Beli",
+    "emptyBag": "Tas kosong!",
+    "emptyInventory": "Inventaris kosong!",
+    "notEnoughMoney": "Uang tidak cukup!",
+    "bought": "Dibeli",
+    "harvested": "Dipanen",
+    "upgradeBought": "Peningkatan dibeli",
+    "levelUp": "Naik level ke",
+    "claimPiBtn": "Klaim Pi",
+    "claimedPi": "Diklaim"
+  }
+}
