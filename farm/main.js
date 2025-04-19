@@ -14,14 +14,21 @@ let upgrades = {
 };
 let level = 1;
 let xp = 0;
-let playerName = 'Player' + Math.floor(Math.random() * 1000); // Nama player acak
-let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+let playerName = 'Player' + Math.floor(Math.random() * 1000);
+let achievements = JSON.parse(localStorage.getItem('achievements')) || {
+  harvest10: false,
+  pi10: false
+};
+let harvestCount = JSON.parse(localStorage.getItem('harvestCount')) || 0;
+let lastRewardClaim = JSON.parse(localStorage.getItem('lastRewardClaim')) || 0;
 
 const plotCount = 8;
 const xpPerLevel = 100;
+const dailyRewardCooldown = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
+  initializeFirebaseAuth();
   loadData();
   document.getElementById('start-btn').onclick = startGame;
   document.getElementById('lang-toggle').onclick = toggleLanguage;
@@ -32,11 +39,14 @@ async function loadData() {
   try {
     const langRes = await fetch('../data/lang.json');
     const vegRes = await fetch('../data/vegetables.json');
+    const invRes = await fetch('../data/inventory.json');
     if (!langRes.ok) throw new Error('Failed to load lang.json');
     if (!vegRes.ok) throw new Error('Failed to load vegetables.json');
+    if (!invRes.ok) throw new Error('Failed to load inventory.json');
     langData = await langRes.json();
     vegetables = await vegRes.json();
-    console.log('Loaded JSON:', { langData, vegetables });
+    inventory = await invRes.json();
+    console.log('Loaded JSON:', { langData, vegetables, inventory });
     initializeGame();
   } catch (e) {
     console.error('JSON load failed:', e);
@@ -51,12 +61,14 @@ function initializeGame() {
     currentLang = savedLang;
     document.getElementById('lang-toggle').textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
   }
+  loadPlayerData();
   updateUIText();
   initializePlots();
   updateWallet();
   updateLevelBar();
   renderBag();
-  updateLeaderboard();
+  renderAchievements();
+  checkDailyReward();
 }
 
 function startGame() {
@@ -84,12 +96,17 @@ function updateUIText() {
   document.getElementById('upgrades-title').textContent = langData[currentLang].upgradesTab;
   document.getElementById('inventory-title').textContent = langData[currentLang].inventoryTab;
   document.getElementById('leaderboard-title').textContent = langData[currentLang].leaderboardTab;
+  document.getElementById('achievements-title').textContent = langData[currentLang].achievementsTab;
   const claimPiBtn = document.querySelector('#claim-pi-btn');
   if (claimPiBtn) {
     claimPiBtn.textContent = langData[currentLang].claimPiBtn;
   }
+  const claimRewardBtn = document.querySelector('#claim-reward-btn');
+  if (claimRewardBtn) {
+    claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
+  }
   document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-    const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'leaderboardTab'];
+    const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'leaderboardTab', 'achievementsTab'];
     btn.textContent = langData[currentLang][tabs[idx]];
   });
   if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'shop') {
@@ -100,6 +117,9 @@ function updateUIText() {
   }
   if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'leaderboard') {
     renderLeaderboard();
+  }
+  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'achievements') {
+    renderAchievements();
   }
 }
 
@@ -129,6 +149,7 @@ function switchTab(tab) {
     if (tab === 'shop') renderShop();
     if (tab === 'inventory') renderInventory();
     if (tab === 'leaderboard') renderLeaderboard();
+    if (tab === 'achievements') renderAchievements();
   } catch (e) {
     console.error('Tab switch failed:', e);
     alert('Tab error: ' + e.message);
@@ -223,10 +244,12 @@ function harvest(index) {
   coins += veg.price;
   pi += veg.piPrice / 2;
   xp += 10;
+  harvestCount++;
+  checkAchievements();
   checkLevelUp();
   updateWallet();
-  updateLevelBar();
   updateLeaderboard();
+  updateLevelBar();
   renderFarm();
   try {
     document.getElementById('harvest-sound').play();
@@ -356,44 +379,114 @@ function claimPi() {
   }, 0);
   pi += totalPi;
   inventory = [];
+  savePlayerData();
   updateWallet();
   updateLeaderboard();
+  checkAchievements();
   renderInventory();
   showNotification(`${langData[currentLang].claimedPi} ${totalPi.toFixed(2)} Pi!`);
-}
-
-function updateLeaderboard() {
-  console.log('Updating leaderboard...');
-  const playerEntry = leaderboard.find(entry => entry.name === playerName);
-  if (playerEntry) {
-    playerEntry.pi = pi;
-  } else {
-    leaderboard.push({ name: playerName, pi: pi });
-  }
-  leaderboard.sort((a, b) => b.pi - a.pi);
-  leaderboard = leaderboard.slice(0, 5);
-  localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'leaderboard') {
-    renderLeaderboard();
-  }
 }
 
 function renderLeaderboard() {
   console.log('Rendering leaderboard...');
   const leaderboardList = document.getElementById('leaderboard-list');
-  leaderboardList.innerHTML = '';
-  leaderboard.forEach((entry, idx) => {
+  leaderboardList.innerHTML = 'Loading...';
+  db.collection('leaderboard')
+    .orderBy('pi', 'desc')
+    .limit(5)
+    .get()
+    .then(snapshot => {
+      leaderboardList.innerHTML = '';
+      snapshot.forEach((doc, idx) => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.className = 'leaderboard-item';
+        div.textContent = `#${idx + 1}: ${data.name} - ${data.pi.toFixed(2)} Pi`;
+        leaderboardList.appendChild(div);
+      });
+    })
+    .catch(e => {
+      console.error('Leaderboard fetch failed:', e);
+      leaderboardList.innerHTML = 'Failed to load leaderboard.';
+    });
+}
+
+function updateLeaderboard() {
+  console.log('Updating leaderboard...');
+  if (!auth.currentUser) return;
+  db.collection('leaderboard').doc(auth.currentUser.uid).set({
+    name: playerName,
+    pi: pi
+  }).catch(e => console.error('Leaderboard update failed:', e));
+}
+
+function renderAchievements() {
+  console.log('Rendering achievements...');
+  const achievementList = document.getElementById('achievement-list');
+  achievementList.innerHTML = '';
+  const achievementsData = [
+    { id: 'harvest10', name: langData[currentLang].achievementHarvest10, completed: achievements.harvest10 },
+    { id: 'pi10', name: langData[currentLang].achievementPi10, completed: achievements.pi10 }
+  ];
+  achievementsData.forEach(ach => {
     const div = document.createElement('div');
-    div.className = 'leaderboard-item';
-    div.textContent = `#${idx + 1}: ${entry.name} - ${entry.pi.toFixed(2)} Pi`;
-    leaderboardList.appendChild(div);
+    div.className = 'achievement-item';
+    div.textContent = `${ach.name}: ${ach.completed ? 'Completed' : 'In Progress'}`;
+    achievementList.appendChild(div);
   });
+}
+
+function checkAchievements() {
+  console.log('Checking achievements...');
+  if (harvestCount >= 10 && !achievements.harvest10) {
+    achievements.harvest10 = true;
+    showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementHarvest10);
+  }
+  if (pi >= 10 && !achievements.pi10) {
+    achievements.pi10 = true;
+    showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementPi10);
+  }
+  localStorage.setItem('achievements', JSON.stringify(achievements));
+  localStorage.setItem('harvestCount', JSON.stringify(harvestCount));
+  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'achievements') {
+    renderAchievements();
+  }
+}
+
+function checkDailyReward() {
+  console.log('Checking daily reward...');
+  const now = Date.now();
+  const claimRewardBtn = document.getElementById('claim-reward-btn');
+  if (now - lastRewardClaim >= dailyRewardCooldown) {
+    claimRewardBtn.disabled = false;
+  } else {
+    claimRewardBtn.disabled = true;
+    claimRewardBtn.textContent = langData[currentLang].rewardCooldown;
+  }
+}
+
+function claimDailyReward() {
+  console.log('Claiming daily reward...');
+  const now = Date.now();
+  if (now - lastRewardClaim < dailyRewardCooldown) {
+    showNotification(langData[currentLang].rewardCooldown);
+    return;
+  }
+  coins += 50;
+  pi += 0.5;
+  lastRewardClaim = now;
+  localStorage.setItem('lastRewardClaim', JSON.stringify(lastRewardClaim));
+  updateWallet();
+  updateLeaderboard();
+  checkDailyReward();
+  showNotification(`${langData[currentLang].rewardClaimed} +50 ${langData[currentLang].coinLabel}, +0.5 Pi!`);
 }
 
 function updateWallet() {
   console.log('Updating wallet...');
   document.getElementById('coin-balance').textContent = coins;
   document.getElementById('pi-balance').textContent = pi.toFixed(2);
+  savePlayerData();
 }
 
 function updateLevelBar() {
