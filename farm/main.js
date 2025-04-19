@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!settingsBtn) throw new Error('Settings button not found');
     if (!claimRewardBtn) throw new Error('Claim reward button not found');
 
-    // Remove existing listeners to prevent duplicates
     startText.removeEventListener('click', startGame);
     langToggle.removeEventListener('click', toggleLanguage);
     settingsBtn.removeEventListener('click', openSettings);
@@ -138,12 +137,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openSettings() {
       console.log('Settings button clicked');
-      const modal = document.getElementById('settings-modal');
-      if (modal) {
-        modal.style.display = 'block';
-        playMenuSound();
-      } else {
-        console.error('Settings modal not found');
+      try {
+        const modal = document.getElementById('settings-modal');
+        if (modal) {
+          modal.style.display = 'block';
+          console.log('Settings modal opened');
+          playMenuSound();
+        } else {
+          throw new Error('Settings modal not found');
+        }
+      } catch (e) {
+        console.error('Open settings failed:', e.message);
+        alert('Failed to open settings. Check console for details.');
       }
     }
 
@@ -155,7 +160,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Event listeners attached successfully');
 
-    initializeFirebaseAuth();
+    // Initialize Firebase with error handling
+    try {
+      initializeFirebaseAuth();
+      console.log('Firebase initialized successfully');
+    } catch (e) {
+      console.error('Firebase initialization failed:', e.message);
+      alert('Firebase initialization failed. Game may not work properly. Check console.');
+    }
+
     loadData();
     initializeSettings();
     updateVolumes();
@@ -169,7 +182,7 @@ async function loadData() {
   console.log('Loading data...');
   try {
     const langRes = await fetch('../data/lang.json');
-    if (!langRes.ok) throw new Error('Failed to load lang.json');
+    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
     langData = await langRes.json();
     console.log('Language data loaded:', langData);
   } catch (e) {
@@ -180,7 +193,7 @@ async function loadData() {
 
   try {
     const vegRes = await fetch('../data/vegetables.json');
-    if (!vegRes.ok) throw new Error('Failed to load vegetables.json');
+    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables;
     console.log('Vegetables data loaded:', vegetables);
@@ -192,7 +205,7 @@ async function loadData() {
 
   try {
     const invRes = await fetch('../data/inventory.json');
-    if (!invRes.ok) throw new Error('Failed to load inventory.json');
+    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
     inventory = await invRes.json();
     console.log('Inventory data loaded:', inventory);
   } catch (e) {
@@ -206,23 +219,29 @@ async function loadData() {
 
 function initializeGame() {
   console.log('Initializing game...');
-  const savedLang = localStorage.getItem('lang');
-  if (savedLang) {
-    currentLang = savedLang;
-    const langToggle = document.getElementById('lang-toggle');
-    if (langToggle) {
-      langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
-      console.log('Language set to:', currentLang);
+  try {
+    const savedLang = localStorage.getItem('lang');
+    if (savedLang) {
+      currentLang = savedLang;
+      const langToggle = document.getElementById('lang-toggle');
+      if (langToggle) {
+        langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+        console.log('Language set to:', currentLang);
+      }
     }
+    loadPlayerData();
+    updateUIText();
+    initializePlots();
+    updateWallet();
+    updateLevelBar();
+    renderBag();
+    renderAchievements();
+    checkDailyReward();
+    console.log('Game initialized successfully');
+  } catch (e) {
+    console.error('Initialize game failed:', e.message);
+    alert('Failed to initialize game. Check console for details.');
   }
-  loadPlayerData();
-  updateUIText();
-  initializePlots();
-  updateWallet();
-  updateLevelBar();
-  renderBag();
-  renderAchievements();
-  checkDailyReward();
 }
 
 function startGame() {
@@ -234,21 +253,31 @@ function startGame() {
     
     startScreen.style.display = 'none';
     gameContainer.style.display = 'block';
+    console.log('Switched from start screen to game container');
+
     switchTab('farm');
+    console.log('Switched to Farm tab');
 
     const bgMusic = document.getElementById('bg-music');
     const bgVoice = document.getElementById('bg-voice');
     if (bgMusic) {
-      bgMusic.play().catch(e => console.error('Background music failed to play:', e));
+      bgMusic.play().catch(e => {
+        console.error('Background music failed to play:', e.message);
+        alert('Background music failed to play. Check console.');
+      });
     } else {
       console.warn('Background music element not found');
     }
     if (bgVoice) {
-      bgVoice.play().catch(e => console.error('Background voice failed to play:', e));
+      bgVoice.play().catch(e => {
+        console.error('Background voice failed to play:', e.message);
+        alert('Background voice failed to play. Check console.');
+      });
     } else {
       console.warn('Background voice element not found');
     }
     playMenuSound();
+    console.log('Game started successfully');
   } catch (e) {
     console.error('Start game failed:', e.message);
     alert('Failed to start game. Please check the console for errors.');
@@ -260,21 +289,29 @@ function toggleLanguage() {
   try {
     currentLang = currentLang === 'en' ? 'id' : 'en';
     localStorage.setItem('lang', currentLang);
+    console.log('Language switched to:', currentLang);
+
     const langToggle = document.getElementById('lang-toggle');
     if (langToggle) {
       langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+      console.log('Language toggle button updated');
     } else {
       console.error('Language toggle button not found');
     }
+
     updateUIText();
+
     const startText = document.getElementById('start-text');
     if (startText) {
       startText.textContent = langData[currentLang].startBtn;
+      console.log('Start text updated to:', langData[currentLang].startBtn);
     } else {
       console.error('Start text element not found');
     }
+
     switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
     playMenuSound();
+    console.log('Language toggled successfully');
   } catch (e) {
     console.error('Toggle language failed:', e.message);
     alert('Failed to toggle language. Please check the console for errors.');
@@ -296,17 +333,50 @@ function updateUIText() {
     const claimRewardBtn = document.getElementById('claim-reward-btn');
     const exchangeBtn = document.querySelector('#exchange-conversion button');
 
-    if (title) title.textContent = langData[currentLang].title;
-    if (startText) startText.textContent = langData[currentLang].startBtn;
-    if (gameTitle) gameTitle.textContent = langData[currentLang].title;
-    if (shopTitle) shopTitle.textContent = langData[currentLang].shopTab;
-    if (upgradesTitle) upgradesTitle.textContent = langData[currentLang].upgradesTab;
-    if (inventoryTitle) inventoryTitle.textContent = langData[currentLang].inventoryTab;
-    if (exchangeTitle) exchangeTitle.textContent = langData[currentLang].exchangeTab;
-    if (leaderboardTitle) leaderboardTitle.textContent = langData[currentLang].leaderboardTab;
-    if (achievementsTitle) achievementsTitle.textContent = langData[currentLang].achievementsTab;
-    if (claimRewardBtn) claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
-    if (exchangeBtn) exchangeBtn.textContent = langData[currentLang].exchangeBtn;
+    if (title) {
+      title.textContent = langData[currentLang].title;
+      console.log('Title updated');
+    }
+    if (startText) {
+      startText.textContent = langData[currentLang].startBtn;
+      console.log('Start text updated');
+    }
+    if (gameTitle) {
+      gameTitle.textContent = langData[currentLang].title;
+      console.log('Game title updated');
+    }
+    if (shopTitle) {
+      shopTitle.textContent = langData[currentLang].shopTab;
+      console.log('Shop title updated');
+    }
+    if (upgradesTitle) {
+      upgradesTitle.textContent = langData[currentLang].upgradesTab;
+      console.log('Upgrades title updated');
+    }
+    if (inventoryTitle) {
+      inventoryTitle.textContent = langData[currentLang].inventoryTab;
+      console.log('Inventory title updated');
+    }
+    if (exchangeTitle) {
+      exchangeTitle.textContent = langData[currentLang].exchangeTab;
+      console.log('Exchange title updated');
+    }
+    if (leaderboardTitle) {
+      leaderboardTitle.textContent = langData[currentLang].leaderboardTab;
+      console.log('Leaderboard title updated');
+    }
+    if (achievementsTitle) {
+      achievementsTitle.textContent = langData[currentLang].achievementsTab;
+      console.log('Achievements title updated');
+    }
+    if (claimRewardBtn) {
+      claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
+      console.log('Claim reward button updated');
+    }
+    if (exchangeBtn) {
+      exchangeBtn.textContent = langData[currentLang].exchangeBtn;
+      console.log('Exchange button updated');
+    }
 
     document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
       const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'exchangeTab', 'leaderboardTab', 'achievementsTab'];
@@ -322,6 +392,7 @@ function updateUIText() {
     console.log('UI text updated successfully');
   } catch (e) {
     console.error('Update UI text failed:', e.message);
+    alert('Failed to update UI text. Check console for details.');
   }
 }
 
@@ -340,6 +411,7 @@ function initializeSettings() {
 
     musicSlider.value = musicVolume;
     voiceSlider.value = voiceVolume;
+    console.log('Settings sliders initialized');
 
     closeBtn.removeEventListener('click', closeSettings);
     window.removeEventListener('click', closeSettingsOnWindowClick);
@@ -349,15 +421,27 @@ function initializeSettings() {
 
     function closeSettings() {
       console.log('Closing settings modal');
-      modal.style.display = 'none';
-      playMenuSound();
+      try {
+        modal.style.display = 'none';
+        playMenuSound();
+        console.log('Settings modal closed');
+      } catch (e) {
+        console.error('Close settings failed:', e.message);
+        alert('Failed to close settings. Check console for details.');
+      }
     }
 
     function closeSettingsOnWindowClick(event) {
       if (event.target === modal) {
         console.log('Closing settings modal via window click');
-        modal.style.display = 'none';
-        playMenuSound();
+        try {
+          modal.style.display = 'none';
+          playMenuSound();
+          console.log('Settings modal closed via window click');
+        } catch (e) {
+          console.error('Close settings via window failed:', e.message);
+          alert('Failed to close settings via window click. Check console for details.');
+        }
       }
     }
 
@@ -382,497 +466,637 @@ function initializeSettings() {
 
 function updateVolumes() {
   console.log('Updating volumes...');
-  const bgMusic = document.getElementById('bg-music');
-  const bgVoice = document.getElementById('bg-voice');
-  const harvestSound = document.getElementById('harvest-sound');
-  const wateringSound = document.getElementById('watering-sound');
-  const menuSound = document.getElementById('menu-sound');
-  const buyingSound = document.getElementById('buying-sound');
-  const coinSound = document.getElementById('coin-sound');
+  try {
+    const bgMusic = document.getElementById('bg-music');
+    const bgVoice = document.getElementById('bg-voice');
+    const harvestSound = document.getElementById('harvest-sound');
+    const wateringSound = document.getElementById('watering-sound');
+    const menuSound = document.getElementById('menu-sound');
+    const buyingSound = document.getElementById('buying-sound');
+    const coinSound = document.getElementById('coin-sound');
 
-  if (bgMusic) bgMusic.volume = musicVolume / 100;
-  if (bgVoice) bgVoice.volume = voiceVolume / 100;
-  if (harvestSound) harvestSound.volume = voiceVolume / 100;
-  if (wateringSound) wateringSound.volume = voiceVolume / 100;
-  if (menuSound) menuSound.volume = voiceVolume / 100;
-  if (buyingSound) buyingSound.volume = voiceVolume / 100;
-  if (coinSound) coinSound.volume = voiceVolume / 100;
+    if (bgMusic) bgMusic.volume = musicVolume / 100;
+    if (bgVoice) bgVoice.volume = voiceVolume / 100;
+    if (harvestSound) harvestSound.volume = voiceVolume / 100;
+    if (wateringSound) wateringSound.volume = voiceVolume / 100;
+    if (menuSound) menuSound.volume = voiceVolume / 100;
+    if (buyingSound) buyingSound.volume = voiceVolume / 100;
+    if (coinSound) coinSound.volume = voiceVolume / 100;
+    console.log('Volumes updated successfully');
+  } catch (e) {
+    console.error('Update volumes failed:', e.message);
+  }
 }
 
 function playMenuSound() {
-  const menuSound = document.getElementById('menu-sound');
-  if (menuSound) menuSound.play().catch(e => console.error('Menu sound failed:', e));
+  console.log('Playing menu sound...');
+  try {
+    const menuSound = document.getElementById('menu-sound');
+    if (menuSound) {
+      menuSound.play().catch(e => {
+        console.error('Menu sound failed:', e.message);
+      });
+    } else {
+      console.warn('Menu sound element not found');
+    }
+  } catch (e) {
+    console.error('Play menu sound failed:', e.message);
+  }
 }
 
 function playBuyingSound() {
-  const buyingSound = document.getElementById('buying-sound');
-  if (buyingSound) buyingSound.play().catch(e => console.error('Buying sound failed:', e));
+  console.log('Playing buying sound...');
+  try {
+    const buyingSound = document.getElementById('buying-sound');
+    if (buyingSound) {
+      buyingSound.play().catch(e => console.error('Buying sound failed:', e.message));
+    }
+  } catch (e) {
+    console.error('Play buying sound failed:', e.message);
+  }
 }
 
 function playCoinSound() {
-  const coinSound = document.getElementById('coin-sound');
-  if (coinSound) coinSound.play().catch(e => console.error('Coin sound failed:', e));
+  console.log('Playing coin sound...');
+  try {
+    const coinSound = document.getElementById('coin-sound');
+    if (coinSound) {
+      coinSound.play().catch(e => console.error('Coin sound failed:', e.message));
+    }
+  } catch (e) {
+    console.error('Play coin sound failed:', e.message);
+  }
 }
 
 function switchTab(tab) {
   console.log('Switching to tab:', tab);
-  const tabElement = document.getElementById(tab);
-  if (!tabElement) {
-    console.error(`Tab element ${tab} not found!`);
-    return;
+  try {
+    const tabElement = document.getElementById(tab);
+    if (!tabElement) {
+      console.error(`Tab element ${tab} not found!`);
+      throw new Error(`Tab element ${tab} not found`);
+    }
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.style.display = 'none';
+    });
+    tabElement.style.display = 'block';
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    if (tab === 'farm') renderFarm();
+    if (tab === 'shop') renderShop();
+    if (tab === 'inventory') renderInventory();
+    if (tab === 'exchange') renderExchange();
+    if (tab === 'leaderboard') renderLeaderboard();
+    if (tab === 'achievements') renderAchievements();
+    playMenuSound();
+    console.log('Tab switched successfully');
+  } catch (e) {
+    console.error('Switch tab failed:', e.message);
+    alert('Failed to switch tab. Check console for details.');
   }
-  document.querySelectorAll('.tab-content').forEach(content => {
-    content.style.display = 'none';
-  });
-  tabElement.style.display = 'block';
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-  if (activeBtn) activeBtn.classList.add('active');
-  if (tab === 'farm') renderFarm();
-  if (tab === 'shop') renderShop();
-  if (tab === 'inventory') renderInventory();
-  if (tab === 'exchange') renderExchange();
-  if (tab === 'leaderboard') renderLeaderboard();
-  if (tab === 'achievements') renderAchievements();
-  playMenuSound();
 }
 
 function initializePlots() {
   console.log('Initializing farm plots...');
-  const farmArea = document.getElementById('farm-area');
-  farmArea.innerHTML = '';
-  const totalPlots = plotCount + upgrades.extraPlot;
-  for (let i = 0; i < totalPlots; i++) {
-    const plot = document.createElement('div');
-    plot.className = 'plot';
-    plot.dataset.index = i;
-    plot.onclick = () => plantSeed(i);
-    farmArea.appendChild(plot);
-    farmPlots[i] = { vegetable: null, growth: 0, watered: false };
+  try {
+    const farmArea = document.getElementById('farm-area');
+    farmArea.innerHTML = '';
+    const totalPlots = plotCount + upgrades.extraPlot;
+    for (let i = 0; i < totalPlots; i++) {
+      const plot = document.createElement('div');
+      plot.className = 'plot';
+      plot.dataset.index = i;
+      plot.onclick = () => plantSeed(i);
+      farmArea.appendChild(plot);
+      farmPlots[i] = { vegetable: null, growth: 0, watered: false };
+    }
+    console.log('Farm plots initialized');
+  } catch (e) {
+    console.error('Initialize plots failed:', e.message);
   }
 }
 
 function renderFarm() {
   console.log('Rendering farm...');
-  farmPlots.forEach((plot, index) => {
-    const plotElement = document.querySelector(`.plot[data-index="${index}"]`);
-    plotElement.innerHTML = '';
-    if (plot.vegetable) {
-      const veg = vegetables.find(v => v.id === plot.vegetable);
-      const frame = Math.min(Math.floor((plot.growth / veg.growthTime) * veg.frames), veg.frames - 1);
-      const img = document.createElement('img');
-      img.src = `../assets/img/plant/${veg.id}/${veg.id}_${frame + 1}.png`;
-      img.alt = veg.name[currentLang];
-      img.className = 'plant-img';
-      if (plot.growth >= veg.growthTime) {
-        plotElement.classList.add('ready');
-        plotElement.onclick = () => harvest(index);
+  try {
+    farmPlots.forEach((plot, index) => {
+      const plotElement = document.querySelector(`.plot[data-index="${index}"]`);
+      plotElement.innerHTML = '';
+      if (plot.vegetable) {
+        const veg = vegetables.find(v => v.id === plot.vegetable);
+        const frame = Math.min(Math.floor((plot.growth / veg.growthTime) * veg.frames), veg.frames - 1);
+        const img = document.createElement('img');
+        img.src = `../assets/img/plant/${veg.id}/${veg.id}_${frame + 1}.png`;
+        img.alt = veg.name[currentLang];
+        img.className = 'plant-img';
+        if (plot.growth >= veg.growthTime) {
+          plotElement.classList.add('ready');
+          plotElement.onclick = () => harvest(index);
+        } else {
+          plotElement.classList.remove('ready');
+          plotElement.onclick = () => water(index);
+        }
+        if (!plot.watered) {
+          plotElement.classList.add('dry');
+          plotElement.onclick = () => water(index);
+        } else {
+          plotElement.classList.remove('dry');
+        }
+        plotElement.appendChild(img);
       } else {
-        plotElement.classList.remove('ready');
-        plotElement.onclick = () => water(index);
+        plotElement.classList.remove('ready', 'dry');
+        plotElement.onclick = () => plantSeed(index);
       }
-      if (!plot.watered) {
-        plotElement.classList.add('dry');
-        plotElement.onclick = () => water(index);
-      } else {
-        plotElement.classList.remove('dry');
-      }
-      plotElement.appendChild(img);
-    } else {
-      plotElement.classList.remove('ready', 'dry');
-      plotElement.onclick = () => plantSeed(index);
-    }
-  });
+    });
+    console.log('Farm rendered');
+  } catch (e) {
+    console.error('Render farm failed:', e.message);
+  }
 }
 
 function plantSeed(index) {
   console.log('Planting seed at index:', index);
-  if (bag.length === 0) {
-    showNotification(langData[currentLang].emptyBag);
-    return;
+  try {
+    if (bag.length === 0) {
+      showNotification(langData[currentLang].emptyBag);
+      return;
+    }
+    const seedObj = bag.shift();
+    farmPlots[index].vegetable = seedObj.id;
+    farmPlots[index].growth = 0;
+    farmPlots[index].watered = false;
+    renderFarm();
+    renderBag();
+  } catch (e) {
+    console.error('Plant seed failed:', e.message);
   }
-  const seedObj = bag.shift();
-  farmPlots[index].vegetable = seedObj.id;
-  farmPlots[index].growth = 0;
-  farmPlots[index].watered = false;
-  renderFarm();
-  renderBag();
 }
 
 function water(index) {
   console.log('Watering plot at index:', index);
-  if (!farmPlots[index].vegetable) return;
-  if (water <= 0) {
-    showNotification(langData[currentLang].notEnoughWater);
-    return;
+  try {
+    if (!farmPlots[index].vegetable) return;
+    if (water <= 0) {
+      showNotification(langData[currentLang].notEnoughWater);
+      return;
+    }
+    water--;
+    if (upgrades.wateringCan) {
+      farmPlots[index].watered = true;
+      farmPlots[index].growth += 2;
+    } else {
+      farmPlots[index].watered = true;
+      farmPlots[index].growth += 1;
+    }
+    const veg = vegetables.find(v => v.id === farmPlots[index].vegetable);
+    if (farmPlots[index].growth >= veg.growthTime) {
+      farmPlots[index].growth = veg.growthTime;
+    }
+    updateWallet();
+    renderFarm();
+    const wateringSound = document.getElementById('watering-sound');
+    if (wateringSound) wateringSound.play().catch(e => console.error('Watering sound failed:', e.message));
+  } catch (e) {
+    console.error('Water plot failed:', e.message);
   }
-  water--;
-  if (upgrades.wateringCan) {
-    farmPlots[index].watered = true;
-    farmPlots[index].growth += 2;
-  } else {
-    farmPlots[index].watered = true;
-    farmPlots[index].growth += 1;
-  }
-  const veg = vegetables.find(v => v.id === farmPlots[index].vegetable);
-  if (farmPlots[index].growth >= veg.growthTime) {
-    farmPlots[index].growth = veg.growthTime;
-  }
-  updateWallet();
-  renderFarm();
-  const wateringSound = document.getElementById('watering-sound');
-  if (wateringSound) wateringSound.play().catch(e => console.error('Watering sound failed:', e));
 }
 
 function harvest(index) {
   console.log('Harvesting plot at index:', index);
-  const veg = vegetables.find(v => v.id === farmPlots[index].vegetable);
-  let yieldAmount = veg.yield;
-  if (upgrades.yieldBoost) {
-    yieldAmount = Math.round(yieldAmount * 1.5);
+  try {
+    const veg = vegetables.find(v => v.id === farmPlots[index].vegetable);
+    let yieldAmount = veg.yield;
+    if (upgrades.yieldBoost) {
+      yieldAmount = Math.round(yieldAmount * 1.5);
+    }
+    inventory.push({ id: veg.id, amount: yieldAmount });
+    farmPlots[index] = { vegetable: null, growth: 0, watered: false };
+    farmCoins += yieldAmount;
+    xp += 10;
+    harvestCount++;
+    checkAchievements();
+    checkLevelUp();
+    updateWallet();
+    updateLeaderboard();
+    updateLevelBar();
+    renderFarm();
+    const harvestSound = document.getElementById('harvest-sound');
+    if (harvestSound) harvestSound.play().catch(e => console.error('Harvest sound failed:', e.message));
+    showNotification(`${langData[currentLang].harvested} ${veg.name[currentLang]}! +${yieldAmount} ${langData[currentLang].coinLabel}, +10 XP`);
+  } catch (e) {
+    console.error('Harvest failed:', e.message);
   }
-  inventory.push({ id: veg.id, amount: yieldAmount });
-  farmPlots[index] = { vegetable: null, growth: 0, watered: false };
-  farmCoins += yieldAmount;
-  xp += 10;
-  harvestCount++;
-  checkAchievements();
-  checkLevelUp();
-  updateWallet();
-  updateLeaderboard();
-  updateLevelBar();
-  renderFarm();
-  const harvestSound = document.getElementById('harvest-sound');
-  if (harvestSound) harvestSound.play().catch(e => console.error('Harvest sound failed:', e));
-  showNotification(`${langData[currentLang].harvested} ${veg.name[currentLang]}! +${yieldAmount} ${langData[currentLang].coinLabel}, +10 XP`);
 }
 
 function renderShop() {
   console.log('Rendering shop');
-  const seedList = document.getElementById('seed-list');
-  seedList.innerHTML = '';
-  let farmCoinPurchases = bag.filter(seed => seed.boughtWith === 'farm').length;
-  vegetables.forEach(veg => {
-    const div = document.createElement('div');
-    div.className = 'seed-item';
-    const img = document.createElement('img');
-    img.src = veg.image || `../assets/img/plant/${veg.id}/${veg.id}_${veg.frames}.png`;
-    img.alt = veg.name[currentLang];
-    img.onerror = () => console.error(`Failed to load image: ${img.src}`);
-    const span = document.createElement('span');
-    span.textContent = `${veg.name[currentLang]} - ${veg.farmPrice} ${langData[currentLang].coinLabel} / ${veg.piPrice || 0} Pi${veg.amount ? ` (${veg.amount} Water)` : ''}`;
-    const farmBuyBtn = document.createElement('button');
-    farmBuyBtn.textContent = `${langData[currentLang].buyLabel} (Farm)`;
-    farmBuyBtn.disabled = veg.id !== 'water' && farmCoinPurchases >= 2;
-    farmBuyBtn.onclick = () => buySeed(veg.id, 'farm');
-    const piBuyBtn = document.createElement('button');
-    piBuyBtn.textContent = `${langData[currentLang].buyLabel} (Pi)`;
-    piBuyBtn.onclick = () => buySeed(veg.id, 'pi');
-    div.append(img, span, farmBuyBtn, veg.id === 'water' ? null : piBuyBtn);
-    seedList.appendChild(div);
-  });
+  try {
+    const seedList = document.getElementById('seed-list');
+    seedList.innerHTML = '';
+    let farmCoinPurchases = bag.filter(seed => seed.boughtWith === 'farm').length;
+    vegetables.forEach(veg => {
+      const div = document.createElement('div');
+      div.className = 'seed-item';
+      const img = document.createElement('img');
+      img.src = veg.image || `../assets/img/plant/${veg.id}/${veg.id}_${veg.frames}.png`;
+      img.alt = veg.name[currentLang];
+      img.onerror = () => console.error(`Failed to load image: ${img.src}`);
+      const span = document.createElement('span');
+      span.textContent = `${veg.name[currentLang]} - ${veg.farmPrice} ${langData[currentLang].coinLabel} / ${veg.piPrice || 0} Pi${veg.amount ? ` (${veg.amount} Water)` : ''}`;
+      const farmBuyBtn = document.createElement('button');
+      farmBuyBtn.textContent = `${langData[currentLang].buyLabel} (Farm)`;
+      farmBuyBtn.disabled = veg.id !== 'water' && farmCoinPurchases >= 2;
+      farmBuyBtn.onclick = () => buySeed(veg.id, 'farm');
+      const piBuyBtn = document.createElement('button');
+      piBuyBtn.textContent = `${langData[currentLang].buyLabel} (Pi)`;
+      piBuyBtn.onclick = () => buySeed(veg.id, 'pi');
+      div.append(img, span, farmBuyBtn, veg.id === 'water' ? null : piBuyBtn);
+      seedList.appendChild(div);
+    });
+    console.log('Shop rendered');
+  } catch (e) {
+    console.error('Render shop failed:', e.message);
+  }
 }
 
 function buySeed(id, currency) {
   console.log('Buying seed:', id, 'with', currency);
-  const veg = vegetables.find(v => v.id === id);
-  let canBuy = false;
-  let farmCoinPurchases = bag.filter(seed => seed.boughtWith === 'farm').length;
+  try {
+    const veg = vegetables.find(v => v.id === id);
+    let canBuy = false;
+    let farmCoinPurchases = bag.filter(seed => seed.boughtWith === 'farm').length;
 
-  if (currency === 'farm' && (veg.id === 'water' || farmCoinPurchases < 2) && farmCoins >= veg.farmPrice) {
-    farmCoins -= veg.farmPrice;
-    canBuy = true;
-  } else if (currency === 'pi' && veg.piPrice && pi >= veg.piPrice) {
-    pi -= veg.piPrice;
-    canBuy = true;
-  }
-
-  if (canBuy) {
-    if (veg.id === 'water') {
-      water += veg.amount;
-    } else {
-      bag.push({ id: id, boughtWith: currency });
+    if (currency === 'farm' && (veg.id === 'water' || farmCoinPurchases < 2) && farmCoins >= veg.farmPrice) {
+      farmCoins -= veg.farmPrice;
+      canBuy = true;
+    } else if (currency === 'pi' && veg.piPrice && pi >= veg.piPrice) {
+      pi -= veg.piPrice;
+      canBuy = true;
     }
-    updateWallet();
-    renderBag();
-    renderShop();
-    showNotification(`${langData[currentLang].bought} ${veg.name[currentLang]}!`);
-    playBuyingSound();
-  } else {
-    showNotification(langData[currentLang].notEnoughMoney);
+
+    if (canBuy) {
+      if (veg.id === 'water') {
+        water += veg.amount;
+      } else {
+        bag.push({ id: id, boughtWith: currency });
+      }
+      updateWallet();
+      renderBag();
+      renderShop();
+      showNotification(`${langData[currentLang].bought} ${veg.name[currentLang]}!`);
+      playBuyingSound();
+    } else {
+      showNotification(langData[currentLang].notEnoughMoney);
+    }
+  } catch (e) {
+    console.error('Buy seed failed:', e.message);
   }
 }
 
 function renderBag() {
   console.log('Rendering bag...');
-  const bagList = document.getElementById('bag-list');
-  const bagIcon = document.getElementById('bag').querySelector('img');
-  bagList.innerHTML = bag.length === 0 ? langData[currentLang].emptyBag : '';
-  bag.forEach((seedObj, idx) => {
-    const veg = vegetables.find(v => v.id === seedObj.id);
-    const div = document.createElement('div');
-    div.className = 'bag-item';
-    const img = document.createElement('img');
-    img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
-    img.alt = veg.name[currentLang];
-    const span = document.createElement('span');
-    span.textContent = veg.name[currentLang];
-    div.append(img, span);
-    bagList.appendChild(div);
-  });
-  bagIcon.removeEventListener('click', toggleBag);
-  bagIcon.addEventListener('click', toggleBag);
+  try {
+    const bagList = document.getElementById('bag-list');
+    const bagIcon = document.getElementById('bag').querySelector('img');
+    bagList.innerHTML = bag.length === 0 ? langData[currentLang].emptyBag : '';
+    bag.forEach((seedObj, idx) => {
+      const veg = vegetables.find(v => v.id === seedObj.id);
+      const div = document.createElement('div');
+      div.className = 'bag-item';
+      const img = document.createElement('img');
+      img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
+      img.alt = veg.name[currentLang];
+      const span = document.createElement('span');
+      span.textContent = veg.name[currentLang];
+      div.append(img, span);
+      bagList.appendChild(div);
+    });
+    bagIcon.removeEventListener('click', toggleBag);
+    bagIcon.addEventListener('click', toggleBag);
+    console.log('Bag rendered');
+  } catch (e) {
+    console.error('Render bag failed:', e.message);
+  }
 }
 
 function toggleBag() {
   console.log('Toggling bag list');
-  const bagList = document.getElementById('bag-list');
-  bagList.classList.toggle('show');
-  playMenuSound();
+  try {
+    const bagList = document.getElementById('bag-list');
+    bagList.classList.toggle('show');
+    playMenuSound();
+  } catch (e) {
+    console.error('Toggle bag failed:', e.message);
+  }
 }
 
 function buyUpgrade(type, currency) {
   console.log('Buying upgrade:', type, 'with', currency);
-  const costs = {
-    wateringCan: { farmCoins: 100, pi: 0.12 },
-    extraPlot: { farmCoins: 400, pi: 0.48 },
-    yieldBoost: { farmCoins: 200, pi: 0.3 }
-  };
-  const cost = costs[type];
-  if (currency === 'farm' && farmCoins >= cost.farmCoins) {
-    farmCoins -= cost.farmCoins;
-    applyUpgrade(type);
-  } else if (currency === 'pi' && pi >= cost.pi) {
-    pi -= cost.pi;
-    applyUpgrade(type);
-  } else {
-    showNotification(langData[currentLang].notEnoughMoney);
-    return;
+  try {
+    const costs = {
+      wateringCan: { farmCoins: 100, pi: 0.12 },
+      extraPlot: { farmCoins: 400, pi: 0.48 },
+      yieldBoost: { farmCoins: 200, pi: 0.3 }
+    };
+    const cost = costs[type];
+    if (currency === 'farm' && farmCoins >= cost.farmCoins) {
+      farmCoins -= cost.farmCoins;
+      applyUpgrade(type);
+    } else if (currency === 'pi' && pi >= cost.pi) {
+      pi -= cost.pi;
+      applyUpgrade(type);
+    } else {
+      showNotification(langData[currentLang].notEnoughMoney);
+      return;
+    }
+    updateWallet();
+    updateLeaderboard();
+    showNotification(`${langData[currentLang].upgradeBought} ${type}!`);
+    playBuyingSound();
+  } catch (e) {
+    console.error('Buy upgrade failed:', e.message);
   }
-  updateWallet();
-  updateLeaderboard();
-  showNotification(`${langData[currentLang].upgradeBought} ${type}!`);
-  playBuyingSound();
 }
 
 function applyUpgrade(type) {
-  if (type === 'wateringCan' || type === 'yieldBoost') {
-    upgrades[type] = true;
-  } else if (type === 'extraPlot') {
-    upgrades.extraPlot += 1;
-    initializePlots();
+  try {
+    if (type === 'wateringCan' || type === 'yieldBoost') {
+      upgrades[type] = true;
+    } else if (type === 'extraPlot') {
+      upgrades.extraPlot += 1;
+      initializePlots();
+    }
+  } catch (e) {
+    console.error('Apply upgrade failed:', e.message);
   }
 }
 
 function renderInventory() {
   console.log('Rendering inventory...');
-  const inventoryList = document.getElementById('inventory-list');
-  inventoryList.innerHTML = inventory.length === 0 ? langData[currentLang].emptyInventory : '';
-  inventory.forEach(item => {
-    const veg = vegetables.find(v => v.id === item.id);
-    const div = document.createElement('div');
-    div.className = 'inventory-item';
-    const img = document.createElement('img');
-    img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
-    img.alt = veg.name[currentLang];
-    const span = document.createElement('span');
-    span.textContent = `${veg.name[currentLang]}: ${item.amount}`;
-    div.append(img, span);
-    inventoryList.appendChild(div);
-  });
+  try {
+    const inventoryList = document.getElementById('inventory-list');
+    inventoryList.innerHTML = inventory.length === 0 ? langData[currentLang].emptyInventory : '';
+    inventory.forEach(item => {
+      const veg = vegetables.find(v => v.id === item.id);
+      const div = document.createElement('div');
+      div.className = 'inventory-item';
+      const img = document.createElement('img');
+      img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
+      img.alt = veg.name[currentLang];
+      const span = document.createElement('span');
+      span.textContent = `${veg.name[currentLang]}: ${item.amount}`;
+      div.append(img, span);
+      inventoryList.appendChild(div);
+    });
+  } catch (e) {
+    console.error('Render inventory failed:', e.message);
+  }
 }
 
 function renderExchange() {
   console.log('Rendering exchange...');
-  updateWallet();
+  try {
+    updateWallet();
+  } catch (e) {
+    console.error('Render exchange failed:', e.message);
+  }
 }
 
 function convertCurrency() {
-  const farmInput = document.getElementById('farm-to-pi');
-  const piInput = document.getElementById('pi-to-farm');
-  const farmAmount = parseInt(farmInput.value);
-  const piAmount = parseFloat(piInput.value);
+  try {
+    const farmInput = document.getElementById('farm-to-pi');
+    const piInput = document.getElementById('pi-to-farm');
+    const farmAmount = parseInt(farmInput.value);
+    const piAmount = parseFloat(piInput.value);
 
-  if (farmAmount > 0 && piAmount > 0) {
-    showNotification('Please enter only one value to convert.');
-    return;
-  }
-
-  if (farmAmount > 0) {
-    if (farmCoins < farmAmount) {
-      showNotification(langData[currentLang].notEnoughMoney);
+    if (farmAmount > 0 && piAmount > 0) {
+      showNotification('Please enter only one value to convert.');
       return;
     }
-    const piConverted = farmAmount / piToFarmRate;
-    farmCoins -= farmAmount;
-    pi += piConverted;
-    showNotification(`${langData[currentLang].convertSuccess} +${piConverted.toFixed(2)} Pi`);
-  } else if (piAmount > 0) {
-    if (pi < piAmount) {
-      showNotification(langData[currentLang].notEnoughMoney);
+
+    if (farmAmount > 0) {
+      if (farmCoins < farmAmount) {
+        showNotification(langData[currentLang].notEnoughMoney);
+        return;
+      }
+      const piConverted = farmAmount / piToFarmRate;
+      farmCoins -= farmAmount;
+      pi += piConverted;
+      showNotification(`${langData[currentLang].convertSuccess} +${piConverted.toFixed(2)} Pi`);
+    } else if (piAmount > 0) {
+      if (pi < piAmount) {
+        showNotification(langData[currentLang].notEnoughMoney);
+        return;
+      }
+      const farmConverted = piAmount * piToFarmRate;
+      pi -= piAmount;
+      farmCoins += farmConverted;
+      showNotification(`${langData[currentLang].convertSuccess} +${farmConverted} ${langData[currentLang].coinLabel}`);
+    } else {
+      showNotification('Please enter a valid amount.');
       return;
     }
-    const farmConverted = piAmount * piToFarmRate;
-    pi -= piAmount;
-    farmCoins += farmConverted;
-    showNotification(`${langData[currentLang].convertSuccess} +${farmConverted} ${langData[currentLang].coinLabel}`);
-  } else {
-    showNotification('Please enter a valid amount.');
-    return;
-  }
 
-  updateWallet();
-  updateLeaderboard();
-  farmInput.value = '';
-  piInput.value = '';
-  playBuyingSound();
+    updateWallet();
+    updateLeaderboard();
+    farmInput.value = '';
+    piInput.value = '';
+    playBuyingSound();
+  } catch (e) {
+    console.error('Convert currency failed:', e.message);
+  }
 }
 
 function renderLeaderboard() {
   console.log('Rendering leaderboard...');
-  const leaderboardList = document.getElementById('leaderboard-list');
-  leaderboardList.innerHTML = 'Loading...';
-  db.collection('leaderboard')
-    .orderBy('pi', 'desc')
-    .limit(5)
-    .get()
-    .then(snapshot => {
-      leaderboardList.innerHTML = '';
-      snapshot.forEach((doc, idx) => {
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.className = 'leaderboard-item';
-        div.textContent = `#${idx + 1}: ${data.name} - ${data.pi.toFixed(2)} Pi`;
-        leaderboardList.appendChild(div);
+  try {
+    const leaderboardList = document.getElementById('leaderboard-list');
+    leaderboardList.innerHTML = 'Loading...';
+    db.collection('leaderboard')
+      .orderBy('pi', 'desc')
+      .limit(5)
+      .get()
+      .then(snapshot => {
+        leaderboardList.innerHTML = '';
+        snapshot.forEach((doc, idx) => {
+          const data = doc.data();
+          const div = document.createElement('div');
+          div.className = 'leaderboard-item';
+          div.textContent = `#${idx + 1}: ${data.name} - ${data.pi.toFixed(2)} Pi`;
+          leaderboardList.appendChild(div);
+        });
+      })
+      .catch(e => {
+        console.error('Leaderboard fetch failed:', e);
+        leaderboardList.innerHTML = 'Failed to load leaderboard.';
       });
-    })
-    .catch(e => {
-      console.error('Leaderboard fetch failed:', e);
-      leaderboardList.innerHTML = 'Failed to load leaderboard.';
-    });
+  } catch (e) {
+    console.error('Render leaderboard failed:', e.message);
+  }
 }
 
 function updateLeaderboard() {
   console.log('Updating leaderboard...');
-  if (!auth.currentUser) return;
-  db.collection('leaderboard').doc(auth.currentUser.uid).set({
-    name: playerName,
-    pi: pi
-  }).catch(e => console.error('Leaderboard update failed:', e));
+  try {
+    if (!auth.currentUser) return;
+    db.collection('leaderboard').doc(auth.currentUser.uid).set({
+      name: playerName,
+      pi: pi
+    }).catch(e => console.error('Leaderboard update failed:', e));
+  } catch (e) {
+    console.error('Update leaderboard failed:', e.message);
+  }
 }
 
 function renderAchievements() {
   console.log('Rendering achievements...');
-  const achievementList = document.getElementById('achievement-list');
-  achievementList.innerHTML = '';
-  const achievementsData = [
-    { id: 'harvest10', name: langData[currentLang].achievementHarvest10, completed: achievements.harvest10 },
-    { id: 'pi10', name: langData[currentLang].achievementPi10, completed: achievements.pi10 }
-  ];
-  achievementsData.forEach(ach => {
-    const div = document.createElement('div');
-    div.className = 'achievement-item';
-    div.textContent = `${ach.name}: ${ach.completed ? 'Completed' : 'In Progress'}`;
-    achievementList.appendChild(div);
-  });
+  try {
+    const achievementList = document.getElementById('achievement-list');
+    achievementList.innerHTML = '';
+    const achievementsData = [
+      { id: 'harvest10', name: langData[currentLang].achievementHarvest10, completed: achievements.harvest10 },
+      { id: 'pi10', name: langData[currentLang].achievementPi10, completed: achievements.pi10 }
+    ];
+    achievementsData.forEach(ach => {
+      const div = document.createElement('div');
+      div.className = 'achievement-item';
+      div.textContent = `${ach.name}: ${ach.completed ? 'Completed' : 'In Progress'}`;
+      achievementList.appendChild(div);
+    });
+  } catch (e) {
+    console.error('Render achievements failed:', e.message);
+  }
 }
 
 function checkAchievements() {
   console.log('Checking achievements...');
-  if (harvestCount >= 10 && !achievements.harvest10) {
-    achievements.harvest10 = true;
-    showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementHarvest10);
-  }
-  if (pi >= 10 && !achievements.pi10) {
-    achievements.pi10 = true;
-    showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementPi10);
-  }
-  localStorage.setItem('achievements', JSON.stringify(achievements));
-  localStorage.setItem('harvestCount', JSON.stringify(harvestCount));
-  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'achievements') {
-    renderAchievements();
+  try {
+    if (harvestCount >= 10 && !achievements.harvest10) {
+      achievements.harvest10 = true;
+      showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementHarvest10);
+    }
+    if (pi >= 10 && !achievements.pi10) {
+      achievements.pi10 = true;
+      showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementPi10);
+    }
+    localStorage.setItem('achievements', JSON.stringify(achievements));
+    localStorage.setItem('harvestCount', JSON.stringify(harvestCount));
+    if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'achievements') {
+      renderAchievements();
+    }
+  } catch (e) {
+    console.error('Check achievements failed:', e.message);
   }
 }
 
 function checkDailyReward() {
   console.log('Checking daily reward...');
-  const now = Date.now();
-  const claimRewardBtn = document.getElementById('claim-reward-btn');
-  if (now - lastRewardClaim >= dailyRewardCooldown) {
-    claimRewardBtn.disabled = false;
-  } else {
-    claimRewardBtn.disabled = true;
-    claimRewardBtn.textContent = langData[currentLang].rewardCooldown;
+  try {
+    const now = Date.now();
+    const claimRewardBtn = document.getElementById('claim-reward-btn');
+    if (now - lastRewardClaim >= dailyRewardCooldown) {
+      claimRewardBtn.disabled = false;
+    } else {
+      claimRewardBtn.disabled = true;
+      claimRewardBtn.textContent = langData[currentLang].rewardCooldown;
+    }
+  } catch (e) {
+    console.error('Check daily reward failed:', e.message);
   }
 }
 
 function claimDailyReward() {
   console.log('Claiming daily reward...');
-  const now = Date.now();
-  if (now - lastRewardClaim < dailyRewardCooldown) {
-    showNotification(langData[currentLang].rewardCooldown);
-    return;
+  try {
+    const now = Date.now();
+    if (now - lastRewardClaim < dailyRewardCooldown) {
+      showNotification(langData[currentLang].rewardCooldown);
+      return;
+    }
+    farmCoins += 50;
+    lastRewardClaim = now;
+    localStorage.setItem('lastRewardClaim', JSON.stringify(lastRewardClaim));
+    updateWallet();
+    updateLeaderboard();
+    checkDailyReward();
+    showNotification(`${langData[currentLang].rewardClaimed} +50 ${langData[currentLang].coinLabel}!`);
+    playCoinSound();
+  } catch (e) {
+    console.error('Claim daily reward failed:', e.message);
   }
-  farmCoins += 50;
-  lastRewardClaim = now;
-  localStorage.setItem('lastRewardClaim', JSON.stringify(lastRewardClaim));
-  updateWallet();
-  updateLeaderboard();
-  checkDailyReward();
-  showNotification(`${langData[currentLang].rewardClaimed} +50 ${langData[currentLang].coinLabel}!`);
-  playCoinSound();
 }
 
 function updateWallet() {
   console.log('Updating wallet...');
-  document.getElementById('coin-balance').textContent = farmCoins;
-  document.getElementById('pi-balance').textContent = pi.toFixed(2);
-  document.getElementById('water-balance').textContent = water;
-  savePlayerData();
+  try {
+    document.getElementById('coin-balance').textContent = farmCoins;
+    document.getElementById('pi-balance').textContent = pi.toFixed(2);
+    document.getElementById('water-balance').textContent = water;
+    savePlayerData();
+  } catch (e) {
+    console.error('Update wallet failed:', e.message);
+  }
 }
 
 function updateLevelBar() {
   console.log('Updating level bar...');
-  document.getElementById('level-display').textContent = level;
-  document.getElementById('xp-display').textContent = xp;
-  const progress = (xp / (xpPerLevel * level)) * 100;
-  document.getElementById('xp-progress').style.width = `${progress}%`;
+  try {
+    document.getElementById('level-display').textContent = level;
+    document.getElementById('xp-display').textContent = xp;
+    const progress = (xp / (xpPerLevel * level)) * 100;
+    document.getElementById('xp-progress').style.width = `${progress}%`;
+  } catch (e) {
+    console.error('Update level bar failed:', e.message);
+  }
 }
 
 function showNotification(message) {
   console.log('Showing notification:', message);
-  const notification = document.getElementById('notification');
-  notification.textContent = message;
-  notification.style.display = 'block';
-  setTimeout(() => {
-    notification.style.display = 'none';
-  }, 3000);
+  try {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.style.display = 'block';
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, 3000);
+  } catch (e) {
+    console.error('Show notification failed:', e.message);
+  }
 }
 
 function checkLevelUp() {
   console.log('Checking level up...');
-  if (xp >= xpPerLevel * level) {
-    level++;
-    xp = 0;
-    showNotification(`${langData[currentLang].levelUp} ${level}!`);
-    updateLevelBar();
+  try {
+    if (xp >= xpPerLevel * level) {
+      level++;
+      xp = 0;
+      showNotification(`${langData[currentLang].levelUp} ${level}!`);
+      updateLevelBar();
+    }
+  } catch (e) {
+    console.error('Check level up failed:', e.message);
   }
 }
 
 setInterval(() => {
-  farmPlots.forEach((plot, index) => {
-    if (plot.vegetable && plot.watered) {
-      plot.growth += 1;
-      const veg = vegetables.find(v => v.id === plot.vegetable);
-      if (plot.growth >= veg.growthTime) {
-        plot.growth = veg.growthTime;
+  try {
+    farmPlots.forEach((plot, index) => {
+      if (plot.vegetable && plot.watered) {
+        plot.growth += 1;
+        const veg = vegetables.find(v => v.id === plot.vegetable);
+        if (plot.growth >= veg.growthTime) {
+          plot.growth = veg.growthTime;
+        }
+        plot.watered = false;
+        renderFarm();
       }
-      plot.watered = false;
-      renderFarm();
-    }
-  });
+    });
+  } catch (e) {
+    console.error('Farm plot update interval failed:', e.message);
+  }
 }, 5000);
 
 loadData();
