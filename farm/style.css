@@ -214,7 +214,7 @@ body {
   display: block;
 }
 
-.tab-content h2 {
+.tab-content h2, .tab-content h3 {
   color: #ffeb3b;
   text-shadow: 0 0 5px #ffeb3b;
 }
@@ -235,7 +235,7 @@ body {
   width: 80px;
   height: 60px;
   background: #654321;
-  border-radius: 50% / 30%;
+  border-radius: 50% / 20%; /* Pipihkan lebih banyak */
   cursor: pointer;
   position: relative;
 }
@@ -315,14 +315,14 @@ body {
   width: 30px;
 }
 
-#seed-list, #inventory-list, #exchange-conversion, #leaderboard-list, #achievement-list {
+#seed-list, #inventory-list, #exchange-conversion, #leaderboard-list, #achievement-list, #sell-list {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
 }
 
-.seed-item, .upgrade-item, .inventory-item, .exchange-conversion, .leaderboard-item, .achievement-item {
+.seed-item, .upgrade-item, .inventory-item, .exchange-conversion, .leaderboard-item, .achievement-item, .sell-item {
   background: rgba(255, 255, 255, 0.1);
   padding: 10px;
   border-radius: 5px;
@@ -331,11 +331,11 @@ body {
   gap: 10px;
 }
 
-.seed-item img, .inventory-item img {
+.seed-item img, .inventory-item img, .sell-item img {
   width: 50px;
 }
 
-.seed-item button, .upgrade-item button, #exchange-conversion button {
+.seed-item button, .upgrade-item button, #exchange-conversion button, .sell-item button {
   background: #4caf50;
   color: #fff;
   border: none;
@@ -345,15 +345,15 @@ body {
   transition: all 0.3s;
 }
 
-.seed-item button:hover, .upgrade-item button:hover, #exchange-conversion button:hover {
+.seed-item button:hover, .upgrade-item button:hover, #exchange-conversion button:hover, .sell-item button:hover {
   box-shadow: 0 0 10px #4caf50, 0 0 20px #4caf50;
 }
 
-.seed-item button:active, .upgrade-item button:active, #exchange-conversion button:active {
+.seed-item button:active, .upgrade-item button:active, #exchange-conversion button:active, .sell-item button:active {
   transform: scale(0.95);
 }
 
-.seed-item button:disabled, .upgrade-item button:disabled {
+.seed-item button:disabled, .upgrade-item button:disabled, .sell-item button:disabled {
   background: #666;
   cursor: not-allowed;
 }
@@ -419,6 +419,36 @@ body {
   right: 10px;
   display: flex;
   gap: 10px;
+}
+
+/* Animasi untuk pembelian dan penjualan */
+.transaction-animation {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  font-weight: bold;
+  animation: floatUp 1.5s ease-out forwards;
+  z-index: 1000;
+}
+
+.transaction-animation.decrease {
+  color: #ff0000;
+}
+
+.transaction-animation.increase {
+  color: #00ff00;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100px);
+  }
 }
 
 @media (max-width: 768px) {
