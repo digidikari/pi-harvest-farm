@@ -5,20 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pi Harvest Farm</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Tambah font retro dari Google Fonts -->
+  <!-- Font retro -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="start-screen">
     <h1 id="title">Pi Harvest Farm</h1>
-    <!-- Ganti tombol Start Game jadi teks dengan class start-text -->
     <div id="start-text" class="start-text">Start Game</div>
-    <!-- Container buat tombol bahasa dan setting di pojok -->
     <div class="corner-buttons">
       <button id="lang-toggle">Switch Language (EN/ID)</button>
       <button id="settings-btn">⚙️</button>
     </div>
-    <!-- Modal buat setting -->
     <div id="settings-modal" class="modal">
       <div class="modal-content">
         <span id="close-settings" class="close">&times;</span>
@@ -86,7 +83,6 @@
     </div>
     <div id="notification"></div>
   </div>
-  <!-- Tambah background music -->
   <audio id="bg-music" src="assets/sfx/music/background.mp3" loop></audio>
   <audio id="harvest-sound" src="assets/sfx/music/harvest.mp3"></audio>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
