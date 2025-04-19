@@ -1,21 +1,51 @@
-<!-- Force redeploy to clear cache - April 18, 2025, vegetables.json parsing fix -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="./farm/style.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- Tambah font retro dari Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="start-screen">
     <h1 id="title">Pi Harvest Farm</h1>
-    <button id="start-btn">Start Game</button>
-    <button id="lang-toggle">Switch Language (EN/ID)</button>
+    <!-- Ganti tombol Start Game jadi teks dengan class start-text -->
+    <div id="start-text" class="start-text">Start Game</div>
+    <!-- Container buat tombol bahasa dan setting di pojok -->
+    <div class="corner-buttons">
+      <button id="lang-toggle">Switch Language (EN/ID)</button>
+      <button id="settings-btn">⚙️</button>
+    </div>
+    <!-- Modal buat setting -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <span id="close-settings" class="close">&times;</span>
+        <h2>Settings</h2>
+        <label for="music-volume">Music Volume:</label>
+        <input type="range" id="music-volume" min="0" max="100" value="50">
+        <label for="voice-volume">Voice/SFX Volume:</label>
+        <input type="range" id="voice-volume" min="0" max="100" value="50">
+      </div>
+    </div>
   </div>
   <div id="game-container" style="display: none;">
-    <div id="menu-bar">
-      <button class="tab-btn active" onclick="switchTab('farm')">Farm</button>
+    <div class="header">
+      <h1 id="game-title">Pi Harvest Farm</h1>
+      <div class="wallet">
+        <span id="coin-balance">100</span> <span id="coin-label">Coins</span> | 
+        <span id="pi-balance">0.00</span> Pi
+      </div>
+      <div class="level-bar">
+        Level: <span id="level-display">1</span> | XP: <span id="xp-display">0</span>
+        <div class="progress-bar">
+          <div id="xp-progress" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn" onclick="switchTab('farm')">Farm</button>
       <button class="tab-btn" onclick="switchTab('shop')">Shop</button>
       <button class="tab-btn" onclick="switchTab('upgrades')">Upgrades</button>
       <button class="tab-btn" onclick="switchTab('inventory')">Inventory</button>
@@ -23,25 +53,12 @@
       <button class="tab-btn" onclick="switchTab('achievements')">Achievements</button>
     </div>
     <div id="farm" class="tab-content">
-      <h2 id="game-title">Pi Harvest Farm</h2>
-      <div id="wallet">
-        <span id="coin-label">Coins</span>: <span id="coin-balance">100</span> | 
-        Pi: <span id="pi-balance">0.00</span>
-      </div>
-      <div id="level-bar">
-        Level: <span id="level-display">1</span> | XP: <span id="xp-display">0</span>
-        <div id="xp-progress-bar">
-          <div id="xp-progress"></div>
-        </div>
-      </div>
-      <div id="daily-reward">
-        <button id="claim-reward-btn" onclick="claimDailyReward()">Claim Daily Reward</button>
-      </div>
+      <div id="farm-area"></div>
       <div id="bag">
-        <img src="./assets/img/ui/bag_icon.png" alt="Bag">
+        <img src="assets/img/bag.png" alt="Bag">
         <div id="bag-list"></div>
       </div>
-      <div id="farm-area"></div>
+      <button id="claim-reward-btn">Claim Daily Reward</button>
     </div>
     <div id="shop" class="tab-content" style="display: none;">
       <h2 id="shop-title">Shop</h2>
@@ -49,15 +66,15 @@
     </div>
     <div id="upgrades" class="tab-content" style="display: none;">
       <h2 id="upgrades-title">Upgrades</h2>
-      <button id="wateringCan-btn" onclick="buyUpgrade('wateringCan')">Watering Can (50 Coins / 0.2 Pi)</button>
-      <button id="extraPlotCoins-btn" onclick="buyUpgrade('extraPlotCoins')">Extra Plot (200 Coins)</button>
-      <button id="extraPlotPi-btn" onclick="buyUpgrade('extraPlotPi')">Extra Plots (1 Pi)</button>
-      <button id="yieldBoost-btn" onclick="buyUpgrade('yieldBoost')">Yield Boost (100 Coins / 0.5 Pi)</button>
+      <button onclick="buyUpgrade('wateringCan')">Watering Can - 50 Coins / 0.2 Pi</button>
+      <button onclick="buyUpgrade('extraPlotCoins')">Extra Plot - 200 Coins</button>
+      <button onclick="buyUpgrade('extraPlotPi')">Extra Plot - 1 Pi</button>
+      <button onclick="buyUpgrade('yieldBoost')">Yield Boost - 100 Coins / 0.5 Pi</button>
     </div>
     <div id="inventory" class="tab-content" style="display: none;">
       <h2 id="inventory-title">Inventory</h2>
       <div id="inventory-list"></div>
-      <button id="claim-pi-btn" onclick="claimPi()">Claim Pi</button>
+      <button id="claim-pi-btn">Claim Pi</button>
     </div>
     <div id="leaderboard" class="tab-content" style="display: none;">
       <h2 id="leaderboard-title">Leaderboard</h2>
@@ -68,13 +85,14 @@
       <div id="achievement-list"></div>
     </div>
     <div id="notification"></div>
-    <audio id="harvest-sound" src="./assets/sfx/music/harvest.mp3"></audio>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-  <script src="./firebase/firebase-config.js"></script>
-  <script src="./firebase/firebase-functions.js"></script>
-  <script src="./farm/main.js"></script>
+  <!-- Tambah background music -->
+  <audio id="bg-music" src="assets/sfx/music/background.mp3" loop></audio>
+  <audio id="harvest-sound" src="assets/sfx/music/harvest.mp3"></audio>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="farm/main.js"></script>
 </body>
 </html>
