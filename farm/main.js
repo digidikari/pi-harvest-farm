@@ -28,10 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadData() {
   console.log('Loading data...');
   try {
-    const langRes = await fetch('./data/lang.json');
-    const vegRes = await fetch('./data/vegetables.json');
-    if (langRes) langData = await langRes.json();
-    if (vegRes) vegetables = await vegRes.json();
+    const langRes = await fetch('../data/lang.json');
+    const vegRes = await fetch('../data/vegetables.json');
+    if (!langRes.ok) throw new Error('Failed to load lang.json');
+    if (!vegRes.ok) throw new Error('Failed to load vegetables.json');
+    langData = await langRes.json();
+    vegetables = await vegRes.json();
     console.log('Loaded JSON:', { langData, vegetables });
     initializeGame();
   } catch (e) {
