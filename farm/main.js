@@ -86,6 +86,27 @@ const fallbackLangData = {
   }
 };
 
+// Tambah fallback data buat vegetables
+const fallbackVegetables = [
+  { id: "beet", name: { en: "Beet", id: "Bit" }, price: 10, piPrice: 0.1, growthTime: 10, frames: 12, yield: 15 },
+  { id: "cabbage", name: { en: "Cabbage", id: "Kol" }, price: 20, piPrice: 0.2, growthTime: 12, frames: 10, yield: 25 },
+  { id: "carrot", name: { en: "Carrot", id: "Wortel" }, price: 15, piPrice: 0.15, growthTime: 8, frames: 8, yield: 20 },
+  { id: "corn", name: { en: "Corn", id: "Jagung" }, price: 25, piPrice: 0.25, growthTime: 15, frames: 14, yield: 30 },
+  { id: "cucumber", name: { en: "Cucumber", id: "Timun" }, price: 18, piPrice: 0.18, growthTime: 10, frames: 9, yield: 22 },
+  { id: "eggplant", name: { en: "Eggplant", id: "Terong" }, price: 22, piPrice: 0.22, growthTime: 12, frames: 11, yield: 28 },
+  { id: "onion", name: { en: "Onion", id: "Bawang" }, price: 12, piPrice: 0.12, growthTime: 7, frames: 7, yield: 18 },
+  { id: "peas", name: { en: "Peas", id: "Kacang Polong" }, price: 16, piPrice: 0.16, growthTime: 9, frames: 8, yield: 20 },
+  { id: "pepper", name: { en: "Pepper", id: "Paprika" }, price: 20, piPrice: 0.2, growthTime: 11, frames: 10, yield: 25 },
+  { id: "potato", name: { en: "Potato", id: "Kentang" }, price: 18, piPrice: 0.18, growthTime: 10, frames: 9, yield: 22 },
+  { id: "pumpkin", name: { en: "Pumpkin", id: "Labu" }, price: 30, piPrice: 0.3, growthTime: 15, frames: 20, yield: 35 },
+  { id: "radish", name: { en: "Radish", id: "Lobak" }, price: 12, piPrice: 0.12, growthTime: 7, frames: 7, yield: 18 },
+  { id: "lettuce", name: { en: "Lettuce", id: "Selada" }, price: 15, piPrice: 0.15, growthTime: 8, frames: 8, yield: 20 },
+  { id: "spinach", name: { en: "Spinach", id: "Bayam" }, price: 10, piPrice: 0.1, growthTime: 6, frames: 6, yield: 15 },
+  { id: "tomato", name: { en: "Tomato", id: "Tomat" }, price: 18, piPrice: 0.18, growthTime: 10, frames: 9, yield: 22 },
+  { id: "watermelon", name: { en: "Watermelon", id: "Semangka" }, price: 35, piPrice: 0.35, growthTime: 18, frames: 15, yield: 40 },
+  { id: "wheat", name: { en: "Wheat", id: "Gandum" }, price: 22, piPrice: 0.22, growthTime: 12, frames: 10, yield: 28 }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
   initializeFirebaseAuth();
@@ -124,8 +145,8 @@ async function loadData() {
     console.log('Loaded vegetables.json:', vegetables);
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
-    alert('Failed to load vegetables.json: ' + e.message);
-    return;
+    console.warn('Using fallback vegetables data...');
+    vegetables = fallbackVegetables;
   }
 
   try {
@@ -625,9 +646,7 @@ function updateWallet() {
 }
 
 function updateLevelBar() {
- 
-
- console.log('Updating level bar...');
+  console.log('Updating level bar...');
   document.getElementById('level-display').textContent = level;
   document.getElementById('xp-display').textContent = xp;
   const progress = (xp / (xpPerLevel * level)) * 100;
