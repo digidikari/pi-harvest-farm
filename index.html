@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=6">
+  <link rel="stylesheet" href="farm/style.css?v=7">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -62,15 +62,14 @@
     </div>
     <div id="upgrades" class="tab-content" style="display: none;">
       <h2 id="upgrades-title">Upgrades</h2>
-      <button onclick="buyUpgrade('wateringCan')">Watering Can - 50 Coins / 0.2 Pi</button>
-      <button onclick="buyUpgrade('extraPlotCoins')">Extra Plot - 200 Coins</button>
-      <button onclick="buyUpgrade('extraPlotPi')">Extra Plot - 1 Pi</button>
-      <button onclick="buyUpgrade('yieldBoost')">Yield Boost - 100 Coins / 0.5 Pi</button>
+      <button onclick="buyUpgrade('wateringCan')">Watering Can - 20 Coins / 0.12 Pi</button>
+      <button onclick="buyUpgrade('extraPlotCoins')">Extra Plot - 80 Coins / 0.48 Pi</button>
+      <button onclick="buyUpgrade('extraPlotPi')">Extra Plot - 80 Coins / 0.48 Pi</button>
+      <button onclick="buyUpgrade('yieldBoost')">Yield Boost - 40 Coins / 0.3 Pi</button>
     </div>
     <div id="inventory" class="tab-content" style="display: none;">
       <h2 id="inventory-title">Inventory</h2>
       <div id="inventory-list"></div>
-      <button id="claim-pi-btn">Claim Pi</button>
     </div>
     <div id="leaderboard" class="tab-content" style="display: none;">
       <h2 id="leaderboard-title">Leaderboard</h2>
@@ -84,11 +83,12 @@
   </div>
   <audio id="bg-music" src="assets/sfx/music/main-bgm.mp3" loop></audio>
   <audio id="harvest-sound" src="assets/sfx/voice/harvesting-bgv.mp3"></audio>
+  <audio id="watering-sound" src="assets/sfx/voice/watering-bgv.mp3"></audio>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="firebase/firebase-config.js"></script>
-  <script src="farm/main.js?v=6"></script>
-  <!-- Force redeploy - April 18, 2025, fix zoom -->
+  <script src="farm/main.js?v=7"></script>
+  <!-- Force redeploy - April 18, 2025, fix audio, text, close, bag, shop icons, upgrades, remove claim -->
 </body>
 </html>
