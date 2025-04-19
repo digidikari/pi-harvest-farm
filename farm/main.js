@@ -129,48 +129,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameSettingsBtn = document.getElementById('game-settings-btn');
     const exitGameBtn = document.getElementById('exit-game-btn');
 
-    if (!startText) throw new Error('Start text element not found');
-    if (!langToggle) throw new Error('Language toggle button not found');
-    if (!settingsBtn) throw new Error('Settings button not found');
-    if (!claimRewardBtn) throw new Error('Claim reward button not found');
-    if (!gameLangToggle) throw new Error('Game language toggle button not found');
-    if (!gameSettingsBtn) throw new Error('Game settings button not found');
-    if (!exitGameBtn) throw new Error('Exit game button not found');
+    // Debug: Cek apakah elemen ditemukan
+    console.log('Start Text Element:', startText);
+    console.log('Lang Toggle Element:', langToggle);
+    console.log('Settings Button Element:', settingsBtn);
 
-    startText.addEventListener('click', startGame);
-    langToggle.addEventListener('click', toggleLanguage);
-    settingsBtn.addEventListener('click', openSettings);
-    claimRewardBtn.addEventListener('click', claimDailyReward);
-    gameLangToggle.addEventListener('click', toggleLanguage);
-    gameSettingsBtn.addEventListener('click', openSettings);
-    exitGameBtn.addEventListener('click', exitGame);
-
-    console.log('Event listeners attached for start, lang, settings, claim reward, game-lang, game-settings, and exit');
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      const tab = btn.getAttribute('data-tab');
-      btn.addEventListener('click', () => switchTab(tab));
-    });
-    console.log('Tab button listeners attached');
-
-    // Play BGM and BGV at initial screen load
-    const bgMusic = document.getElementById('bg-music');
-    const bgVoice = document.getElementById('bg-voice');
-    if (bgMusic) {
-      console.log('Attempting to play BGM at:', bgMusic.src);
-      bgMusic.volume = musicVolume / 100;
-      bgMusic.play().catch(e => console.warn('Background music failed to play:', e.message));
+    if (startText) {
+      startText.addEventListener('click', startGame);
+      console.log('Start Text listener attached');
     } else {
-      console.warn('Background music element not found');
-    }
-    if (bgVoice) {
-      console.log('Attempting to play BGV at:', bgVoice.src);
-      bgVoice.volume = voiceVolume / 100;
-      bgVoice.play().catch(e => console.warn('Background voice failed to play:', e.message));
-    } else {
-      console.warn('Background voice element not found');
+      console.warn('Start Text element not found');
     }
 
+    if (langToggle) {
+      langToggle.addEventListener('click', toggleLanguage);
+      console.log('Lang Toggle listener attached');
+    } else {
+      console.warn('Lang Toggle element not found');
+    }
+
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', openSettings);
+      console.log('Settings Button listener attached');
+    } else {
+      console.warn('Settings Button element not found');
+    }
+
+    if (claimRewardBtn) {
+      claimRewardBtn.addEventListener('click', claimDailyReward);
+      console.log('Claim Reward listener attached');
+    } else {
+      console.warn('Claim Reward button not found');
+    }
+
+    if (gameLangToggle) {
+      gameLangToggle.addEventListener('click', toggleLanguage);
+      console.log('Game Lang Toggle listener attached');
+    } else {
+      console.warn('Game Lang Toggle element not found');
+    }
+
+    if (gameSettingsBtn) {
+      gameSettingsBtn.addEventListener('click', openSettings);
+      console.log('Game Settings Button listener attached');
+    } else {
+      console.warn('Game Settings Button element not found');
+    }
+
+    if (exitGameBtn) {
+      exitGameBtn.addEventListener('click', exitGame);
+      console.log('Exit Game Button listener attached');
+    } else {
+      console.warn('Exit Game Button element not found');
+    }
+
+    // Lanjutkan inisialisasi
     loadData();
     initializeSettings();
     updateVolumes();
