@@ -3,7 +3,7 @@ let langData = {};
 let currentLang = 'en';
 let farmCoins = 0;
 let pi = 0;
-let water = 10;
+let water = 100; // Ubah dari 10 ke 100
 let farmPlots = [];
 let inventory = [];
 let bag = [];
@@ -17,7 +17,7 @@ let xp = 0;
 let playerName = 'Player' + Math.floor(Math.random() * 1000);
 let achievements = JSON.parse(localStorage.getItem('achievements')) || {
   harvest10: false,
-  farmCoin100: false // Ganti pi10 jadi farmCoin100
+  farmCoin1000: false // Ubah dari farmCoin100 ke farmCoin1000
 };
 let harvestCount = JSON.parse(localStorage.getItem('harvestCount')) || 0;
 let lastRewardClaim = JSON.parse(localStorage.getItem('lastRewardClaim')) || 0;
@@ -28,8 +28,8 @@ let voiceVolume = localStorage.getItem('voiceVolume') ? parseInt(localStorage.ge
 const plotCount = 36;
 const xpPerLevel = 100;
 const dailyRewardCooldown = 24 * 60 * 60 * 1000;
-const piToFarmRate = 1000;
-const dailyReward = { farmCoins: 50, water: 5 }; // Reward harian: 50 Farm Coins, 5 Water
+const piToFarmRate = 10000; // Ubah dari 1000 ke 10000
+const dailyReward = { farmCoins: 50, water: 5 };
 
 const fallbackLangData = {
   "en": {
@@ -44,11 +44,13 @@ const fallbackLangData = {
     "achievementsTab": "Achievements",
     "coinLabel": "Farm Coins",
     "buyLabel": "Buy",
+    "sellLabel": "Sell",
     "emptyBag": "Bag is empty!",
     "emptyInventory": "Inventory is empty!",
     "notEnoughMoney": "Not enough money!",
     "notEnoughWater": "Not enough water!",
     "bought": "Bought",
+    "sold": "Sold",
     "harvested": "Harvested",
     "upgradeBought": "Upgrade bought",
     "levelUp": "Level up to",
@@ -56,7 +58,7 @@ const fallbackLangData = {
     "rewardClaimed": "Daily Reward Claimed!",
     "rewardCooldown": "Reward Available Tomorrow!",
     "achievementHarvest10": "Harvest 10 Plants",
-    "achievementFarmCoin100": "Collect 100 Farm Coins", // Ganti pi10 jadi farmCoin100
+    "achievementFarmCoin1000": "Collect 1000 Farm Coins", // Ubah dari farmCoin100 ke farmCoin1000
     "achievementUnlocked": "Achievement Unlocked!",
     "convertSuccess": "Exchange successful!",
     "exchangeBtn": "Exchange"
@@ -73,11 +75,13 @@ const fallbackLangData = {
     "achievementsTab": "Pencapaian",
     "coinLabel": "Koin Ladang",
     "buyLabel": "Beli",
+    "sellLabel": "Jual",
     "emptyBag": "Tas kosong!",
     "emptyInventory": "Inventaris kosong!",
     "notEnoughMoney": "Uang tidak cukup!",
     "notEnoughWater": "Air tidak cukup!",
     "bought": "Dibeli",
+    "sold": "Dijual",
     "harvested": "Dipanen",
     "upgradeBought": "Peningkatan dibeli",
     "levelUp": "Naik level ke",
@@ -85,7 +89,7 @@ const fallbackLangData = {
     "rewardClaimed": "Hadiah Harian Diklaim!",
     "rewardCooldown": "Hadiah Tersedia Besok!",
     "achievementHarvest10": "Panen 10 Tanaman",
-    "achievementFarmCoin100": "Kumpulkan 100 Koin Ladang", // Ganti pi10 jadi farmCoin100
+    "achievementFarmCoin1000": "Kumpulkan 1000 Koin Ladang", // Ubah dari farmCoin100 ke farmCoin1000
     "achievementUnlocked": "Pencapaian Dibuka!",
     "convertSuccess": "Penukaran berhasil!",
     "exchangeBtn": "Tukar"
@@ -93,24 +97,24 @@ const fallbackLangData = {
 };
 
 const fallbackVegetables = [
-  { id: "beet", name: { en: "Beet", id: "Bit" }, farmPrice: 50, piPrice: 0.1, growthTime: 10, frames: 13, yield: 15, image: "assets/img/plant/beet/beet_13.png" },
-  { id: "cabbage", name: { en: "Cabbage", id: "Kol" }, farmPrice: 100, piPrice: 0.2, growthTime: 12, frames: 20, yield: 25, image: "assets/img/plant/cabbage/cabbage_20.png" },
-  { id: "carrot", name: { en: "Carrot", id: "Wortel" }, farmPrice: 75, piPrice: 0.15, growthTime: 8, frames: 16, yield: 20, image: "assets/img/plant/carrot/carrot_16.png" },
-  { id: "corn", name: { en: "Corn", id: "Jagung" }, farmPrice: 125, piPrice: 0.25, growthTime: 15, frames: 20, yield: 30, image: "assets/img/plant/corn/corn_20.png" },
-  { id: "cucumber", name: { en: "Cucumber", id: "Timun" }, farmPrice: 90, piPrice: 0.18, growthTime: 10, frames: 20, yield: 22, image: "assets/img/plant/cucumber/cucumber_20.png" },
-  { id: "eggplant", name: { en: "Eggplant", id: "Terong" }, farmPrice: 110, piPrice: 0.22, growthTime: 12, frames: 9, yield: 28, image: "assets/img/plant/eggplant/eggplant_9.png" },
-  { id: "lettuce", name: { en: "Lettuce", id: "Selada" }, farmPrice: 75, piPrice: 0.15, growthTime: 8, frames: 7, yield: 20, image: "assets/img/plant/lettuce/lettuce_7.png" },
-  { id: "onion", name: { en: "Onion", id: "Bawang" }, farmPrice: 60, piPrice: 0.12, growthTime: 7, frames: 6, yield: 18, image: "assets/img/plant/onion/onion_6.png" },
-  { id: "peas", name: { en: "Peas", id: "Kacang Polong" }, farmPrice: 80, piPrice: 0.16, growthTime: 9, frames: 8, yield: 20, image: "assets/img/plant/peas/peas_8.png" },
-  { id: "pepper", name: { en: "Pepper", id: "Paprika" }, farmPrice: 100, piPrice: 0.2, growthTime: 11, frames: 12, yield: 25, image: "assets/img/plant/pepper/pepper_12.png" },
-  { id: "potato", name: { en: "Potato", id: "Kentang" }, farmPrice: 90, piPrice: 0.18, growthTime: 10, frames: 7, yield: 22, image: "assets/img/plant/potato/potato_7.png" },
-  { id: "pumpkin", name: { en: "Pumpkin", id: "Labu" }, farmPrice: 150, piPrice: 0.3, growthTime: 15, frames: 20, yield: 35, image: "assets/img/plant/pumpkin/pumpkin_20.png" },
-  { id: "radish", name: { en: "Radish", id: "Lobak" }, farmPrice: 60, piPrice: 0.12, growthTime: 7, frames: 8, yield: 18, image: "assets/img/plant/radish/radish_8.png" },
-  { id: "spinach", name: { en: "Spinach", id: "Bayam" }, farmPrice: 50, piPrice: 0.1, growthTime: 6, frames: 5, yield: 15, image: "assets/img/plant/spinach/spinach_5.png" },
-  { id: "tomato", name: { en: "Tomato", id: "Tomat" }, farmPrice: 90, piPrice: 0.18, growthTime: 10, frames: 20, yield: 22, image: "assets/img/plant/tomato/tomato_20.png" },
-  { id: "watermelon", name: { en: "Watermelon", id: "Semangka" }, farmPrice: 175, piPrice: 0.35, growthTime: 18, frames: 19, yield: 40, image: "assets/img/plant/watermelon/watermelon_19.png" },
-  { id: "wheat", name: { en: "Wheat", id: "Gandum" }, farmPrice: 110, piPrice: 0.22, growthTime: 12, frames: 7, yield: 28, image: "assets/img/plant/wheat/wheat_7.png" },
-  { id: "water", name: { en: "Water", id: "Air" }, farmPrice: 10, piPrice: 0.02, amount: 10 }
+  { id: "beet", name: { en: "Beet", id: "Bit" }, farmPrice: 500, piPrice: 0.05, growthTime: 10, frames: 13, yield: 15, image: "assets/img/plant/beet/beet_13.png" },
+  { id: "cabbage", name: { en: "Cabbage", id: "Kol" }, farmPrice: 550, piPrice: 0.055, growthTime: 12, frames: 20, yield: 25, image: "assets/img/plant/cabbage/cabbage_20.png" },
+  { id: "carrot", name: { en: "Carrot", id: "Wortel" }, farmPrice: 520, piPrice: 0.052, growthTime: 8, frames: 16, yield: 20, image: "assets/img/plant/carrot/carrot_16.png" },
+  { id: "corn", name: { en: "Corn", id: "Jagung" }, farmPrice: 600, piPrice: 0.06, growthTime: 15, frames: 20, yield: 30, image: "assets/img/plant/corn/corn_20.png" },
+  { id: "cucumber", name: { en: "Cucumber", id: "Timun" }, farmPrice: 530, piPrice: 0.053, growthTime: 10, frames: 20, yield: 22, image: "assets/img/plant/cucumber/cucumber_20.png" },
+  { id: "eggplant", name: { en: "Eggplant", id: "Terong" }, farmPrice: 570, piPrice: 0.057, growthTime: 12, frames: 9, yield: 28, image: "assets/img/plant/eggplant/eggplant_9.png" },
+  { id: "lettuce", name: { en: "Lettuce", id: "Selada" }, farmPrice: 510, piPrice: 0.051, growthTime: 8, frames: 7, yield: 20, image: "assets/img/plant/lettuce/lettuce_7.png" },
+  { id: "onion", name: { en: "Onion", id: "Bawang" }, farmPrice: 500, piPrice: 0.05, growthTime: 7, frames: 6, yield: 18, image: "assets/img/plant/onion/onion_6.png" },
+  { id: "peas", name: { en: "Peas", id: "Kacang Polong" }, farmPrice: 520, piPrice: 0.052, growthTime: 9, frames: 8, yield: 20, image: "assets/img/plant/peas/peas_8.png" },
+  { id: "pepper", name: { en: "Pepper", id: "Paprika" }, farmPrice: 550, piPrice: 0.055, growthTime: 11, frames: 12, yield: 25, image: "assets/img/plant/pepper/pepper_12.png" },
+  { id: "potato", name: { en: "Potato", id: "Kentang" }, farmPrice: 530, piPrice: 0.053, growthTime: 10, frames: 7, yield: 22, image: "assets/img/plant/potato/potato_7.png" },
+  { id: "pumpkin", name: { en: "Pumpkin", id: "Labu" }, farmPrice: 650, piPrice: 0.065, growthTime: 15, frames: 20, yield: 35, image: "assets/img/plant/pumpkin/pumpkin_20.png" },
+  { id: "radish", name: { en: "Radish", id: "Lobak" }, farmPrice: 500, piPrice: 0.05, growthTime: 7, frames: 8, yield: 18, image: "assets/img/plant/radish/radish_8.png" },
+  { id: "spinach", name: { en: "Spinach", id: "Bayam" }, farmPrice: 500, piPrice: 0.05, growthTime: 6, frames: 5, yield: 15, image: "assets/img/plant/spinach/spinach_5.png" },
+  { id: "tomato", name: { en: "Tomato", id: "Tomat" }, farmPrice: 530, piPrice: 0.053, growthTime: 10, frames: 20, yield: 22, image: "assets/img/plant/tomato/tomato_20.png" },
+  { id: "watermelon", name: { en: "Watermelon", id: "Semangka" }, farmPrice: 700, piPrice: 0.07, growthTime: 18, frames: 19, yield: 40, image: "assets/img/plant/watermelon/watermelon_19.png" },
+  { id: "wheat", name: { en: "Wheat", id: "Gandum" }, farmPrice: 570, piPrice: 0.057, growthTime: 12, frames: 7, yield: 28, image: "assets/img/plant/wheat/wheat_7.png" },
+  { id: "water", name: { en: "Water", id: "Air" }, farmPrice: 10, piPrice: 0.001, amount: 10 }
 ];
 
 // Initialize game on DOM load
@@ -153,12 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const bgMusic = document.getElementById('bg-music');
     const bgVoice = document.getElementById('bg-voice');
     if (bgMusic) {
+      console.log('Attempting to play BGM at:', bgMusic.src);
       bgMusic.volume = musicVolume / 100;
       bgMusic.play().catch(e => console.warn('Background music failed to play:', e.message));
+    } else {
+      console.warn('Background music element not found');
     }
     if (bgVoice) {
+      console.log('Attempting to play BGV at:', bgVoice.src);
       bgVoice.volume = voiceVolume / 100;
       bgVoice.play().catch(e => console.warn('Background voice failed to play:', e.message));
+    } else {
+      console.warn('Background voice element not found');
     }
 
     loadData();
@@ -231,6 +241,9 @@ function initializeGame() {
     loadPlayerData();
     updateUIText();
     initializePlots();
+    renderShop();
+    renderInventory();
+    renderSellSection();
     updateWallet();
     updateLevelBar();
     renderBag();
@@ -272,10 +285,12 @@ function exitGame() {
   try {
     const startScreen = document.getElementById('start-screen');
     const gameContainer = document.getElementById('game-container');
+    const settingsModal = document.getElementById('settings-modal');
     if (!startScreen || !gameContainer) throw new Error('Start screen or game container not found');
 
     gameContainer.style.display = 'none';
     startScreen.style.display = 'flex';
+    if (settingsModal) settingsModal.classList.remove('active'); // Close settings modal
     console.log('Switched from game container to start screen');
 
     playMenuSound();
@@ -306,6 +321,8 @@ function toggleLanguage() {
     }
 
     updateUIText();
+    renderShop();
+    renderSellSection();
     playMenuSound();
     console.log('Language toggled successfully');
   } catch (e) {
@@ -436,12 +453,13 @@ function initializeSettings() {
 // Load player data
 function loadPlayerData() {
   console.log('Loading player data...');
-  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 0;
+  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 100; // Ubah dari 0 ke 100
   pi = localStorage.getItem('pi') ? parseFloat(localStorage.getItem('pi')) : 0;
-  water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 10;
+  water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 100; // Ubah dari 10 ke 100
   level = localStorage.getItem('level') ? parseInt(localStorage.getItem('level')) : 1;
   xp = localStorage.getItem('xp') ? parseInt(localStorage.getItem('xp')) : 0;
-  console.log('Player data loaded:', { farmCoins, pi, water, level, xp });
+  inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+  console.log('Player data loaded:', { farmCoins, pi, water, level, xp, inventory });
 }
 
 // Switch between tabs
@@ -463,6 +481,13 @@ function switchTab(tab) {
       console.log(`Switched to ${tab} tab successfully`);
     } else {
       throw new Error(`Tab content or button for ${tab} not found`);
+    }
+
+    if (tab === 'shop') {
+      renderShop();
+      renderSellSection();
+    } else if (tab === 'inventory') {
+      renderInventory();
     }
 
     playMenuSound();
@@ -487,15 +512,170 @@ function initializePlots() {
     plot.classList.add('plot');
     plot.addEventListener('click', () => handlePlotClick(i));
     farmArea.appendChild(plot);
-    farmPlots.push({ planted: false, progress: 0 });
+    farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false });
   }
   console.log('Plots initialized:', farmPlots);
 }
 
-// Handle plot click (placeholder for planting/harvesting)
+// Handle plot click (planting, watering, harvesting)
 function handlePlotClick(index) {
-  console.log(`Plot ${index} clicked (placeholder)...`);
-  // Add planting/harvesting logic if needed
+  console.log(`Plot ${index} clicked...`);
+  const plot = farmPlots[index];
+  const plotElement = document.querySelectorAll('.plot')[index];
+
+  if (!plot.planted && bag.some(item => item.includes('Seed'))) {
+    // Plant a seed
+    const vegetable = vegetables[0]; // Default to first vegetable (Beet) for now
+    plot.planted = true;
+    plot.vegetable = vegetable;
+    plot.progress = 0;
+    plotElement.innerHTML = `<img src="${vegetable.image}" class="plant-img">`;
+    bag = bag.filter(item => !item.includes('Seed'));
+    renderBag();
+    showNotification(langData[currentLang].bought);
+    console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
+  } else if (plot.planted && !plot.watered && water > 0) {
+    // Water the plant
+    plot.watered = true;
+    water--;
+    updateWallet();
+    plotElement.classList.add('ready');
+    playWateringSound();
+    console.log(`Watered plot ${index}`);
+  } else if (plot.planted && plot.watered) {
+    // Harvest the plant
+    inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+    plot.planted = false;
+    plot.vegetable = null;
+    plot.progress = 0;
+    plot.watered = false;
+    plotElement.innerHTML = '';
+    plotElement.classList.remove('ready');
+    harvestCount++;
+    localStorage.setItem('harvestCount', harvestCount);
+    checkHarvestAchievement();
+    showNotification(langData[currentLang].harvested);
+    playHarvestSound();
+    renderInventory();
+    renderSellSection();
+    console.log(`Harvested plot ${index}, added to inventory:`, inventory);
+  } else if (water <= 0) {
+    showNotification(langData[currentLang].notEnoughWater);
+  }
+}
+
+// Render shop (seeds for buying)
+function renderShop() {
+  console.log('Rendering shop...');
+  const seedList = document.getElementById('seed-list');
+  if (!seedList) {
+    console.error('Seed list element not found');
+    return;
+  }
+
+  seedList.innerHTML = vegetables
+    .filter(veg => veg.id !== 'water')
+    .map(veg => `
+      <div class="seed-item">
+        <img src="${veg.image}" alt="${veg.name[currentLang]}">
+        <span>${veg.name[currentLang]} - ${veg.farmPrice} ${langData[currentLang].coinLabel} / ${veg.piPrice} Pi</span>
+        <button onclick="buySeed('${veg.id}', 'farm')">${langData[currentLang].buyLabel} (Farm)</button>
+        <button onclick="buySeed('${veg.id}', 'pi')">${langData[currentLang].buyLabel} (Pi)</button>
+      </div>
+    `).join('');
+  console.log('Shop rendered with vegetables');
+}
+
+// Render sell section in shop
+function renderSellSection() {
+  console.log('Rendering sell section...');
+  const sellList = document.getElementById('sell-list');
+  if (!sellList) {
+    console.error('Sell list element not found');
+    return;
+  }
+
+  if (inventory.length === 0) {
+    sellList.innerHTML = `<span>${langData[currentLang].emptyInventory}</span>`;
+  } else {
+    sellList.innerHTML = inventory.map((item, index) => `
+      <div class="sell-item">
+        <img src="${item.vegetable.image}" alt="${item.vegetable.name[currentLang]}">
+        <span>${item.vegetable.name[currentLang]} x${item.quantity} - ${item.vegetable.farmPrice / 2} ${langData[currentLang].coinLabel}</span>
+        <button onclick="sellItem(${index})">${langData[currentLang].sellLabel}</button>
+      </div>
+    `).join('');
+  }
+  console.log('Sell section rendered:', inventory);
+}
+
+// Buy a seed
+function buySeed(vegId, currency) {
+  console.log(`Buying seed ${vegId} with ${currency}...`);
+  const vegetable = vegetables.find(veg => veg.id === vegId);
+  const cost = currency === 'farm' ? vegetable.farmPrice : vegetable.piPrice;
+
+  if (currency === 'farm' && farmCoins >= cost) {
+    farmCoins -= cost;
+    bag.push(`Seed x1`);
+    updateWallet();
+    showNotification(langData[currentLang].bought);
+    showTransactionAnimation(`-${cost}`, 'decrease');
+    playBuyingSound();
+    renderBag();
+  } else if (currency === 'pi' && pi >= cost) {
+    pi -= cost;
+    bag.push(`Seed x1`);
+    updateWallet();
+    showNotification(langData[currentLang].bought);
+    showTransactionAnimation(`-${cost}`, 'decrease');
+    playBuyingSound();
+    renderBag();
+  } else {
+    showNotification(langData[currentLang].notEnoughMoney);
+  }
+  console.log(`Bought seed ${vegId}:`, bag);
+}
+
+// Sell an item from inventory
+function sellItem(index) {
+  console.log(`Selling item at index ${index}...`);
+  const item = inventory[index];
+  const sellPrice = item.vegetable.farmPrice / 2 * item.quantity;
+
+  farmCoins += sellPrice;
+  inventory.splice(index, 1);
+  localStorage.setItem('inventory', JSON.stringify(inventory));
+  updateWallet();
+  showNotification(langData[currentLang].sold);
+  showTransactionAnimation(`+${sellPrice}`, 'increase');
+  playCoinSound();
+  renderInventory();
+  renderSellSection();
+  console.log(`Sold item at index ${index}, gained ${sellPrice} Farm Coins`);
+}
+
+// Render inventory
+function renderInventory() {
+  console.log('Rendering inventory...');
+  const inventoryList = document.getElementById('inventory-list');
+  if (!inventoryList) {
+    console.error('Inventory list element not found');
+    return;
+  }
+
+  if (inventory.length === 0) {
+    inventoryList.innerHTML = `<span>${langData[currentLang].emptyInventory}</span>`;
+  } else {
+    inventoryList.innerHTML = inventory.map(item => `
+      <div class="inventory-item">
+        <img src="${item.vegetable.image}" alt="${item.vegetable.name[currentLang]}">
+        <span>${item.vegetable.name[currentLang]} x${item.quantity}</span>
+      </div>
+    `).join('');
+  }
+  console.log('Inventory rendered:', inventory);
 }
 
 // Update wallet display
@@ -513,7 +693,6 @@ function updateWallet() {
   localStorage.setItem('pi', pi);
   localStorage.setItem('water', water);
 
-  // Check achievement for 100 Farm Coins
   checkFarmCoinAchievement();
   console.log('Wallet updated:', { farmCoins, pi, water });
 }
@@ -558,7 +737,6 @@ function renderBag() {
     console.log('Bag toggled:', bagList.classList.contains('show') ? 'open' : 'closed');
   });
 
-  // Add sample item to bag for testing
   bag = ['Seed x1', 'Water x2'];
   console.log('Bag initialized with sample items:', bag);
 }
@@ -578,20 +756,30 @@ function renderAchievements() {
       <span>${achievements.harvest10 ? '✅' : '❌'}</span>
     </div>
     <div class="achievement-item">
-      <span>${langData[currentLang].achievementFarmCoin100}</span>
-      <span>${achievements.farmCoin100 ? '✅' : '❌'}</span>
+      <span>${langData[currentLang].achievementFarmCoin1000}</span>
+      <span>${achievements.farmCoin1000 ? '✅' : '❌'}</span>
     </div>
   `;
   console.log('Achievements rendered:', achievements);
 }
 
-// Check Farm Coins achievement (100 Farm Coins)
-function checkFarmCoinAchievement() {
-  if (farmCoins >= 100 && !achievements.farmCoin100) {
-    achievements.farmCoin100 = true;
+// Check Harvest achievement (10 plants)
+function checkHarvestAchievement() {
+  if (harvestCount >= 10 && !achievements.harvest10) {
+    achievements.harvest10 = true;
     localStorage.setItem('achievements', JSON.stringify(achievements));
     showNotification(langData[currentLang].achievementUnlocked);
-    console.log('Achievement unlocked: Collect 100 Farm Coins');
+    console.log('Achievement unlocked: Harvest 10 Plants');
+  }
+}
+
+// Check Farm Coins achievement (1000 Farm Coins)
+function checkFarmCoinAchievement() {
+  if (farmCoins >= 1000 && !achievements.farmCoin1000) {
+    achievements.farmCoin1000 = true;
+    localStorage.setItem('achievements', JSON.stringify(achievements));
+    showNotification(langData[currentLang].achievementUnlocked);
+    console.log('Achievement unlocked: Collect 1000 Farm Coins');
   }
 }
 
@@ -639,6 +827,7 @@ function claimDailyReward() {
   checkDailyReward();
 
   showNotification(langData[currentLang].rewardClaimed);
+  showTransactionAnimation(`+${dailyReward.farmCoins}`, 'increase');
   playCoinSound();
   console.log('Daily reward claimed:', dailyReward);
 }
@@ -659,11 +848,22 @@ function showNotification(message) {
   console.log('Notification shown:', message);
 }
 
+// Show transaction animation
+function showTransactionAnimation(text, type) {
+  const animation = document.createElement('div');
+  animation.classList.add('transaction-animation', type);
+  animation.textContent = text;
+  document.body.appendChild(animation);
+  setTimeout(() => animation.remove(), 1500);
+  console.log(`Transaction animation shown: ${text} (${type})`);
+}
+
 // Play menu sound
 function playMenuSound() {
   console.log('Playing menu sound...');
   const menuSound = document.getElementById('menu-sound');
   if (menuSound) {
+    console.log('Attempting to play menu sound at:', menuSound.src);
     menuSound.volume = voiceVolume / 100;
     menuSound.play().catch(e => console.warn('Menu sound failed to play:', e.message));
   }
@@ -674,8 +874,42 @@ function playCoinSound() {
   console.log('Playing coin sound...');
   const coinSound = document.getElementById('coin-sound');
   if (coinSound) {
+    console.log('Attempting to play coin sound at:', coinSound.src);
     coinSound.volume = voiceVolume / 100;
     coinSound.play().catch(e => console.warn('Coin sound failed to play:', e.message));
+  }
+}
+
+// Play buying sound
+function playBuyingSound() {
+  console.log('Playing buying sound...');
+  const buyingSound = document.getElementById('buying-sound');
+  if (buyingSound) {
+    console.log('Attempting to play buying sound at:', buyingSound.src);
+    buyingSound.volume = voiceVolume / 100;
+    buyingSound.play().catch(e => console.warn('Buying sound failed to play:', e.message));
+  }
+}
+
+// Play watering sound
+function playWateringSound() {
+  console.log('Playing watering sound...');
+  const wateringSound = document.getElementById('watering-sound');
+  if (wateringSound) {
+    console.log('Attempting to play watering sound at:', wateringSound.src);
+    wateringSound.volume = voiceVolume / 100;
+    wateringSound.play().catch(e => console.warn('Watering sound failed to play:', e.message));
+  }
+}
+
+// Play harvest sound
+function playHarvestSound() {
+  console.log('Playing harvest sound...');
+  const harvestSound = document.getElementById('harvest-sound');
+  if (harvestSound) {
+    console.log('Attempting to play harvest sound at:', harvestSound.src);
+    harvestSound.volume = voiceVolume / 100;
+    harvestSound.play().catch(e => console.warn('Harvest sound failed to play:', e.message));
   }
 }
 
@@ -689,7 +923,7 @@ function updateVolumes() {
   console.log('Volumes updated:', { musicVolume, voiceVolume });
 }
 
-// Convert currency (placeholder)
+// Convert currency
 function convertCurrency() {
   console.log('Converting currency...');
   const farmToPiInput = document.getElementById('farm-to-pi');
@@ -703,6 +937,7 @@ function convertCurrency() {
       pi += piAmount;
       updateWallet();
       showNotification(langData[currentLang].convertSuccess);
+      showTransactionAnimation(`-${farmAmount}`, 'decrease');
       playCoinSound();
       farmToPiInput.value = '';
       piToFarmInput.value = '';
@@ -717,6 +952,7 @@ function convertCurrency() {
       farmCoins += farmAmount;
       updateWallet();
       showNotification(langData[currentLang].convertSuccess);
+      showTransactionAnimation(`+${farmAmount}`, 'increase');
       playCoinSound();
       farmToPiInput.value = '';
       piToFarmInput.value = '';
@@ -727,7 +963,7 @@ function convertCurrency() {
   console.log('Currency converted:', { farmCoins, pi });
 }
 
-// Buy upgrade (placeholder)
+// Buy upgrade
 function buyUpgrade(type, currency) {
   console.log(`Buying upgrade ${type} with ${currency}...`);
   const costs = {
@@ -742,25 +978,17 @@ function buyUpgrade(type, currency) {
     upgrades[type] = type === 'extraPlot' ? upgrades.extraPlot + 1 : true;
     updateWallet();
     showNotification(langData[currentLang].upgradeBought);
+    showTransactionAnimation(`-${cost}`, 'decrease');
     playBuyingSound();
   } else if (currency === 'pi' && pi >= cost) {
     pi -= cost;
     upgrades[type] = type === 'extraPlot' ? upgrades.extraPlot + 1 : true;
     updateWallet();
     showNotification(langData[currentLang].upgradeBought);
+    showTransactionAnimation(`-${cost}`, 'decrease');
     playBuyingSound();
   } else {
     showNotification(langData[currentLang].notEnoughMoney);
   }
   console.log('Upgrade bought:', upgrades);
-}
-
-// Play buying sound
-function playBuyingSound() {
-  console.log('Playing buying sound...');
-  const buyingSound = document.getElementById('buying-sound');
-  if (buyingSound) {
-    buyingSound.volume = voiceVolume / 100;
-    buyingSound.play().catch(e => console.warn('Buying sound failed to play:', e.message));
-  }
 }
