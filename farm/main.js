@@ -105,7 +105,7 @@ async function loadData() {
   } catch (e) {
     console.error('Lang JSON load failed:', e.message);
     console.warn('Using fallback lang data...');
-    langData = fallbackLangData; // Pakai fallback kalo gagal
+    langData = fallbackLangData;
   }
 
   // Load vegetables.json
@@ -115,12 +115,13 @@ async function loadData() {
       console.error(`Failed to load vegetables.json, status: ${vegRes.status}, statusText: ${vegRes.statusText}`);
       throw new Error('Failed to load vegetables.json');
     }
-    vegetables = await vegRes.json();
+    const vegData = await vegRes.json();
+    vegetables = vegData.vegetables; // Ambil array dari key "vegetables"
     console.log('Loaded vegetables.json:', vegetables);
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
     alert('Failed to load vegetables.json: ' + e.message);
-    return; // Stop kalo vegetables.json gagal, karena ini kritikal
+    return;
   }
 
   // Load inventory.json
@@ -134,7 +135,7 @@ async function loadData() {
     console.log('Loaded inventory.json:', inventory);
   } catch (e) {
     console.error('Inventory JSON load failed:', e.message);
-    inventory = []; // Fallback ke array kosong
+    inventory = [];
   }
 
   initializeGame();
