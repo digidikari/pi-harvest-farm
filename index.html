@@ -18,12 +18,19 @@
       <button class="tab-btn" onclick="switchTab('shop')">Shop</button>
       <button class="tab-btn" onclick="switchTab('upgrades')">Upgrades</button>
       <button class="tab-btn" onclick="switchTab('inventory')">Inventory</button>
+      <button class="tab-btn" onclick="switchTab('leaderboard')">Leaderboard</button>
     </div>
     <div id="farm" class="tab-content">
       <h2 id="game-title">Pi Harvest Farm</h2>
       <div id="wallet">
         <span id="coin-label">Coins</span>: <span id="coin-balance">100</span> | 
         Pi: <span id="pi-balance">0.00</span>
+      </div>
+      <div id="level-bar">
+        Level: <span id="level-display">1</span> | XP: <span id="xp-display">0</span>
+        <div id="xp-progress-bar">
+          <div id="xp-progress"></div>
+        </div>
       </div>
       <div id="bag">
         <img src="./assets/img/ui/bag_icon.png" alt="Bag">
@@ -45,8 +52,14 @@
     <div id="inventory" class="tab-content" style="display: none;">
       <h2 id="inventory-title">Inventory</h2>
       <div id="inventory-list"></div>
+      <button id="claim-pi-btn" onclick="claimPi()">Claim Pi</button>
+    </div>
+    <div id="leaderboard" class="tab-content" style="display: none;">
+      <h2 id="leaderboard-title">Leaderboard</h2>
+      <div id="leaderboard-list"></div>
     </div>
     <div id="notification"></div>
+    <audio id="harvest-sound" src="./assets/sounds/harvest.mp3"></audio>
   </div>
   <script src="./farm/main.js"></script>
 </body>
