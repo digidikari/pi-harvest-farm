@@ -86,7 +86,6 @@ const fallbackLangData = {
   }
 };
 
-// Tambah fallback data buat vegetables
 const fallbackVegetables = [
   { id: "beet", name: { en: "Beet", id: "Bit" }, price: 10, piPrice: 0.1, growthTime: 10, frames: 12, yield: 15 },
   { id: "cabbage", name: { en: "Cabbage", id: "Kol" }, price: 20, piPrice: 0.2, growthTime: 12, frames: 10, yield: 25 },
