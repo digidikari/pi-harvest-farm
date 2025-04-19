@@ -6,7 +6,7 @@
       "price": 10,
       "piPrice": 0.1,
       "growthTime": 10,
-      "frames": 12,
+      "frames": 13,
       "yield": 15
     },
     {
@@ -15,7 +15,7 @@
       "price": 20,
       "piPrice": 0.2,
       "growthTime": 12,
-      "frames": 10,
+      "frames": 20,
       "yield": 25
     },
     {
@@ -24,7 +24,7 @@
       "price": 15,
       "piPrice": 0.15,
       "growthTime": 8,
-      "frames": 8,
+      "frames": 16,
       "yield": 20
     },
     {
@@ -33,7 +33,7 @@
       "price": 25,
       "piPrice": 0.25,
       "growthTime": 15,
-      "frames": 14,
+      "frames": 20,
       "yield": 30
     },
     {
@@ -42,7 +42,7 @@
       "price": 18,
       "piPrice": 0.18,
       "growthTime": 10,
-      "frames": 9,
+      "frames": 20,
       "yield": 22
     },
     {
@@ -51,7 +51,7 @@
       "price": 22,
       "piPrice": 0.22,
       "growthTime": 12,
-      "frames": 11,
+      "frames": 9,
       "yield": 28
     },
     {
@@ -60,7 +60,7 @@
       "price": 12,
       "piPrice": 0.12,
       "growthTime": 7,
-      "frames": 7,
+      "frames": 6,
       "yield": 18
     },
     {
@@ -78,7 +78,7 @@
       "price": 20,
       "piPrice": 0.2,
       "growthTime": 11,
-      "frames": 10,
+      "frames": 12,
       "yield": 25
     },
     {
@@ -87,7 +87,7 @@
       "price": 18,
       "piPrice": 0.18,
       "growthTime": 10,
-      "frames": 9,
+      "frames": 7,
       "yield": 22
     },
     {
@@ -105,7 +105,7 @@
       "price": 12,
       "piPrice": 0.12,
       "growthTime": 7,
-      "frames": 7,
+      "frames": 8,
       "yield": 18
     },
     {
@@ -114,7 +114,7 @@
       "price": 15,
       "piPrice": 0.15,
       "growthTime": 8,
-      "frames": 8,
+      "frames": 7,
       "yield": 20
     },
     {
@@ -123,7 +123,7 @@
       "price": 10,
       "piPrice": 0.1,
       "growthTime": 6,
-      "frames": 6,
+      "frames": 5,
       "yield": 15
     },
     {
@@ -132,7 +132,7 @@
       "price": 18,
       "piPrice": 0.18,
       "growthTime": 10,
-      "frames": 9,
+      "frames": 20,
       "yield": 22
     },
     {
@@ -141,7 +141,7 @@
       "price": 35,
       "piPrice": 0.35,
       "growthTime": 18,
-      "frames": 15,
+      "frames": 19,
       "yield": 40
     },
     {
@@ -150,7 +150,7 @@
       "price": 22,
       "piPrice": 0.22,
       "growthTime": 12,
-      "frames": 10,
+      "frames": 7,
       "yield": 28
     }
   ]
