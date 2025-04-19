@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=7">
+  <link rel="stylesheet" href="farm/style.css?v=8">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -30,7 +30,7 @@
     <div class="header">
       <h1 id="game-title">Pi Harvest Farm</h1>
       <div class="wallet">
-        <span id="coin-balance">100</span> <span id="coin-label">Coins</span> | 
+        <span id="coin-balance">0</span> <span id="coin-label">Farm Coins</span> | 
         <span id="pi-balance">0.00</span> Pi
       </div>
       <div class="level-bar">
@@ -45,6 +45,7 @@
       <button class="tab-btn" data-tab="shop">Shop</button>
       <button class="tab-btn" data-tab="upgrades">Upgrades</button>
       <button class="tab-btn" data-tab="inventory">Inventory</button>
+      <button class="tab-btn" data-tab="market">Market</button>
       <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
       <button class="tab-btn" data-tab="achievements">Achievements</button>
     </div>
@@ -62,14 +63,27 @@
     </div>
     <div id="upgrades" class="tab-content" style="display: none;">
       <h2 id="upgrades-title">Upgrades</h2>
-      <button onclick="buyUpgrade('wateringCan')">Watering Can - 20 Coins / 0.12 Pi</button>
-      <button onclick="buyUpgrade('extraPlotCoins')">Extra Plot - 80 Coins / 0.48 Pi</button>
-      <button onclick="buyUpgrade('extraPlotPi')">Extra Plot - 80 Coins / 0.48 Pi</button>
-      <button onclick="buyUpgrade('yieldBoost')">Yield Boost - 40 Coins / 0.3 Pi</button>
+      <button onclick="buyUpgrade('wateringCan')">Watering Can - 100 Farm Coins / 0.12 Pi</button>
+      <button onclick="buyUpgrade('extraPlot')">Extra Plot - 400 Farm Coins / 0.48 Pi</button>
+      <button onclick="buyUpgrade('yieldBoost')">Yield Boost - 200 Farm Coins / 0.3 Pi</button>
     </div>
     <div id="inventory" class="tab-content" style="display: none;">
       <h2 id="inventory-title">Inventory</h2>
       <div id="inventory-list"></div>
+    </div>
+    <div id="market" class="tab-content" style="display: none;">
+      <h2 id="market-title">Market</h2>
+      <div id="market-conversion">
+        <p>1 Pi Coin = 1000 Farm Coins</p>
+        <div>
+          <input type="number" id="farm-to-pi" placeholder="Farm Coins to Pi">
+          <button onclick="convertFarmToPi()">Convert to Pi</button>
+        </div>
+        <div>
+          <input type="number" id="pi-to-farm" placeholder="Pi to Farm Coins">
+          <button onclick="convertPiToFarm()">Convert to Farm Coins</button>
+        </div>
+      </div>
     </div>
     <div id="leaderboard" class="tab-content" style="display: none;">
       <h2 id="leaderboard-title">Leaderboard</h2>
@@ -88,7 +102,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="firebase/firebase-config.js"></script>
-  <script src="farm/main.js?v=7"></script>
-  <!-- Force redeploy - April 18, 2025, fix audio, text, close, bag, shop icons, upgrades, remove claim -->
+  <script src="farm/main.js?v=8"></script>
+  <!-- Force redeploy - April 19, 2025, fix audio, close, bag, images, buy/upgrade, buttons, economy, add Market -->
 </body>
 </html>
