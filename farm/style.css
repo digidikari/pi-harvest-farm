@@ -31,6 +31,11 @@ body {
   text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336;
   cursor: pointer;
   animation: blink 1s infinite;
+  transition: transform 0.1s;
+}
+
+.start-text:active {
+  transform: scale(0.95);
 }
 
 @keyframes blink {
@@ -50,15 +55,19 @@ body {
   background: #333;
   color: #fff;
   border: 2px solid #fff;
-  padding: 5px 10px;
+  padding: 8px 12px;
   cursor: pointer;
   font-size: 14px;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: all 0.3s;
 }
 
 #lang-toggle:hover, #settings-btn:hover {
   box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+}
+
+#lang-toggle:active, #settings-btn:active {
+  transform: scale(0.95);
 }
 
 #settings-btn {
@@ -99,6 +108,10 @@ body {
 .close:hover {
   color: #f44336;
   text-shadow: 0 0 10px #f44336;
+}
+
+.close:active {
+  transform: scale(0.95);
 }
 
 .modal-content h2 {
@@ -165,6 +178,7 @@ body {
   border: 2px solid #fff;
   padding: 10px 20px;
   cursor: pointer;
+  border-radius: 8px;
   transition: all 0.3s;
 }
 
@@ -175,6 +189,10 @@ body {
 .tab-btn.active {
   background: #555;
   box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+}
+
+.tab-btn:active {
+  transform: scale(0.95);
 }
 
 .tab-content {
@@ -246,6 +264,10 @@ body {
   box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ffeb3b;
 }
 
+#bag img:active {
+  transform: scale(0.95);
+}
+
 #bag-list {
   display: none;
   position: absolute;
@@ -271,14 +293,14 @@ body {
   width: 30px;
 }
 
-#seed-list, #inventory-list, #leaderboard-list, #achievement-list {
+#seed-list, #inventory-list, #market-conversion, #leaderboard-list, #achievement-list {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
 }
 
-.seed-item, .inventory-item, .leaderboard-item, .achievement-item {
+.seed-item, .inventory-item, .market-conversion div, .leaderboard-item, .achievement-item {
   background: rgba(255, 255, 255, 0.1);
   padding: 10px;
   border-radius: 5px;
@@ -291,17 +313,28 @@ body {
   width: 50px;
 }
 
-.seed-item button {
+.seed-item button, #market-conversion button {
   background: #4caf50;
   color: #fff;
   border: none;
-  padding: 5px 10px;
+  padding: 8px 12px;
   cursor: pointer;
+  border-radius: 8px;
   transition: all 0.3s;
 }
 
-.seed-item button:hover {
+.seed-item button:hover, #market-conversion button:hover {
   box-shadow: 0 0 10px #4caf50, 0 0 20px #4caf50;
+}
+
+.seed-item button:active, #market-conversion button:active {
+  transform: scale(0.95);
+}
+
+#market-conversion input {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #fff;
 }
 
 #claim-reward-btn {
@@ -311,11 +344,16 @@ body {
   padding: 10px 20px;
   margin-top: 20px;
   cursor: pointer;
+  border-radius: 8px;
   transition: all 0.3s;
 }
 
 #claim-reward-btn:hover {
   box-shadow: 0 0 10px #2196f3, 0 0 20px #2196f3;
+}
+
+#claim-reward-btn:active {
+  transform: scale(0.95);
 }
 
 #claim-reward-btn:disabled {
