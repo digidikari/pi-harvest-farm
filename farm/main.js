@@ -3,7 +3,7 @@ let langData = {};
 let currentLang = 'en';
 let farmCoins = 0;
 let pi = 0;
-let water = 10; // Awal 10 air
+let water = 10;
 let farmPlots = [];
 let inventory = [];
 let bag = [];
@@ -25,7 +25,7 @@ let lastRewardClaim = JSON.parse(localStorage.getItem('lastRewardClaim')) || 0;
 let musicVolume = localStorage.getItem('musicVolume') ? parseInt(localStorage.getItem('musicVolume')) : 50;
 let voiceVolume = localStorage.getItem('voiceVolume') ? parseInt(localStorage.getItem('voiceVolume')) : 50;
 
-const plotCount = 36; // 6x6
+const plotCount = 36;
 const xpPerLevel = 100;
 const dailyRewardCooldown = 24 * 60 * 60 * 1000;
 const piToFarmRate = 1000;
@@ -125,20 +125,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!settingsBtn) throw new Error('Settings button not found');
     if (!claimRewardBtn) throw new Error('Claim reward button not found');
 
+    // Remove existing listeners to prevent duplicates
+    startText.removeEventListener('click', startGame);
+    langToggle.removeEventListener('click', toggleLanguage);
+    settingsBtn.removeEventListener('click', openSettings);
+    claimRewardBtn.removeEventListener('click', claimDailyReward);
+
     startText.addEventListener('click', startGame);
     langToggle.addEventListener('click', toggleLanguage);
-    settingsBtn.addEventListener('click', () => {
+    settingsBtn.addEventListener('click', openSettings);
+    claimRewardBtn.addEventListener('click', claimDailyReward);
+
+    function openSettings() {
       console.log('Settings button clicked');
       const modal = document.getElementById('settings-modal');
-      if (modal) modal.style.display = 'block';
-      playMenuSound();
-    });
-    claimRewardBtn.addEventListener('click', claimDailyReward);
+      if (modal) {
+        modal.style.display = 'block';
+        playMenuSound();
+      } else {
+        console.error('Settings modal not found');
+      }
+    }
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       const tab = btn.getAttribute('data-tab');
+      btn.removeEventListener('click', () => switchTab(tab));
       btn.addEventListener('click', () => switchTab(tab));
     });
+
+    console.log('Event listeners attached successfully');
 
     initializeFirebaseAuth();
     loadData();
@@ -146,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateVolumes();
   } catch (e) {
     console.error('Initialization failed:', e.message);
+    alert('Failed to initialize game. Please check the console for errors.');
   }
 });
 
@@ -155,9 +171,11 @@ async function loadData() {
     const langRes = await fetch('../data/lang.json');
     if (!langRes.ok) throw new Error('Failed to load lang.json');
     langData = await langRes.json();
+    console.log('Language data loaded:', langData);
   } catch (e) {
     console.error('Lang JSON load failed:', e.message);
     langData = fallbackLangData;
+    console.log('Using fallback language data');
   }
 
   try {
@@ -165,18 +183,22 @@ async function loadData() {
     if (!vegRes.ok) throw new Error('Failed to load vegetables.json');
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables;
+    console.log('Vegetables data loaded:', vegetables);
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
     vegetables = fallbackVegetables;
+    console.log('Using fallback vegetables data');
   }
 
   try {
     const invRes = await fetch('../data/inventory.json');
     if (!invRes.ok) throw new Error('Failed to load inventory.json');
     inventory = await invRes.json();
+    console.log('Inventory data loaded:', inventory);
   } catch (e) {
     console.error('Inventory JSON load failed:', e.message);
     inventory = [];
+    console.log('Using empty inventory');
   }
 
   initializeGame();
@@ -190,6 +212,7 @@ function initializeGame() {
     const langToggle = document.getElementById('lang-toggle');
     if (langToggle) {
       langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+      console.log('Language set to:', currentLang);
     }
   }
   loadPlayerData();
@@ -208,120 +231,153 @@ function startGame() {
     const startScreen = document.getElementById('start-screen');
     const gameContainer = document.getElementById('game-container');
     if (!startScreen || !gameContainer) throw new Error('Start screen or game container not found');
+    
     startScreen.style.display = 'none';
     gameContainer.style.display = 'block';
     switchTab('farm');
 
     const bgMusic = document.getElementById('bg-music');
     const bgVoice = document.getElementById('bg-voice');
-    if (bgMusic) bgMusic.play().catch(e => console.error('Background music failed to play:', e));
-    if (bgVoice) bgVoice.play().catch(e => console.error('Background voice failed to play:', e));
+    if (bgMusic) {
+      bgMusic.play().catch(e => console.error('Background music failed to play:', e));
+    } else {
+      console.warn('Background music element not found');
+    }
+    if (bgVoice) {
+      bgVoice.play().catch(e => console.error('Background voice failed to play:', e));
+    } else {
+      console.warn('Background voice element not found');
+    }
+    playMenuSound();
   } catch (e) {
     console.error('Start game failed:', e.message);
+    alert('Failed to start game. Please check the console for errors.');
   }
 }
 
 function toggleLanguage() {
   console.log('Toggling language...');
-  currentLang = currentLang === 'en' ? 'id' : 'en';
-  localStorage.setItem('lang', currentLang);
-  const langToggle = document.getElementById('lang-toggle');
-  if (langToggle) {
-    langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+  try {
+    currentLang = currentLang === 'en' ? 'id' : 'en';
+    localStorage.setItem('lang', currentLang);
+    const langToggle = document.getElementById('lang-toggle');
+    if (langToggle) {
+      langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+    } else {
+      console.error('Language toggle button not found');
+    }
+    updateUIText();
+    const startText = document.getElementById('start-text');
+    if (startText) {
+      startText.textContent = langData[currentLang].startBtn;
+    } else {
+      console.error('Start text element not found');
+    }
+    switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
+    playMenuSound();
+  } catch (e) {
+    console.error('Toggle language failed:', e.message);
+    alert('Failed to toggle language. Please check the console for errors.');
   }
-  updateUIText();
-  const startText = document.getElementById('start-text');
-  if (startText) startText.textContent = langData[currentLang].startBtn;
-  switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
-  playMenuSound();
 }
 
 function updateUIText() {
   console.log('Updating UI text...');
-  const title = document.getElementById('title');
-  const startText = document.getElementById('start-text');
-  const gameTitle = document.getElementById('game-title');
-  const shopTitle = document.getElementById('shop-title');
-  const upgradesTitle = document.getElementById('upgrades-title');
-  const inventoryTitle = document.getElementById('inventory-title');
-  const exchangeTitle = document.getElementById('exchange-title');
-  const leaderboardTitle = document.getElementById('leaderboard-title');
-  const achievementsTitle = document.getElementById('achievements-title');
-  const claimRewardBtn = document.getElementById('claim-reward-btn');
-  const exchangeBtn = document.querySelector('#exchange-conversion button');
+  try {
+    const title = document.getElementById('title');
+    const startText = document.getElementById('start-text');
+    const gameTitle = document.getElementById('game-title');
+    const shopTitle = document.getElementById('shop-title');
+    const upgradesTitle = document.getElementById('upgrades-title');
+    const inventoryTitle = document.getElementById('inventory-title');
+    const exchangeTitle = document.getElementById('exchange-title');
+    const leaderboardTitle = document.getElementById('leaderboard-title');
+    const achievementsTitle = document.getElementById('achievements-title');
+    const claimRewardBtn = document.getElementById('claim-reward-btn');
+    const exchangeBtn = document.querySelector('#exchange-conversion button');
 
-  if (title) title.textContent = langData[currentLang].title;
-  if (startText) startText.textContent = langData[currentLang].startBtn;
-  if (gameTitle) gameTitle.textContent = langData[currentLang].title;
-  if (shopTitle) shopTitle.textContent = langData[currentLang].shopTab;
-  if (upgradesTitle) upgradesTitle.textContent = langData[currentLang].upgradesTab;
-  if (inventoryTitle) inventoryTitle.textContent = langData[currentLang].inventoryTab;
-  if (exchangeTitle) exchangeTitle.textContent = langData[currentLang].exchangeTab;
-  if (leaderboardTitle) leaderboardTitle.textContent = langData[currentLang].leaderboardTab;
-  if (achievementsTitle) achievementsTitle.textContent = langData[currentLang].achievementsTab;
-  if (claimRewardBtn) claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
-  if (exchangeBtn) exchangeBtn.textContent = langData[currentLang].exchangeBtn;
+    if (title) title.textContent = langData[currentLang].title;
+    if (startText) startText.textContent = langData[currentLang].startBtn;
+    if (gameTitle) gameTitle.textContent = langData[currentLang].title;
+    if (shopTitle) shopTitle.textContent = langData[currentLang].shopTab;
+    if (upgradesTitle) upgradesTitle.textContent = langData[currentLang].upgradesTab;
+    if (inventoryTitle) inventoryTitle.textContent = langData[currentLang].inventoryTab;
+    if (exchangeTitle) exchangeTitle.textContent = langData[currentLang].exchangeTab;
+    if (leaderboardTitle) leaderboardTitle.textContent = langData[currentLang].leaderboardTab;
+    if (achievementsTitle) achievementsTitle.textContent = langData[currentLang].achievementsTab;
+    if (claimRewardBtn) claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
+    if (exchangeBtn) exchangeBtn.textContent = langData[currentLang].exchangeBtn;
 
-  document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-    const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'exchangeTab', 'leaderboardTab', 'achievementsTab'];
-    btn.textContent = langData[currentLang][tabs[idx]];
-  });
+    document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+      const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'exchangeTab', 'leaderboardTab', 'achievementsTab'];
+      btn.textContent = langData[currentLang][tabs[idx]];
+    });
 
-  const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
-  if (activeTab === 'shop') renderShop();
-  if (activeTab === 'inventory') renderInventory();
-  if (activeTab === 'exchange') renderExchange();
-  if (activeTab === 'leaderboard') renderLeaderboard();
-  if (activeTab === 'achievements') renderAchievements();
+    const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
+    if (activeTab === 'shop') renderShop();
+    if (activeTab === 'inventory') renderInventory();
+    if (activeTab === 'exchange') renderExchange();
+    if (activeTab === 'leaderboard') renderLeaderboard();
+    if (activeTab === 'achievements') renderAchievements();
+    console.log('UI text updated successfully');
+  } catch (e) {
+    console.error('Update UI text failed:', e.message);
+  }
 }
 
 function initializeSettings() {
   console.log('Initializing settings...');
-  const modal = document.getElementById('settings-modal');
-  const closeBtn = document.getElementById('close-settings');
-  const musicSlider = document.getElementById('music-volume');
-  const voiceSlider = document.getElementById('voice-volume');
+  try {
+    const modal = document.getElementById('settings-modal');
+    const closeBtn = document.getElementById('close-settings');
+    const musicSlider = document.getElementById('music-volume');
+    const voiceSlider = document.getElementById('voice-volume');
 
-  if (!modal || !closeBtn || !musicSlider || !voiceSlider) {
-    console.error('Settings elements not found');
-    return;
-  }
+    if (!modal || !closeBtn || !musicSlider || !voiceSlider) {
+      console.error('Settings elements not found');
+      throw new Error('Settings elements not found');
+    }
 
-  musicSlider.value = musicVolume;
-  voiceSlider.value = voiceVolume;
+    musicSlider.value = musicVolume;
+    voiceSlider.value = voiceVolume;
 
-  // Remove previous listeners to avoid duplicates
-  closeBtn.removeEventListener('click', closeSettings);
-  window.removeEventListener('click', closeSettingsOnWindowClick);
+    closeBtn.removeEventListener('click', closeSettings);
+    window.removeEventListener('click', closeSettingsOnWindowClick);
 
-  closeBtn.addEventListener('click', closeSettings);
-  window.addEventListener('click', closeSettingsOnWindowClick);
+    closeBtn.addEventListener('click', closeSettings);
+    window.addEventListener('click', closeSettingsOnWindowClick);
 
-  function closeSettings() {
-    console.log('Closing settings modal');
-    modal.style.display = 'none';
-    playMenuSound();
-  }
-
-  function closeSettingsOnWindowClick(event) {
-    if (event.target === modal) {
-      console.log('Closing settings modal via window click');
+    function closeSettings() {
+      console.log('Closing settings modal');
       modal.style.display = 'none';
       playMenuSound();
     }
+
+    function closeSettingsOnWindowClick(event) {
+      if (event.target === modal) {
+        console.log('Closing settings modal via window click');
+        modal.style.display = 'none';
+        playMenuSound();
+      }
+    }
+
+    musicSlider.addEventListener('input', () => {
+      musicVolume = parseInt(musicSlider.value);
+      localStorage.setItem('musicVolume', musicVolume);
+      updateVolumes();
+    });
+
+    voiceSlider.addEventListener('input', () => {
+      voiceVolume = parseInt(voiceSlider.value);
+      localStorage.setItem('voiceVolume', voiceVolume);
+      updateVolumes();
+    });
+
+    console.log('Settings initialized successfully');
+  } catch (e) {
+    console.error('Initialize settings failed:', e.message);
+    alert('Failed to initialize settings. Please check the console for errors.');
   }
-
-  musicSlider.addEventListener('input', () => {
-    musicVolume = parseInt(musicSlider.value);
-    localStorage.setItem('musicVolume', musicVolume);
-    updateVolumes();
-  });
-
-  voiceSlider.addEventListener('input', () => {
-    voiceVolume = parseInt(voiceSlider.value);
-    localStorage.setItem('voiceVolume', voiceVolume);
-    updateVolumes();
-  });
 }
 
 function updateVolumes() {
@@ -759,7 +815,7 @@ function claimDailyReward() {
     showNotification(langData[currentLang].rewardCooldown);
     return;
   }
-  farmCoins += 50; // Ubah dari 20 jadi 50
+  farmCoins += 50;
   lastRewardClaim = now;
   localStorage.setItem('lastRewardClaim', JSON.stringify(lastRewardClaim));
   updateWallet();
