@@ -112,10 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const startText = document.getElementById('start-text');
     const langToggle = document.getElementById('lang-toggle');
     const settingsBtn = document.getElementById('settings-btn');
+    const claimRewardBtn = document.getElementById('claim-reward-btn');
 
     if (!startText) throw new Error('Start text element not found');
     if (!langToggle) throw new Error('Language toggle button not found');
     if (!settingsBtn) throw new Error('Settings button not found');
+    if (!claimRewardBtn) throw new Error('Claim reward button not found');
 
     startText.addEventListener('click', startGame);
     langToggle.addEventListener('click', toggleLanguage);
@@ -124,12 +126,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('settings-modal');
       if (modal) modal.style.display = 'block';
     });
+    claimRewardBtn.addEventListener('click', claimDailyReward);
+
+    // Initialize tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const tab = btn.getAttribute('data-tab');
+      btn.addEventListener('click', () => switchTab(tab));
+    });
 
     initializeFirebaseAuth();
     loadData();
     initializeSettings();
     updateVolumes();
-    document.getElementById('bg-music').play().catch(e => console.warn('Background music failed to play:', e));
+
+    // Play background music after user interaction
+    document.addEventListener('click', () => {
+      const bgMusic = document.getElementById('bg-music');
+      if (bgMusic) {
+        bgMusic.play().catch(e => console.warn('Background music failed to play:', e));
+      }
+    }, { once: true });
   } catch (e) {
     console.error('Initialization failed:', e.message);
   }
@@ -293,29 +309,29 @@ function initializeSettings() {
     musicSlider.value = musicVolume;
     voiceSlider.value = voiceVolume;
 
-    closeBtn.onclick = () => {
+    closeBtn.addEventListener('click', () => {
       console.log('Closing settings modal');
       modal.style.display = 'none';
-    };
+    });
 
-    window.onclick = (event) => {
+    window.addEventListener('click', (event) => {
       if (event.target === modal) {
         console.log('Closing settings modal via window click');
         modal.style.display = 'none';
       }
-    };
+    });
 
-    musicSlider.oninput = () => {
+    musicSlider.addEventListener('input', () => {
       musicVolume = parseInt(musicSlider.value);
       localStorage.setItem('musicVolume', musicVolume);
       updateVolumes();
-    };
+    });
 
-    voiceSlider.oninput = () => {
+    voiceSlider.addEventListener('input', () => {
       voiceVolume = parseInt(voiceSlider.value);
       localStorage.setItem('voiceVolume', voiceVolume);
       updateVolumes();
-    };
+    });
   } catch (e) {
     console.error('Settings initialization failed:', e.message);
   }
@@ -333,7 +349,6 @@ function updateVolumes() {
   }
 }
 
-// Sisanya sama kayak sebelumnya
 function switchTab(tab) {
   console.log('Switching to tab:', tab);
   try {
@@ -349,12 +364,10 @@ function switchTab(tab) {
     tabElement.style.display = 'block';
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.classList.remove('active');
-      btn.onclick = () => switchTab(btn.getAttribute('data-tab'));
     });
-    const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
     if (activeBtn) {
       activeBtn.classList.add('active');
-      activeBtn.setAttribute('data-tab', tab);
     }
     if (tab === 'farm') renderFarm();
     if (tab === 'shop') renderShop();
@@ -472,7 +485,8 @@ function harvest(index) {
   updateLevelBar();
   renderFarm();
   try {
-    document.getElementById('harvest-sound').play();
+    const harvestSound = document.getElementById('harvest-sound');
+    harvestSound.play().catch(e => console.warn('Harvest sound failed:', e));
   } catch (e) {
     console.warn('Harvest sound failed:', e);
   }
