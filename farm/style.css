@@ -107,7 +107,6 @@ body {
   width: 100%;
 }
 
-/* Sisanya sama kayak sebelumnya */
 #game-container {
   padding: 20px;
 }
@@ -298,4 +297,4 @@ body {
   color: #fff;
   padding: 10px 20px;
   border-radius: 5px;
-}
+  }
