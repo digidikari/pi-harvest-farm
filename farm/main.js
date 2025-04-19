@@ -17,7 +17,7 @@ let xp = 0;
 let playerName = 'Player' + Math.floor(Math.random() * 1000);
 let achievements = JSON.parse(localStorage.getItem('achievements')) || {
   harvest10: false,
-  pi10: false
+  farmCoin100: false // Ganti pi10 jadi farmCoin100
 };
 let harvestCount = JSON.parse(localStorage.getItem('harvestCount')) || 0;
 let lastRewardClaim = JSON.parse(localStorage.getItem('lastRewardClaim')) || 0;
@@ -29,6 +29,7 @@ const plotCount = 36;
 const xpPerLevel = 100;
 const dailyRewardCooldown = 24 * 60 * 60 * 1000;
 const piToFarmRate = 1000;
+const dailyReward = { farmCoins: 50, water: 5 }; // Reward harian: 50 Farm Coins, 5 Water
 
 const fallbackLangData = {
   "en": {
@@ -55,7 +56,7 @@ const fallbackLangData = {
     "rewardClaimed": "Daily Reward Claimed!",
     "rewardCooldown": "Reward Available Tomorrow!",
     "achievementHarvest10": "Harvest 10 Plants",
-    "achievementPi10": "Collect 10 Pi",
+    "achievementFarmCoin100": "Collect 100 Farm Coins", // Ganti pi10 jadi farmCoin100
     "achievementUnlocked": "Achievement Unlocked!",
     "convertSuccess": "Exchange successful!",
     "exchangeBtn": "Exchange"
@@ -84,7 +85,7 @@ const fallbackLangData = {
     "rewardClaimed": "Hadiah Harian Diklaim!",
     "rewardCooldown": "Hadiah Tersedia Besok!",
     "achievementHarvest10": "Panen 10 Tanaman",
-    "achievementPi10": "Kumpulkan 10 Pi",
+    "achievementFarmCoin100": "Kumpulkan 100 Koin Ladang", // Ganti pi10 jadi farmCoin100
     "achievementUnlocked": "Pencapaian Dibuka!",
     "convertSuccess": "Penukaran berhasil!",
     "exchangeBtn": "Tukar"
@@ -120,24 +121,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const langToggle = document.getElementById('lang-toggle');
     const settingsBtn = document.getElementById('settings-btn');
     const claimRewardBtn = document.getElementById('claim-reward-btn');
+    const gameLangToggle = document.getElementById('game-lang-toggle');
+    const gameSettingsBtn = document.getElementById('game-settings-btn');
+    const exitGameBtn = document.getElementById('exit-game-btn');
 
     if (!startText) throw new Error('Start text element not found');
     if (!langToggle) throw new Error('Language toggle button not found');
     if (!settingsBtn) throw new Error('Settings button not found');
     if (!claimRewardBtn) throw new Error('Claim reward button not found');
+    if (!gameLangToggle) throw new Error('Game language toggle button not found');
+    if (!gameSettingsBtn) throw new Error('Game settings button not found');
+    if (!exitGameBtn) throw new Error('Exit game button not found');
 
     startText.addEventListener('click', startGame);
     langToggle.addEventListener('click', toggleLanguage);
     settingsBtn.addEventListener('click', openSettings);
     claimRewardBtn.addEventListener('click', claimDailyReward);
+    gameLangToggle.addEventListener('click', toggleLanguage);
+    gameSettingsBtn.addEventListener('click', openSettings);
+    exitGameBtn.addEventListener('click', exitGame);
 
-    console.log('Event listeners attached for start, lang, settings, and claim reward');
+    console.log('Event listeners attached for start, lang, settings, claim reward, game-lang, game-settings, and exit');
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       const tab = btn.getAttribute('data-tab');
       btn.addEventListener('click', () => switchTab(tab));
     });
     console.log('Tab button listeners attached');
+
+    // Play BGM and BGV at initial screen load
+    const bgMusic = document.getElementById('bg-music');
+    const bgVoice = document.getElementById('bg-voice');
+    if (bgMusic) {
+      bgMusic.volume = musicVolume / 100;
+      bgMusic.play().catch(e => console.warn('Background music failed to play:', e.message));
+    }
+    if (bgVoice) {
+      bgVoice.volume = voiceVolume / 100;
+      bgVoice.play().catch(e => console.warn('Background voice failed to play:', e.message));
+    }
 
     loadData();
     initializeSettings();
@@ -197,10 +219,14 @@ function initializeGame() {
     if (savedLang) {
       currentLang = savedLang;
       const langToggle = document.getElementById('lang-toggle');
+      const gameLangToggle = document.getElementById('game-lang-toggle');
       if (langToggle) {
         langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
-        console.log('Language set to:', currentLang);
       }
+      if (gameLangToggle) {
+        gameLangToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+      }
+      console.log('Language set to:', currentLang);
     }
     loadPlayerData();
     updateUIText();
@@ -232,25 +258,31 @@ function startGame() {
     switchTab('farm');
     console.log('Switched to Farm tab');
 
-    const bgMusic = document.getElementById('bg-music');
-    const bgVoice = document.getElementById('bg-voice');
-    if (bgMusic) {
-      bgMusic.volume = musicVolume / 100;
-      bgMusic.play().catch(e => console.warn('Background music failed to play:', e.message));
-    } else {
-      console.warn('Background music element not found');
-    }
-    if (bgVoice) {
-      bgVoice.volume = voiceVolume / 100;
-      bgVoice.play().catch(e => console.warn('Background voice failed to play:', e.message));
-    } else {
-      console.warn('Background voice element not found');
-    }
     playMenuSound();
     console.log('Game started successfully');
   } catch (e) {
     console.error('Start game failed:', e.message);
     alert('Failed to start game. Check console for errors.');
+  }
+}
+
+// Exit game (back to start screen)
+function exitGame() {
+  console.log('Exiting game...');
+  try {
+    const startScreen = document.getElementById('start-screen');
+    const gameContainer = document.getElementById('game-container');
+    if (!startScreen || !gameContainer) throw new Error('Start screen or game container not found');
+
+    gameContainer.style.display = 'none';
+    startScreen.style.display = 'flex';
+    console.log('Switched from game container to start screen');
+
+    playMenuSound();
+    console.log('Game exited successfully');
+  } catch (e) {
+    console.error('Exit game failed:', e.message);
+    alert('Failed to exit game. Check console for errors.');
   }
 }
 
@@ -263,11 +295,14 @@ function toggleLanguage() {
     console.log('Language switched to:', currentLang);
 
     const langToggle = document.getElementById('lang-toggle');
+    const gameLangToggle = document.getElementById('game-lang-toggle');
     if (langToggle) {
       langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
-      console.log('Language toggle button updated');
-    } else {
-      console.error('Language toggle button not found');
+      console.log('Start screen language toggle button updated');
+    }
+    if (gameLangToggle) {
+      gameLangToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+      console.log('Game screen language toggle button updated');
     }
 
     updateUIText();
@@ -283,7 +318,6 @@ function toggleLanguage() {
 function updateUIText() {
   console.log('Updating UI text...');
   try {
-    // Ensure langData is populated, use fallback if empty
     if (!langData[currentLang]) {
       langData = fallbackLangData;
       console.log('langData was empty, using fallbackLangData');
@@ -399,68 +433,334 @@ function initializeSettings() {
   }
 }
 
-// Placeholder functions (to avoid errors)
+// Load player data
 function loadPlayerData() {
-  console.log('Loading player data (placeholder)...');
-  // Add logic if needed
+  console.log('Loading player data...');
+  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 0;
+  pi = localStorage.getItem('pi') ? parseFloat(localStorage.getItem('pi')) : 0;
+  water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 10;
+  level = localStorage.getItem('level') ? parseInt(localStorage.getItem('level')) : 1;
+  xp = localStorage.getItem('xp') ? parseInt(localStorage.getItem('xp')) : 0;
+  console.log('Player data loaded:', { farmCoins, pi, water, level, xp });
 }
 
+// Switch between tabs
 function switchTab(tab) {
-  console.log(`Switching to ${tab} tab (placeholder)...`);
-  // Add logic if needed
+  console.log(`Switching to ${tab} tab...`);
+  try {
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+
+    const tabContent = document.getElementById(tab);
+    const tabBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if (tabContent && tabBtn) {
+      tabContent.classList.add('active');
+      tabBtn.classList.add('active');
+      console.log(`Switched to ${tab} tab successfully`);
+    } else {
+      throw new Error(`Tab content or button for ${tab} not found`);
+    }
+
+    playMenuSound();
+  } catch (e) {
+    console.error('Switch tab failed:', e.message);
+    alert('Failed to switch tab. Check console for details.');
+  }
 }
 
+// Initialize farm plots
 function initializePlots() {
-  console.log('Initializing plots (placeholder)...');
-  // Add logic if needed
+  console.log('Initializing plots...');
+  const farmArea = document.getElementById('farm-area');
+  if (!farmArea) {
+    console.error('Farm area element not found');
+    return;
+  }
+
+  farmPlots = [];
+  for (let i = 0; i < plotCount; i++) {
+    const plot = document.createElement('div');
+    plot.classList.add('plot');
+    plot.addEventListener('click', () => handlePlotClick(i));
+    farmArea.appendChild(plot);
+    farmPlots.push({ planted: false, progress: 0 });
+  }
+  console.log('Plots initialized:', farmPlots);
 }
 
+// Handle plot click (placeholder for planting/harvesting)
+function handlePlotClick(index) {
+  console.log(`Plot ${index} clicked (placeholder)...`);
+  // Add planting/harvesting logic if needed
+}
+
+// Update wallet display
 function updateWallet() {
-  console.log('Updating wallet (placeholder)...');
-  // Add logic if needed
+  console.log('Updating wallet...');
+  const coinBalance = document.getElementById('coin-balance');
+  const piBalance = document.getElementById('pi-balance');
+  const waterBalance = document.getElementById('water-balance');
+
+  if (coinBalance) coinBalance.textContent = farmCoins;
+  if (piBalance) piBalance.textContent = pi.toFixed(2);
+  if (waterBalance) waterBalance.textContent = water;
+
+  localStorage.setItem('farmCoins', farmCoins);
+  localStorage.setItem('pi', pi);
+  localStorage.setItem('water', water);
+
+  // Check achievement for 100 Farm Coins
+  checkFarmCoinAchievement();
+  console.log('Wallet updated:', { farmCoins, pi, water });
 }
 
+// Update level bar
 function updateLevelBar() {
-  console.log('Updating level bar (placeholder)...');
-  // Add logic if needed
+  console.log('Updating level bar...');
+  const levelDisplay = document.getElementById('level-display');
+  const xpDisplay = document.getElementById('xp-display');
+  const xpProgress = document.getElementById('xp-progress');
+
+  if (levelDisplay) levelDisplay.textContent = level;
+  if (xpDisplay) xpDisplay.textContent = xp;
+  if (xpProgress) xpProgress.style.width = `${(xp / xpPerLevel) * 100}%`;
+
+  localStorage.setItem('level', level);
+  localStorage.setItem('xp', xp);
+  console.log('Level bar updated:', { level, xp });
 }
 
+// Render bag (open/close bag)
 function renderBag() {
-  console.log('Rendering bag (placeholder)...');
-  // Add logic if needed
-}
+  console.log('Rendering bag...');
+  const bagIcon = document.querySelector('#bag img');
+  const bagList = document.getElementById('bag-list');
 
-function renderAchievements() {
-  console.log('Rendering achievements (placeholder)...');
-  // Add logic if needed
-}
+  if (!bagIcon || !bagList) {
+    console.error('Bag elements not found');
+    return;
+  }
 
-function checkDailyReward() {
-  console.log('Checking daily reward (placeholder)...');
-  // Add logic if needed
-}
-
-function claimDailyReward() {
-  console.log('Claiming daily reward (placeholder)...');
-  // Add logic if needed
-}
-
-function playMenuSound() {
-  console.log('Playing menu sound (placeholder)...');
-  // Add logic if needed
-}
-
-function updateVolumes() {
-  console.log('Updating volumes (placeholder)...');
-  // Add logic if needed
-}
-
-function convertCurrency() {
-  console.log('Converting currency (placeholder)...');
-  // Add logic if needed
-}
-
-function buyUpgrade(type, currency) {
-  console.log(`Buying upgrade ${type} with ${currency} (placeholder)...`);
-  // Add logic if needed
+  bagIcon.addEventListener('click', () => {
+    bagList.classList.toggle('show');
+    if (bagList.classList.contains('show')) {
+      if (bag.length === 0) {
+        bagList.innerHTML = `<span>${langData[currentLang].emptyBag}</span>`;
+      } else {
+        bagList.innerHTML = bag.map(item => `<div class="bag-item">${item}</div>`).join('');
       }
+    }
+    playMenuSound();
+    console.log('Bag toggled:', bagList.classList.contains('show') ? 'open' : 'closed');
+  });
+
+  // Add sample item to bag for testing
+  bag = ['Seed x1', 'Water x2'];
+  console.log('Bag initialized with sample items:', bag);
+}
+
+// Render achievements
+function renderAchievements() {
+  console.log('Rendering achievements...');
+  const achievementList = document.getElementById('achievement-list');
+  if (!achievementList) {
+    console.error('Achievement list element not found');
+    return;
+  }
+
+  achievementList.innerHTML = `
+    <div class="achievement-item">
+      <span>${langData[currentLang].achievementHarvest10}</span>
+      <span>${achievements.harvest10 ? '✅' : '❌'}</span>
+    </div>
+    <div class="achievement-item">
+      <span>${langData[currentLang].achievementFarmCoin100}</span>
+      <span>${achievements.farmCoin100 ? '✅' : '❌'}</span>
+    </div>
+  `;
+  console.log('Achievements rendered:', achievements);
+}
+
+// Check Farm Coins achievement (100 Farm Coins)
+function checkFarmCoinAchievement() {
+  if (farmCoins >= 100 && !achievements.farmCoin100) {
+    achievements.farmCoin100 = true;
+    localStorage.setItem('achievements', JSON.stringify(achievements));
+    showNotification(langData[currentLang].achievementUnlocked);
+    console.log('Achievement unlocked: Collect 100 Farm Coins');
+  }
+}
+
+// Check daily reward availability
+function checkDailyReward() {
+  console.log('Checking daily reward...');
+  const claimRewardBtn = document.getElementById('claim-reward-btn');
+  if (!claimRewardBtn) {
+    console.error('Claim reward button not found');
+    return;
+  }
+
+  const now = Date.now();
+  if (now - lastRewardClaim < dailyRewardCooldown) {
+    claimRewardBtn.disabled = true;
+    claimRewardBtn.textContent = langData[currentLang].rewardCooldown;
+  } else {
+    claimRewardBtn.disabled = false;
+    claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
+  }
+  console.log('Daily reward checked:', { lastRewardClaim, now });
+}
+
+// Claim daily reward
+function claimDailyReward() {
+  console.log('Claiming daily reward...');
+  const claimRewardBtn = document.getElementById('claim-reward-btn');
+  if (!claimRewardBtn) {
+    console.error('Claim reward button not found');
+    return;
+  }
+
+  const now = Date.now();
+  if (now - lastRewardClaim < dailyRewardCooldown) {
+    showNotification(langData[currentLang].rewardCooldown);
+    return;
+  }
+
+  farmCoins += dailyReward.farmCoins;
+  water += dailyReward.water;
+  lastRewardClaim = now;
+
+  localStorage.setItem('lastRewardClaim', lastRewardClaim);
+  updateWallet();
+  checkDailyReward();
+
+  showNotification(langData[currentLang].rewardClaimed);
+  playCoinSound();
+  console.log('Daily reward claimed:', dailyReward);
+}
+
+// Show notification
+function showNotification(message) {
+  const notification = document.getElementById('notification');
+  if (!notification) {
+    console.error('Notification element not found');
+    return;
+  }
+
+  notification.textContent = message;
+  notification.style.display = 'block';
+  setTimeout(() => {
+    notification.style.display = 'none';
+  }, 3000);
+  console.log('Notification shown:', message);
+}
+
+// Play menu sound
+function playMenuSound() {
+  console.log('Playing menu sound...');
+  const menuSound = document.getElementById('menu-sound');
+  if (menuSound) {
+    menuSound.volume = voiceVolume / 100;
+    menuSound.play().catch(e => console.warn('Menu sound failed to play:', e.message));
+  }
+}
+
+// Play coin sound
+function playCoinSound() {
+  console.log('Playing coin sound...');
+  const coinSound = document.getElementById('coin-sound');
+  if (coinSound) {
+    coinSound.volume = voiceVolume / 100;
+    coinSound.play().catch(e => console.warn('Coin sound failed to play:', e.message));
+  }
+}
+
+// Update audio volumes
+function updateVolumes() {
+  console.log('Updating volumes...');
+  const bgMusic = document.getElementById('bg-music');
+  const bgVoice = document.getElementById('bg-voice');
+  if (bgMusic) bgMusic.volume = musicVolume / 100;
+  if (bgVoice) bgVoice.volume = voiceVolume / 100;
+  console.log('Volumes updated:', { musicVolume, voiceVolume });
+}
+
+// Convert currency (placeholder)
+function convertCurrency() {
+  console.log('Converting currency...');
+  const farmToPiInput = document.getElementById('farm-to-pi');
+  const piToFarmInput = document.getElementById('pi-to-farm');
+
+  if (farmToPiInput.value) {
+    const farmAmount = parseInt(farmToPiInput.value);
+    if (farmAmount <= farmCoins) {
+      const piAmount = farmAmount / piToFarmRate;
+      farmCoins -= farmAmount;
+      pi += piAmount;
+      updateWallet();
+      showNotification(langData[currentLang].convertSuccess);
+      playCoinSound();
+      farmToPiInput.value = '';
+      piToFarmInput.value = '';
+    } else {
+      showNotification(langData[currentLang].notEnoughMoney);
+    }
+  } else if (piToFarmInput.value) {
+    const piAmount = parseFloat(piToFarmInput.value);
+    if (piAmount <= pi) {
+      const farmAmount = piAmount * piToFarmRate;
+      pi -= piAmount;
+      farmCoins += farmAmount;
+      updateWallet();
+      showNotification(langData[currentLang].convertSuccess);
+      playCoinSound();
+      farmToPiInput.value = '';
+      piToFarmInput.value = '';
+    } else {
+      showNotification(langData[currentLang].notEnoughMoney);
+    }
+  }
+  console.log('Currency converted:', { farmCoins, pi });
+}
+
+// Buy upgrade (placeholder)
+function buyUpgrade(type, currency) {
+  console.log(`Buying upgrade ${type} with ${currency}...`);
+  const costs = {
+    wateringCan: { farm: 100, pi: 0.12 },
+    extraPlot: { farm: 400, pi: 0.48 },
+    yieldBoost: { farm: 200, pi: 0.3 }
+  };
+
+  const cost = costs[type][currency === 'farm' ? 'farm' : 'pi'];
+  if (currency === 'farm' && farmCoins >= cost) {
+    farmCoins -= cost;
+    upgrades[type] = type === 'extraPlot' ? upgrades.extraPlot + 1 : true;
+    updateWallet();
+    showNotification(langData[currentLang].upgradeBought);
+    playBuyingSound();
+  } else if (currency === 'pi' && pi >= cost) {
+    pi -= cost;
+    upgrades[type] = type === 'extraPlot' ? upgrades.extraPlot + 1 : true;
+    updateWallet();
+    showNotification(langData[currentLang].upgradeBought);
+    playBuyingSound();
+  } else {
+    showNotification(langData[currentLang].notEnoughMoney);
+  }
+  console.log('Upgrade bought:', upgrades);
+}
+
+// Play buying sound
+function playBuyingSound() {
+  console.log('Playing buying sound...');
+  const buyingSound = document.getElementById('buying-sound');
+  if (buyingSound) {
+    buyingSound.volume = voiceVolume / 100;
+    buyingSound.play().catch(e => console.warn('Buying sound failed to play:', e.message));
+  }
+}
