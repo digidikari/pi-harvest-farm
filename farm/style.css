@@ -215,17 +215,17 @@ body {
   grid-template-columns: repeat(6, 80px);
   gap: 5px;
   justify-content: center;
-  background: #8b4513; /* Brown soil background */
+  background: #8b4513;
   padding: 10px;
   border-radius: 10px;
-  width: 510px; /* 6 plots x 80px + 5px gap + padding */
+  width: 510px;
   margin: 0 auto;
 }
 
 .plot {
   width: 80px;
   height: 60px;
-  background: #654321; /* Darker brown for mound */
+  background: #654321;
   border-radius: 50% / 30%;
   cursor: pointer;
   position: relative;
