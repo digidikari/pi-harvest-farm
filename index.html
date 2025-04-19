@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=8">
+  <link rel="stylesheet" href="farm/style.css?v=9">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -31,7 +31,8 @@
       <h1 id="game-title">Pi Harvest Farm</h1>
       <div class="wallet">
         <span id="coin-balance">0</span> <span id="coin-label">Farm Coins</span> | 
-        <span id="pi-balance">0.00</span> Pi
+        <span id="pi-balance">0.00</span> Pi | 
+        <span id="water-balance">10</span> Water
       </div>
       <div class="level-bar">
         Level: <span id="level-display">1</span> | XP: <span id="xp-display">0</span>
@@ -45,7 +46,7 @@
       <button class="tab-btn" data-tab="shop">Shop</button>
       <button class="tab-btn" data-tab="upgrades">Upgrades</button>
       <button class="tab-btn" data-tab="inventory">Inventory</button>
-      <button class="tab-btn" data-tab="market">Market</button>
+      <button class="tab-btn" data-tab="exchange">Exchange</button>
       <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
       <button class="tab-btn" data-tab="achievements">Achievements</button>
     </div>
@@ -63,26 +64,36 @@
     </div>
     <div id="upgrades" class="tab-content" style="display: none;">
       <h2 id="upgrades-title">Upgrades</h2>
-      <button onclick="buyUpgrade('wateringCan')">Watering Can - 100 Farm Coins / 0.12 Pi</button>
-      <button onclick="buyUpgrade('extraPlot')">Extra Plot - 400 Farm Coins / 0.48 Pi</button>
-      <button onclick="buyUpgrade('yieldBoost')">Yield Boost - 200 Farm Coins / 0.3 Pi</button>
+      <div class="upgrade-item">
+        <span>Watering Can - 100 Farm Coins / 0.12 Pi</span>
+        <button onclick="buyUpgrade('wateringCan', 'farm')">Buy (Farm)</button>
+        <button onclick="buyUpgrade('wateringCan', 'pi')">Buy (Pi)</button>
+      </div>
+      <div class="upgrade-item">
+        <span>Extra Plot - 400 Farm Coins / 0.48 Pi</span>
+        <button onclick="buyUpgrade('extraPlot', 'farm')">Buy (Farm)</button>
+        <button onclick="buyUpgrade('extraPlot', 'pi')">Buy (Pi)</button>
+      </div>
+      <div class="upgrade-item">
+        <span>Yield Boost - 200 Farm Coins / 0.3 Pi</span>
+        <button onclick="buyUpgrade('yieldBoost', 'farm')">Buy (Farm)</button>
+        <button onclick="buyUpgrade('yieldBoost', 'pi')">Buy (Pi)</button>
+      </div>
     </div>
     <div id="inventory" class="tab-content" style="display: none;">
       <h2 id="inventory-title">Inventory</h2>
       <div id="inventory-list"></div>
     </div>
-    <div id="market" class="tab-content" style="display: none;">
-      <h2 id="market-title">Market</h2>
-      <div id="market-conversion">
+    <div id="exchange" class="tab-content" style="display: none;">
+      <h2 id="exchange-title">Exchange</h2>
+      <div id="exchange-conversion">
         <p>1 Pi Coin = 1000 Farm Coins</p>
-        <div>
-          <input type="number" id="farm-to-pi" placeholder="Farm Coins to Pi">
-          <button onclick="convertFarmToPi()">Convert to Pi</button>
+        <div class="exchange-inputs">
+          <input type="number" id="farm-to-pi" placeholder="Farm Coins">
+          <span>↔</span>
+          <input type="number" id="pi-to-farm" placeholder="Pi Coins">
         </div>
-        <div>
-          <input type="number" id="pi-to-farm" placeholder="Pi to Farm Coins">
-          <button onclick="convertPiToFarm()">Convert to Farm Coins</button>
-        </div>
+        <button onclick="convertCurrency()">Tukar</button>
       </div>
     </div>
     <div id="leaderboard" class="tab-content" style="display: none;">
@@ -96,13 +107,17 @@
     <div id="notification"></div>
   </div>
   <audio id="bg-music" src="assets/sfx/music/main-bgm.mp3" loop></audio>
+  <audio id="bg-voice" src="assets/sfx/voice/main-bgv.mp3" loop></audio>
   <audio id="harvest-sound" src="assets/sfx/voice/harvesting-bgv.mp3"></audio>
   <audio id="watering-sound" src="assets/sfx/voice/watering-bgv.mp3"></audio>
+  <audio id="menu-sound" src="assets/sfx/voice/menu-bgv.mp3"></audio>
+  <audio id="buying-sound" src="assets/sfx/voice/buying-bgv.mp3"></audio>
+  <audio id="coin-sound" src="assets/sfx/voice/coin-bgv.mp3"></audio>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="firebase/firebase-config.js"></script>
-  <script src="farm/main.js?v=8"></script>
-  <!-- Force redeploy - April 19, 2025, fix audio, close, bag, images, buy/upgrade, buttons, economy, add Market -->
+  <script src="farm/main.js?v=9"></script>
+  <!-- Force redeploy - April 19, 2025, fix close, add bg voice, claim 50, bag, farm layout, upgrades, Exchange, water limit, sounds, images -->
 </body>
 </html>
