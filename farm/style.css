@@ -14,7 +14,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  position: relative; /* Biar corner-buttons bisa diposisikan */
+  position: relative;
 }
 
 #title {
@@ -23,23 +23,20 @@ body {
   margin-bottom: 20px;
 }
 
-/* Styling teks Start Game */
 .start-text {
-  font-family: 'Press Start 2P', cursive; /* Font retro arcade */
+  font-family: 'Press Start 2P', cursive;
   font-size: 32px;
-  color: #ffeb3b; /* Kuning cerah */
-  text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336; /* Efek neon/glow */
+  color: #ffeb3b;
+  text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336;
   cursor: pointer;
-  animation: blink 1s infinite; /* Animasi kelip-kelip */
+  animation: blink 1s infinite;
 }
 
-/* Animasi kelip-kelip */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
 
-/* Container buat tombol di pojok */
 .corner-buttons {
   position: absolute;
   top: 10px;
@@ -63,7 +60,6 @@ body {
   font-size: 18px;
 }
 
-/* Modal setting */
 .modal {
   display: none;
   position: fixed;
@@ -111,6 +107,7 @@ body {
   width: 100%;
 }
 
+/* Sisanya sama kayak sebelumnya */
 #game-container {
   padding: 20px;
 }
