@@ -14,6 +14,8 @@ let upgrades = {
 };
 let level = 1;
 let xp = 0;
+let playerName = 'Player' + Math.floor(Math.random() * 1000); // Nama player acak
+let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
 
 const plotCount = 8;
 const xpPerLevel = 100;
@@ -54,6 +56,7 @@ function initializeGame() {
   updateWallet();
   updateLevelBar();
   renderBag();
+  updateLeaderboard();
 }
 
 function startGame() {
@@ -80,13 +83,13 @@ function updateUIText() {
   document.getElementById('shop-title').textContent = langData[currentLang].shopTab;
   document.getElementById('upgrades-title').textContent = langData[currentLang].upgradesTab;
   document.getElementById('inventory-title').textContent = langData[currentLang].inventoryTab;
-  document.getElementById('coin-label').textContent = langData[currentLang].coinLabel;
+  document.getElementById('leaderboard-title').textContent = langData[currentLang].leaderboardTab;
   const claimPiBtn = document.querySelector('#claim-pi-btn');
   if (claimPiBtn) {
     claimPiBtn.textContent = langData[currentLang].claimPiBtn;
   }
   document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-    const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab'];
+    const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'leaderboardTab'];
     btn.textContent = langData[currentLang][tabs[idx]];
   });
   if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'shop') {
@@ -94,6 +97,9 @@ function updateUIText() {
   }
   if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'inventory') {
     renderInventory();
+  }
+  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'leaderboard') {
+    renderLeaderboard();
   }
 }
 
@@ -122,6 +128,7 @@ function switchTab(tab) {
     if (tab === 'farm') renderFarm();
     if (tab === 'shop') renderShop();
     if (tab === 'inventory') renderInventory();
+    if (tab === 'leaderboard') renderLeaderboard();
   } catch (e) {
     console.error('Tab switch failed:', e);
     alert('Tab error: ' + e.message);
@@ -219,6 +226,7 @@ function harvest(index) {
   checkLevelUp();
   updateWallet();
   updateLevelBar();
+  updateLeaderboard();
   renderFarm();
   try {
     document.getElementById('harvest-sound').play();
@@ -311,6 +319,7 @@ function buyUpgrade(type) {
       initializePlots();
     }
     updateWallet();
+    updateLeaderboard();
     showNotification(`${langData[currentLang].upgradeBought} ${type}!`);
   } else {
     showNotification(langData[currentLang].notEnoughMoney);
@@ -348,8 +357,37 @@ function claimPi() {
   pi += totalPi;
   inventory = [];
   updateWallet();
+  updateLeaderboard();
   renderInventory();
   showNotification(`${langData[currentLang].claimedPi} ${totalPi.toFixed(2)} Pi!`);
+}
+
+function updateLeaderboard() {
+  console.log('Updating leaderboard...');
+  const playerEntry = leaderboard.find(entry => entry.name === playerName);
+  if (playerEntry) {
+    playerEntry.pi = pi;
+  } else {
+    leaderboard.push({ name: playerName, pi: pi });
+  }
+  leaderboard.sort((a, b) => b.pi - a.pi);
+  leaderboard = leaderboard.slice(0, 5);
+  localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'leaderboard') {
+    renderLeaderboard();
+  }
+}
+
+function renderLeaderboard() {
+  console.log('Rendering leaderboard...');
+  const leaderboardList = document.getElementById('leaderboard-list');
+  leaderboardList.innerHTML = '';
+  leaderboard.forEach((entry, idx) => {
+    const div = document.createElement('div');
+    div.className = 'leaderboard-item';
+    div.textContent = `#${idx + 1}: ${entry.name} - ${entry.pi.toFixed(2)} Pi`;
+    leaderboardList.appendChild(div);
+  });
 }
 
 function updateWallet() {
