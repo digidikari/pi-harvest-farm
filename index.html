@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=15">
+  <link rel="stylesheet" href="farm/style.css?v=16">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -61,6 +61,10 @@
     <div id="shop" class="tab-content" style="display: none;">
       <h2 id="shop-title">Shop</h2>
       <div id="seed-list"></div>
+      <div id="sell-section">
+        <h3>Sell Items</h3>
+        <div id="sell-list"></div>
+      </div>
     </div>
     <div id="upgrades" class="tab-content" style="display: none;">
       <h2 id="upgrades-title">Upgrades</h2>
@@ -87,7 +91,7 @@
     <div id="exchange" class="tab-content" style="display: none;">
       <h2 id="exchange-title">Exchange</h2>
       <div id="exchange-conversion">
-        <p>1 Pi Coin = 1000 Farm Coins</p>
+        <p>1 Pi Coin = 10000 Farm Coins</p>
         <div class="exchange-inputs">
           <input type="number" id="farm-to-pi" placeholder="Farm Coins">
           <span>↔</span>
@@ -105,7 +109,6 @@
       <div id="achievement-list"></div>
     </div>
     <div id="notification"></div>
-    <!-- Tambah tombol bahasa, settings, dan exit di dalam game -->
     <div class="game-buttons">
       <button id="game-lang-toggle">Switch Language (EN/ID)</button>
       <button id="game-settings-btn">⚙️</button>
@@ -119,11 +122,11 @@
   <audio id="menu-sound" src="assets/sfx/voice/menu-bgv.mp3"></audio>
   <audio id="buying-sound" src="assets/sfx/voice/buying-bgv.mp3"></audio>
   <audio id="coin-sound" src="assets/sfx/voice/coin-bgv.mp3"></audio>
-  <script src="farm/main.js?v=15"></script>
+  <script src="farm/main.js?v=16"></script>
   <script>
     console.log('Inline script running... Checking main.js load.');
     const mainScript = document.createElement('script');
-    mainScript.src = 'farm/main.js?v=15';
+    mainScript.src = 'farm/main.js?v=16';
     mainScript.onload = () => console.log('main.js loaded successfully!');
     mainScript.onerror = () => {
       console.error('Failed to load main.js! Check Network tab for status.');
@@ -131,6 +134,6 @@
     };
     document.head.appendChild(mainScript);
   </script>
-  <!-- Force redeploy - April 19, 2025, debug game features v15 -->
+  <!-- Force redeploy - April 19, 2025, debug game features v16 -->
 </body>
 </html>
