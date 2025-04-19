@@ -204,7 +204,7 @@ async function loadData() {
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
     vegetables = fallbackVegetables;
-    console.log('Using fallback vegetables data');
+    console.log('Using fallback vegetables data:', vegetables);
   }
 
   try {
@@ -453,12 +453,22 @@ function initializeSettings() {
 // Load player data
 function loadPlayerData() {
   console.log('Loading player data...');
-  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 100; // Ubah dari 0 ke 100
+  // Reset nilai awal kalau belum ada di localStorage
+  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 100;
   pi = localStorage.getItem('pi') ? parseFloat(localStorage.getItem('pi')) : 0;
-  water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 100; // Ubah dari 10 ke 100
+  water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 100;
   level = localStorage.getItem('level') ? parseInt(localStorage.getItem('level')) : 1;
   xp = localStorage.getItem('xp') ? parseInt(localStorage.getItem('xp')) : 0;
   inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+  // Reset localStorage kalau nilai awal gak sesuai
+  if (!localStorage.getItem('farmCoins')) {
+    farmCoins = 100;
+    localStorage.setItem('farmCoins', farmCoins);
+  }
+  if (!localStorage.getItem('water')) {
+    water = 100;
+    localStorage.setItem('water', water);
+  }
   console.log('Player data loaded:', { farmCoins, pi, water, level, xp, inventory });
 }
 
@@ -483,11 +493,14 @@ function switchTab(tab) {
       throw new Error(`Tab content or button for ${tab} not found`);
     }
 
+    // Pastikan render konten tiap tab
     if (tab === 'shop') {
       renderShop();
       renderSellSection();
     } else if (tab === 'inventory') {
       renderInventory();
+    } else if (tab === 'achievements') {
+      renderAchievements();
     }
 
     playMenuSound();
@@ -499,6 +512,9 @@ function switchTab(tab) {
 
 // Initialize farm plots
 function initializePlots() {
+const plotCount = 36; // 6x6 = 36 plot
+
+function initializePlots() {
   console.log('Initializing plots...');
   const farmArea = document.getElementById('farm-area');
   if (!farmArea) {
@@ -507,6 +523,7 @@ function initializePlots() {
   }
 
   farmPlots = [];
+  farmArea.innerHTML = ''; // Bersihin plot lama
   for (let i = 0; i < plotCount; i++) {
     const plot = document.createElement('div');
     plot.classList.add('plot');
@@ -523,27 +540,50 @@ function handlePlotClick(index) {
   const plot = farmPlots[index];
   const plotElement = document.querySelectorAll('.plot')[index];
 
-  if (!plot.planted && bag.some(item => item.includes('Seed'))) {
-    // Plant a seed
-    const vegetable = vegetables[0]; // Default to first vegetable (Beet) for now
-    plot.planted = true;
-    plot.vegetable = vegetable;
-    plot.progress = 0;
-    plotElement.innerHTML = `<img src="${vegetable.image}" class="plant-img">`;
-    bag = bag.filter(item => !item.includes('Seed'));
-    renderBag();
-    showNotification(langData[currentLang].bought);
-    console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
-  } else if (plot.planted && !plot.watered && water > 0) {
-    // Water the plant
-    plot.watered = true;
-    water--;
-    updateWallet();
-    plotElement.classList.add('ready');
-    playWateringSound();
-    console.log(`Watered plot ${index}`);
+  if (!plot.planted) {
+    // Cek apakah ada Seed di bag
+    const seedIndex = bag.findIndex(item => item.includes('Seed'));
+    if (seedIndex !== -1) {
+      // Tanam sayuran (default Beet)
+      const vegetable = vegetables.find(veg => veg.id === "beet");
+      plot.planted = true;
+      plot.vegetable = vegetable;
+      plot.progress = 0;
+      plot.watered = false;
+      plotElement.innerHTML = `<img src="${vegetable.image}" class="plant-img">`;
+      // Kurangi Seed dari bag
+      bag.splice(seedIndex, 1);
+      renderBag();
+      showNotification(langData[currentLang].bought);
+      playBuyingSound();
+      console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
+    } else {
+      showNotification("No Seeds in bag!");
+    }
+  } else if (plot.planted && !plot.watered) {
+    // Cek apakah ada Water di bag
+    const waterIndex = bag.findIndex(item => item.includes('Water'));
+    if (waterIndex !== -1 && water > 0) {
+      plot.watered = true;
+      water--;
+      updateWallet();
+      plotElement.classList.add('ready');
+      // Kurangi Water dari bag
+      const waterItem = bag[waterIndex];
+      const waterAmount = parseInt(waterItem.split('x')[1]);
+      if (waterAmount > 1) {
+        bag[waterIndex] = `Water x${waterAmount - 1}`;
+      } else {
+        bag.splice(waterIndex, 1);
+      }
+      renderBag();
+      playWateringSound();
+      console.log(`Watered plot ${index}`);
+    } else {
+      showNotification(langData[currentLang].notEnoughWater);
+    }
   } else if (plot.planted && plot.watered) {
-    // Harvest the plant
+    // Panen
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
     localStorage.setItem('inventory', JSON.stringify(inventory));
     plot.planted = false;
@@ -560,6 +600,8 @@ function handlePlotClick(index) {
     renderInventory();
     renderSellSection();
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
+  }
+}
   } else if (water <= 0) {
     showNotification(langData[currentLang].notEnoughWater);
   }
