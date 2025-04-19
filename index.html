@@ -19,6 +19,7 @@
       <button class="tab-btn" onclick="switchTab('upgrades')">Upgrades</button>
       <button class="tab-btn" onclick="switchTab('inventory')">Inventory</button>
       <button class="tab-btn" onclick="switchTab('leaderboard')">Leaderboard</button>
+      <button class="tab-btn" onclick="switchTab('achievements')">Achievements</button>
     </div>
     <div id="farm" class="tab-content">
       <h2 id="game-title">Pi Harvest Farm</h2>
@@ -31,6 +32,9 @@
         <div id="xp-progress-bar">
           <div id="xp-progress"></div>
         </div>
+      </div>
+      <div id="daily-reward">
+        <button id="claim-reward-btn" onclick="claimDailyReward()">Claim Daily Reward</button>
       </div>
       <div id="bag">
         <img src="./assets/img/ui/bag_icon.png" alt="Bag">
@@ -58,9 +62,18 @@
       <h2 id="leaderboard-title">Leaderboard</h2>
       <div id="leaderboard-list"></div>
     </div>
+    <div id="achievements" class="tab-content" style="display: none;">
+      <h2 id="achievements-title">Achievements</h2>
+      <div id="achievement-list"></div>
+    </div>
     <div id="notification"></div>
-    <audio id="harvest-sound" src="./assets/sounds/harvest.mp3"></audio>
+    <audio id="harvest-sound" src="./assets/sfx/music/harvest.mp3"></audio>
   </div>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script src="./firebase/firebase-config.js"></script>
+  <script src="./firebase/firebase-functions.js"></script>
   <script src="./farm/main.js"></script>
 </body>
 </html>
