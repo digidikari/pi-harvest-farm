@@ -108,13 +108,31 @@ const fallbackVegetables = [
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
-  initializeFirebaseAuth();
-  loadData();
-  document.getElementById('start-text').onclick = startGame;
-  document.getElementById('lang-toggle').onclick = toggleLanguage;
-  initializeSettings();
-  updateVolumes();
-  document.getElementById('bg-music').play().catch(e => console.warn('Background music failed to play:', e));
+  try {
+    const startText = document.getElementById('start-text');
+    const langToggle = document.getElementById('lang-toggle');
+    const settingsBtn = document.getElementById('settings-btn');
+
+    if (!startText) throw new Error('Start text element not found');
+    if (!langToggle) throw new Error('Language toggle button not found');
+    if (!settingsBtn) throw new Error('Settings button not found');
+
+    startText.addEventListener('click', startGame);
+    langToggle.addEventListener('click', toggleLanguage);
+    settingsBtn.addEventListener('click', () => {
+      console.log('Settings button clicked');
+      const modal = document.getElementById('settings-modal');
+      if (modal) modal.style.display = 'block';
+    });
+
+    initializeFirebaseAuth();
+    loadData();
+    initializeSettings();
+    updateVolumes();
+    document.getElementById('bg-music').play().catch(e => console.warn('Background music failed to play:', e));
+  } catch (e) {
+    console.error('Initialization failed:', e.message);
+  }
 });
 
 async function loadData() {
@@ -169,7 +187,10 @@ function initializeGame() {
   const savedLang = localStorage.getItem('lang');
   if (savedLang) {
     currentLang = savedLang;
-    document.getElementById('lang-toggle').textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+    const langToggle = document.getElementById('lang-toggle');
+    if (langToggle) {
+      langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+    }
   }
   loadPlayerData();
   updateUIText();
@@ -183,101 +204,136 @@ function initializeGame() {
 
 function startGame() {
   console.log('Starting game...');
-  document.getElementById('start-screen').style.display = 'none';
-  document.getElementById('game-container').style.display = 'block';
-  switchTab('farm');
+  try {
+    const startScreen = document.getElementById('start-screen');
+    const gameContainer = document.getElementById('game-container');
+    if (!startScreen || !gameContainer) {
+      throw new Error('Start screen or game container not found');
+    }
+    startScreen.style.display = 'none';
+    gameContainer.style.display = 'block';
+    switchTab('farm');
+  } catch (e) {
+    console.error('Start game failed:', e.message);
+  }
 }
 
 function toggleLanguage() {
   console.log('Toggling language...');
-  currentLang = currentLang === 'en' ? 'id' : 'en';
-  localStorage.setItem('lang', currentLang);
-  document.getElementById('lang-toggle').textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
-  updateUIText();
-  document.getElementById('start-text').textContent = langData[currentLang].startBtn;
-  switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
+  try {
+    currentLang = currentLang === 'en' ? 'id' : 'en';
+    localStorage.setItem('lang', currentLang);
+    const langToggle = document.getElementById('lang-toggle');
+    if (langToggle) {
+      langToggle.textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
+    }
+    updateUIText();
+    const startText = document.getElementById('start-text');
+    if (startText) {
+      startText.textContent = langData[currentLang].startBtn;
+    }
+    switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
+  } catch (e) {
+    console.error('Toggle language failed:', e.message);
+  }
 }
 
 function updateUIText() {
   console.log('Updating UI text...');
-  document.getElementById('title').textContent = langData[currentLang].title;
-  document.getElementById('start-text').textContent = langData[currentLang].startBtn;
-  document.getElementById('game-title').textContent = langData[currentLang].title;
-  document.getElementById('shop-title').textContent = langData[currentLang].shopTab;
-  document.getElementById('upgrades-title').textContent = langData[currentLang].upgradesTab;
-  document.getElementById('inventory-title').textContent = langData[currentLang].inventoryTab;
-  document.getElementById('leaderboard-title').textContent = langData[currentLang].leaderboardTab;
-  document.getElementById('achievements-title').textContent = langData[currentLang].achievementsTab;
-  const claimPiBtn = document.querySelector('#claim-pi-btn');
-  if (claimPiBtn) {
-    claimPiBtn.textContent = langData[currentLang].claimPiBtn;
-  }
-  const claimRewardBtn = document.querySelector('#claim-reward-btn');
-  if (claimRewardBtn) {
-    claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
-  }
-  document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-    const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'leaderboardTab', 'achievementsTab'];
-    btn.textContent = langData[currentLang][tabs[idx]];
-  });
-  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'shop') {
-    renderShop();
-  }
-  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'inventory') {
-    renderInventory();
-  }
-  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'leaderboard') {
-    renderLeaderboard();
-  }
-  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'achievements') {
-    renderAchievements();
+  try {
+    const title = document.getElementById('title');
+    const startText = document.getElementById('start-text');
+    const gameTitle = document.getElementById('game-title');
+    const shopTitle = document.getElementById('shop-title');
+    const upgradesTitle = document.getElementById('upgrades-title');
+    const inventoryTitle = document.getElementById('inventory-title');
+    const leaderboardTitle = document.getElementById('leaderboard-title');
+    const achievementsTitle = document.getElementById('achievements-title');
+    const claimPiBtn = document.getElementById('claim-pi-btn');
+    const claimRewardBtn = document.getElementById('claim-reward-btn');
+
+    if (title) title.textContent = langData[currentLang].title;
+    if (startText) startText.textContent = langData[currentLang].startBtn;
+    if (gameTitle) gameTitle.textContent = langData[currentLang].title;
+    if (shopTitle) shopTitle.textContent = langData[currentLang].shopTab;
+    if (upgradesTitle) upgradesTitle.textContent = langData[currentLang].upgradesTab;
+    if (inventoryTitle) inventoryTitle.textContent = langData[currentLang].inventoryTab;
+    if (leaderboardTitle) leaderboardTitle.textContent = langData[currentLang].leaderboardTab;
+    if (achievementsTitle) achievementsTitle.textContent = langData[currentLang].achievementsTab;
+    if (claimPiBtn) claimPiBtn.textContent = langData[currentLang].claimPiBtn;
+    if (claimRewardBtn) claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
+
+    document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+      const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'leaderboardTab', 'achievementsTab'];
+      btn.textContent = langData[currentLang][tabs[idx]];
+    });
+
+    const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
+    if (activeTab === 'shop') renderShop();
+    if (activeTab === 'inventory') renderInventory();
+    if (activeTab === 'leaderboard') renderLeaderboard();
+    if (activeTab === 'achievements') renderAchievements();
+  } catch (e) {
+    console.error('Update UI text failed:', e.message);
   }
 }
 
 function initializeSettings() {
-  const modal = document.getElementById('settings-modal');
-  const btn = document.getElementById('settings-btn');
-  const closeBtn = document.getElementById('close-settings');
-  const musicSlider = document.getElementById('music-volume');
-  const voiceSlider = document.getElementById('voice-volume');
+  console.log('Initializing settings...');
+  try {
+    const modal = document.getElementById('settings-modal');
+    const closeBtn = document.getElementById('close-settings');
+    const musicSlider = document.getElementById('music-volume');
+    const voiceSlider = document.getElementById('voice-volume');
 
-  musicSlider.value = musicVolume;
-  voiceSlider.value = voiceVolume;
-
-  btn.onclick = () => {
-    modal.style.display = 'block';
-  };
-
-  closeBtn.onclick = () => {
-    modal.style.display = 'none';
-  };
-
-  window.onclick = (event) => {
-    if (event.target === modal) {
-      modal.style.display = 'none';
+    if (!modal || !closeBtn || !musicSlider || !voiceSlider) {
+      throw new Error('Settings elements not found');
     }
-  };
 
-  musicSlider.oninput = () => {
-    musicVolume = parseInt(musicSlider.value);
-    localStorage.setItem('musicVolume', musicVolume);
-    updateVolumes();
-  };
+    musicSlider.value = musicVolume;
+    voiceSlider.value = voiceVolume;
 
-  voiceSlider.oninput = () => {
-    voiceVolume = parseInt(voiceSlider.value);
-    localStorage.setItem('voiceVolume', voiceVolume);
-    updateVolumes();
-  };
+    closeBtn.onclick = () => {
+      console.log('Closing settings modal');
+      modal.style.display = 'none';
+    };
+
+    window.onclick = (event) => {
+      if (event.target === modal) {
+        console.log('Closing settings modal via window click');
+        modal.style.display = 'none';
+      }
+    };
+
+    musicSlider.oninput = () => {
+      musicVolume = parseInt(musicSlider.value);
+      localStorage.setItem('musicVolume', musicVolume);
+      updateVolumes();
+    };
+
+    voiceSlider.oninput = () => {
+      voiceVolume = parseInt(voiceSlider.value);
+      localStorage.setItem('voiceVolume', voiceVolume);
+      updateVolumes();
+    };
+  } catch (e) {
+    console.error('Settings initialization failed:', e.message);
+  }
 }
 
 function updateVolumes() {
-  const bgMusic = document.getElementById('bg-music');
-  const harvestSound = document.getElementById('harvest-sound');
-  bgMusic.volume = musicVolume / 100;
-  harvestSound.volume = voiceVolume / 100;
+  console.log('Updating volumes...');
+  try {
+    const bgMusic = document.getElementById('bg-music');
+    const harvestSound = document.getElementById('harvest-sound');
+    if (bgMusic) bgMusic.volume = musicVolume / 100;
+    if (harvestSound) harvestSound.volume = voiceVolume / 100;
+  } catch (e) {
+    console.error('Update volumes failed:', e.message);
+  }
 }
 
+// Sisanya sama kayak sebelumnya
 function switchTab(tab) {
   console.log('Switching to tab:', tab);
   try {
@@ -348,6 +404,7 @@ function renderFarm() {
       }
       if (!plot.watered) {
         plotElement.classList.add('dry');
+        plotElement.onclick = () => water(index);
       } else {
         plotElement.classList.remove('dry');
       }
@@ -380,6 +437,7 @@ function water(index) {
     farmPlots[index].watered = true;
     farmPlots[index].growth += 2;
   } else {
+    farmPlots[index].watered = true;
     farmPlots[index].growth += 1;
   }
   const veg = vegetables.find(v => v.id === farmPlots[index].vegetable);
@@ -387,6 +445,13 @@ function water(index) {
     farmPlots[index].growth = veg.growthTime;
   }
   renderFarm();
+  try {
+    const wateringSound = new Audio('../assets/sfx/voice/watering-bgv.mp3');
+    wateringSound.volume = voiceVolume / 100;
+    wateringSound.play().catch(e => console.warn('Watering sound failed:', e));
+  } catch (e) {
+    console.warn('Watering sound failed:', e);
+  }
 }
 
 function harvest(index) {
