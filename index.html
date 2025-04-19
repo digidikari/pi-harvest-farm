@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=12">
+  <link rel="stylesheet" href="farm/style.css?v=13">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -66,7 +66,7 @@
       <h2 id="upgrades-title">Upgrades</h2>
       <div class="upgrade-item">
         <span>Watering Can - 100 Farm Coins / 0.12 Pi</span>
-        <button onclick="buyUpgrade('wateringCan', 'farm')">Buy (Farm)</button>
+        <button onclick="buyUpgrade(' underwritingCan', 'farm')">Buy (Farm)</button>
         <button onclick="buyUpgrade('wateringCan', 'pi')">Buy (Pi)</button>
       </div>
       <div class="upgrade-item">
@@ -116,8 +116,19 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="firebase/firebase-config.js?v=12"></script>
-  <script src="farm/main.js?v=12"></script>
-  <!-- Force redeploy - April 19, 2025, fix start game, settings, language v12 -->
+  <script src="firebase/firebase-config.js?v=13"></script>
+  <script>
+    // Debug script to check if main.js loads
+    console.log('Inline script running... Checking main.js load.');
+    const mainScript = document.createElement('script');
+    mainScript.src = 'farm/main.js?v=13';
+    mainScript.onload = () => console.log('main.js loaded successfully!');
+    mainScript.onerror = () => {
+      console.error('Failed to load main.js! Check Network tab for status.');
+      alert('Failed to load main.js. Please check console for details.');
+    };
+    document.head.appendChild(mainScript);
+  </script>
+  <!-- Force redeploy - April 19, 2025, debug start game, settings, language v13 -->
 </body>
 </html>
