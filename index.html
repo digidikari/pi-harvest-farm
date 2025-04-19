@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=5">
+  <link rel="stylesheet" href="farm/style.css?v=6">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -41,17 +41,17 @@
       </div>
     </div>
     <div class="tabs">
-      <button class="tab-btn" onclick="switchTab('farm')">Farm</button>
-      <button class="tab-btn" onclick="switchTab('shop')">Shop</button>
-      <button class="tab-btn" onclick="switchTab('upgrades')">Upgrades</button>
-      <button class="tab-btn" onclick="switchTab('inventory')">Inventory</button>
-      <button class="tab-btn" onclick="switchTab('leaderboard')">Leaderboard</button>
-      <button class="tab-btn" onclick="switchTab('achievements')">Achievements</button>
+      <button class="tab-btn" data-tab="farm">Farm</button>
+      <button class="tab-btn" data-tab="shop">Shop</button>
+      <button class="tab-btn" data-tab="upgrades">Upgrades</button>
+      <button class="tab-btn" data-tab="inventory">Inventory</button>
+      <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+      <button class="tab-btn" data-tab="achievements">Achievements</button>
     </div>
     <div id="farm" class="tab-content">
       <div id="farm-area"></div>
       <div id="bag">
-        <img src="assets/img/bag.png" alt="Bag">
+        <img src="assets/img/ui/bag_icon.png" alt="Bag">
         <div id="bag-list"></div>
       </div>
       <button id="claim-reward-btn">Claim Daily Reward</button>
@@ -82,13 +82,13 @@
     </div>
     <div id="notification"></div>
   </div>
-  <audio id="bg-music" src="assets/sfx/music/background.mp3" loop></audio>
-  <audio id="harvest-sound" src="assets/sfx/music/harvest.mp3"></audio>
+  <audio id="bg-music" src="assets/sfx/music/main-bgm.mp3" loop></audio>
+  <audio id="harvest-sound" src="assets/sfx/voice/harvesting-bgv.mp3"></audio>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="firebase/firebase-config.js"></script>
-  <script src="farm/main.js?v=5"></script>
-  <!-- Force redeploy - April 18, 2025, fix start screen -->
+  <script src="farm/main.js?v=6"></script>
+  <!-- Force redeploy - April 18, 2025, fix zoom -->
 </body>
 </html>
