@@ -7,6 +7,7 @@
     "upgradesTab": "Upgrades",
     "inventoryTab": "Inventory",
     "leaderboardTab": "Leaderboard",
+    "achievementsTab": "Achievements",
     "coinLabel": "Coins",
     "buyLabel": "Buy",
     "emptyBag": "Bag is empty!",
@@ -17,7 +18,13 @@
     "upgradeBought": "Upgrade bought",
     "levelUp": "Level up to",
     "claimPiBtn": "Claim Pi",
-    "claimedPi": "Claimed"
+    "claimedPi": "Claimed",
+    "claimRewardBtn": "Claim Daily Reward",
+    "rewardClaimed": "Daily Reward Claimed!",
+    "rewardCooldown": "Reward Available Tomorrow!",
+    "achievementHarvest10": "Harvest 10 Plants",
+    "achievementPi10": "Collect 10 Pi",
+    "achievementUnlocked": "Achievement Unlocked!"
   },
   "id": {
     "title": "Pi Harvest Farm",
@@ -27,6 +34,7 @@
     "upgradesTab": "Peningkatan",
     "inventoryTab": "Inventaris",
     "leaderboardTab": "Papan Peringkat",
+    "achievementsTab": "Pencapaian",
     "coinLabel": "Koin",
     "buyLabel": "Beli",
     "emptyBag": "Tas kosong!",
@@ -37,6 +45,12 @@
     "upgradeBought": "Peningkatan dibeli",
     "levelUp": "Naik level ke",
     "claimPiBtn": "Klaim Pi",
-    "claimedPi": "Diklaim"
+    "claimedPi": "Diklaim",
+    "claimRewardBtn": "Klaim Hadiah Harian",
+    "rewardClaimed": "Hadiah Harian Diklaim!",
+    "rewardCooldown": "Hadiah Tersedia Besok!",
+    "achievementHarvest10": "Panen 10 Tanaman",
+    "achievementPi10": "Kumpulkan 10 Pi",
+    "achievementUnlocked": "Pencapaian Dibuka!"
   }
 }
