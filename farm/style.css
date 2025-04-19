@@ -404,7 +404,6 @@ body {
   border-radius: 5px;
 }
 
-/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   #title, #game-title {
     font-size: 24px;
