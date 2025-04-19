@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!settingsBtn) throw new Error('Settings button not found');
     if (!claimRewardBtn) throw new Error('Claim reward button not found');
 
+    // Remove any existing listeners to prevent duplicates
     startText.removeEventListener('click', startGame);
     langToggle.removeEventListener('click', toggleLanguage);
     settingsBtn.removeEventListener('click', openSettings);
@@ -135,53 +136,39 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsBtn.addEventListener('click', openSettings);
     claimRewardBtn.addEventListener('click', claimDailyReward);
 
-    function openSettings() {
-      console.log('Settings button clicked');
-      try {
-        const modal = document.getElementById('settings-modal');
-        if (modal) {
-          modal.style.display = 'block';
-          console.log('Settings modal opened');
-          playMenuSound();
-        } else {
-          throw new Error('Settings modal not found');
-        }
-      } catch (e) {
-        console.error('Open settings failed:', e.message);
-        alert('Failed to open settings. Check console for details.');
-      }
-    }
+    console.log('Event listeners attached for start, lang, settings, and claim reward');
 
+    // Attach tab listeners
     document.querySelectorAll('.tab-btn').forEach(btn => {
       const tab = btn.getAttribute('data-tab');
       btn.removeEventListener('click', () => switchTab(tab));
       btn.addEventListener('click', () => switchTab(tab));
     });
+    console.log('Tab button listeners attached');
 
-    console.log('Event listeners attached successfully');
-
-    // Initialize Firebase with error handling
+    // Initialize Firebase
     try {
       initializeFirebaseAuth();
       console.log('Firebase initialized successfully');
     } catch (e) {
       console.error('Firebase initialization failed:', e.message);
-      alert('Firebase initialization failed. Game may not work properly. Check console.');
+      alert('Firebase initialization failed. Game may not work properly.');
     }
 
     loadData();
     initializeSettings();
     updateVolumes();
+    console.log('Game initialization complete');
   } catch (e) {
     console.error('Initialization failed:', e.message);
-    alert('Failed to initialize game. Please check the console for errors.');
+    alert('Failed to initialize game. Check console for errors.');
   }
 });
 
 async function loadData() {
   console.log('Loading data...');
   try {
-    const langRes = await fetch('../data/lang.json');
+    const langRes = await fetch('data/lang.json'); // Fixed path
     if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
     langData = await langRes.json();
     console.log('Language data loaded:', langData);
@@ -192,7 +179,7 @@ async function loadData() {
   }
 
   try {
-    const vegRes = await fetch('../data/vegetables.json');
+    const vegRes = await fetch('data/vegetables.json'); // Fixed path
     if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables;
@@ -204,7 +191,7 @@ async function loadData() {
   }
 
   try {
-    const invRes = await fetch('../data/inventory.json');
+    const invRes = await fetch('data/inventory.json'); // Fixed path
     if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
     inventory = await invRes.json();
     console.log('Inventory data loaded:', inventory);
@@ -250,7 +237,7 @@ function startGame() {
     const startScreen = document.getElementById('start-screen');
     const gameContainer = document.getElementById('game-container');
     if (!startScreen || !gameContainer) throw new Error('Start screen or game container not found');
-    
+
     startScreen.style.display = 'none';
     gameContainer.style.display = 'block';
     console.log('Switched from start screen to game container');
@@ -261,18 +248,14 @@ function startGame() {
     const bgMusic = document.getElementById('bg-music');
     const bgVoice = document.getElementById('bg-voice');
     if (bgMusic) {
-      bgMusic.play().catch(e => {
-        console.error('Background music failed to play:', e.message);
-        alert('Background music failed to play. Check console.');
-      });
+      bgMusic.volume = musicVolume / 100;
+      bgMusic.play().catch(e => console.warn('Background music failed to play:', e.message));
     } else {
       console.warn('Background music element not found');
     }
     if (bgVoice) {
-      bgVoice.play().catch(e => {
-        console.error('Background voice failed to play:', e.message);
-        alert('Background voice failed to play. Check console.');
-      });
+      bgVoice.volume = voiceVolume / 100;
+      bgVoice.play().catch(e => console.warn('Background voice failed to play:', e.message));
     } else {
       console.warn('Background voice element not found');
     }
@@ -280,7 +263,7 @@ function startGame() {
     console.log('Game started successfully');
   } catch (e) {
     console.error('Start game failed:', e.message);
-    alert('Failed to start game. Please check the console for errors.');
+    alert('Failed to start game. Check console for errors.');
   }
 }
 
@@ -300,95 +283,53 @@ function toggleLanguage() {
     }
 
     updateUIText();
-
-    const startText = document.getElementById('start-text');
-    if (startText) {
-      startText.textContent = langData[currentLang].startBtn;
-      console.log('Start text updated to:', langData[currentLang].startBtn);
-    } else {
-      console.error('Start text element not found');
-    }
-
-    switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
     playMenuSound();
     console.log('Language toggled successfully');
   } catch (e) {
     console.error('Toggle language failed:', e.message);
-    alert('Failed to toggle language. Please check the console for errors.');
+    alert('Failed to toggle language. Check console for errors.');
   }
 }
 
 function updateUIText() {
   console.log('Updating UI text...');
   try {
-    const title = document.getElementById('title');
-    const startText = document.getElementById('start-text');
-    const gameTitle = document.getElementById('game-title');
-    const shopTitle = document.getElementById('shop-title');
-    const upgradesTitle = document.getElementById('upgrades-title');
-    const inventoryTitle = document.getElementById('inventory-title');
-    const exchangeTitle = document.getElementById('exchange-title');
-    const leaderboardTitle = document.getElementById('leaderboard-title');
-    const achievementsTitle = document.getElementById('achievements-title');
-    const claimRewardBtn = document.getElementById('claim-reward-btn');
-    const exchangeBtn = document.querySelector('#exchange-conversion button');
+    const elements = {
+      title: document.getElementById('title'),
+      startText: document.getElementById('start-text'),
+      gameTitle: document.getElementById('game-title'),
+      shopTitle: document.getElementById('shop-title'),
+      upgradesTitle: document.getElementById('upgrades-title'),
+      inventoryTitle: document.getElementById('inventory-title'),
+      exchangeTitle: document.getElementById('exchange-title'),
+      leaderboardTitle: document.getElementById('leaderboard-title'),
+      achievementsTitle: document.getElementById('achievements-title'),
+      claimRewardBtn: document.getElementById('claim-reward-btn'),
+      exchangeBtn: document.querySelector('#exchange-conversion button'),
+      coinLabel: document.getElementById('coin-label')
+    };
 
-    if (title) {
-      title.textContent = langData[currentLang].title;
-      console.log('Title updated');
-    }
-    if (startText) {
-      startText.textContent = langData[currentLang].startBtn;
-      console.log('Start text updated');
-    }
-    if (gameTitle) {
-      gameTitle.textContent = langData[currentLang].title;
-      console.log('Game title updated');
-    }
-    if (shopTitle) {
-      shopTitle.textContent = langData[currentLang].shopTab;
-      console.log('Shop title updated');
-    }
-    if (upgradesTitle) {
-      upgradesTitle.textContent = langData[currentLang].upgradesTab;
-      console.log('Upgrades title updated');
-    }
-    if (inventoryTitle) {
-      inventoryTitle.textContent = langData[currentLang].inventoryTab;
-      console.log('Inventory title updated');
-    }
-    if (exchangeTitle) {
-      exchangeTitle.textContent = langData[currentLang].exchangeTab;
-      console.log('Exchange title updated');
-    }
-    if (leaderboardTitle) {
-      leaderboardTitle.textContent = langData[currentLang].leaderboardTab;
-      console.log('Leaderboard title updated');
-    }
-    if (achievementsTitle) {
-      achievementsTitle.textContent = langData[currentLang].achievementsTab;
-      console.log('Achievements title updated');
-    }
-    if (claimRewardBtn) {
-      claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
-      console.log('Claim reward button updated');
-    }
-    if (exchangeBtn) {
-      exchangeBtn.textContent = langData[currentLang].exchangeBtn;
-      console.log('Exchange button updated');
-    }
+    if (elements.title) elements.title.textContent = langData[currentLang].title || 'Pi Harvest Farm';
+    if (elements.startText) elements.startText.textContent = langData[currentLang].startBtn || 'Start Game';
+    if (elements.gameTitle) elements.gameTitle.textContent = langData[currentLang].title || 'Pi Harvest Farm';
+    if (elements.shopTitle) elements.shopTitle.textContent = langData[currentLang].shopTab || 'Shop';
+    if (elements.upgradesTitle) elements.upgradesTitle.textContent = langData[currentLang].upgradesTab || 'Upgrades';
+    if (elements.inventoryTitle) elements.inventoryTitle.textContent = langData[currentLang].inventoryTab || 'Inventory';
+    if (elements.exchangeTitle) elements.exchangeTitle.textContent = langData[currentLang].exchangeTab || 'Exchange';
+    if (elements.leaderboardTitle) elements.leaderboardTitle.textContent = langData[currentLang].leaderboardTab || 'Leaderboard';
+    if (elements.achievementsTitle) elements.achievementsTitle.textContent = langData[currentLang].achievementsTab || 'Achievements';
+    if (elements.claimRewardBtn) elements.claimRewardBtn.textContent = langData[currentLang].claimRewardBtn || 'Claim Daily Reward';
+    if (elements.exchangeBtn) elements.exchangeBtn.textContent = langData[currentLang].exchangeBtn || 'Tukar';
+    if (elements.coinLabel) elements.coinLabel.textContent = langData[currentLang].coinLabel || 'Farm Coins';
 
+    const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'exchangeTab', 'leaderboardTab', 'achievementsTab'];
     document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-      const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'exchangeTab', 'leaderboardTab', 'achievementsTab'];
-      btn.textContent = langData[currentLang][tabs[idx]];
+      btn.textContent = langData[currentLang][tabs[idx]] || tabs[idx];
+      console.log(`Tab ${tabs[idx]} updated to:`, btn.textContent);
     });
 
     const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
-    if (activeTab === 'shop') renderShop();
-    if (activeTab === 'inventory') renderInventory();
-    if (activeTab === 'exchange') renderExchange();
-    if (activeTab === 'leaderboard') renderLeaderboard();
-    if (activeTab === 'achievements') renderAchievements();
+    if (activeTab) switchTab(activeTab);
     console.log('UI text updated successfully');
   } catch (e) {
     console.error('Update UI text failed:', e.message);
@@ -405,7 +346,6 @@ function initializeSettings() {
     const voiceSlider = document.getElementById('voice-volume');
 
     if (!modal || !closeBtn || !musicSlider || !voiceSlider) {
-      console.error('Settings elements not found');
       throw new Error('Settings elements not found');
     }
 
@@ -421,27 +361,81 @@ function initializeSettings() {
 
     function closeSettings() {
       console.log('Closing settings modal');
-      try {
-        modal.style.display = 'none';
-        playMenuSound();
-        console.log('Settings modal closed');
-      } catch (e) {
-        console.error('Close settings failed:', e.message);
-        alert('Failed to close settings. Check console for details.');
-      }
+      modal.style.display = 'none';
+      playMenuSound();
+      console.log('Settings modal closed');
     }
 
     function closeSettingsOnWindowClick(event) {
       if (event.target === modal) {
         console.log('Closing settings modal via window click');
-        try {
-          modal.style.display = 'none';
-          playMenuSound();
-          console.log('Settings modal closed via window click');
-        } catch (e) {
-          console.error('Close settings via window failed:', e.message);
-          alert('Failed to close settings via window click. Check console for details.');
-        }
+        modal.style.display = 'none';
+        playMenuSound();
+        console.log('Settings modal closed via window click');
+      }
+    }
+
+    musicSlider.addEventListener('input', () => {
+      musicVolume = parseInt(musicSlider.value);
+      localStorage.setItem('musicVolume', musicVolume);
+      updateVolumes();
+    });
+
+    voiceSlider.addEventListener('input', () => {
+      voiceVolume = parseInt(voiceSlider.value);
+      localStorage.setItem('voiceVolume', voiceVolume);
+      updateVolumes();
+    });
+
+    console.log('Settings initialized successfully');
+  } catch (e) {
+    console.error('Initialize settings failed:', e.messageI apologize for the interruption! It looks like the response was cut off. I'll continue from where it left off and complete the solution, ensuring all fixes are included and the response is concise yet comprehensive. I'll also address the memory concern and provide clear testing instructions.
+
+---
+
+### Solusi (Lanjutan)
+
+#### 1. Perbaiki `main.js` (Lanjutan)
+Berikut kelanjutan kode `main.js` yang sudah diperbaiki. Kode ini mempertahankan struktur asli lo, cuma benerin bug dan tambah log debug. Ganti isi `farm/main.js` dengan ini:
+
+```javascript
+// ... (bagian atas sama seperti kode lo, sampai initializeSettings)
+
+function initializeSettings() {
+  console.log('Initializing settings...');
+  try {
+    const modal = document.getElementById('settings-modal');
+    const closeBtn = document.getElementById('close-settings');
+    const musicSlider = document.getElementById('music-volume');
+    const voiceSlider = document.getElementById('voice-volume');
+
+    if (!modal || !closeBtn || !musicSlider || !voiceSlider) {
+      throw new Error('Settings elements not found');
+    }
+
+    musicSlider.value = musicVolume;
+    voiceSlider.value = voiceVolume;
+    console.log('Settings sliders initialized');
+
+    closeBtn.removeEventListener('click', closeSettings);
+    window.removeEventListener('click', closeSettingsOnWindowClick);
+
+    closeBtn.addEventListener('click', closeSettings);
+    window.addEventListener('click', closeSettingsOnWindowClick);
+
+    function closeSettings() {
+      console.log('Closing settings modal');
+      modal.style.display = 'none';
+      playMenuSound();
+      console.log('Settings modal closed');
+    }
+
+    function closeSettingsOnWindowClick(event) {
+      if (event.target === modal) {
+        console.log('Closing settings modal via window click');
+        modal.style.display = 'none';
+        playMenuSound();
+        console.log('Settings modal closed via window click');
       }
     }
 
@@ -460,28 +454,25 @@ function initializeSettings() {
     console.log('Settings initialized successfully');
   } catch (e) {
     console.error('Initialize settings failed:', e.message);
-    alert('Failed to initialize settings. Please check the console for errors.');
+    alert('Failed to initialize settings. Check console for errors.');
   }
 }
 
 function updateVolumes() {
   console.log('Updating volumes...');
   try {
-    const bgMusic = document.getElementById('bg-music');
-    const bgVoice = document.getElementById('bg-voice');
-    const harvestSound = document.getElementById('harvest-sound');
-    const wateringSound = document.getElementById('watering-sound');
-    const menuSound = document.getElementById('menu-sound');
-    const buyingSound = document.getElementById('buying-sound');
-    const coinSound = document.getElementById('coin-sound');
-
-    if (bgMusic) bgMusic.volume = musicVolume / 100;
-    if (bgVoice) bgVoice.volume = voiceVolume / 100;
-    if (harvestSound) harvestSound.volume = voiceVolume / 100;
-    if (wateringSound) wateringSound.volume = voiceVolume / 100;
-    if (menuSound) menuSound.volume = voiceVolume / 100;
-    if (buyingSound) buyingSound.volume = voiceVolume / 100;
-    if (coinSound) coinSound.volume = voiceVolume / 100;
+    const audioElements = [
+      'bg-music', 'bg-voice', 'harvest-sound', 'watering-sound',
+      'menu-sound', 'buying-sound', 'coin-sound'
+    ];
+    audioElements.forEach(id => {
+      const audio = document.getElementById(id);
+      if (audio) {
+        audio.volume = (id === 'bg-music' ? musicVolume : voiceVolume) / 100;
+      } else {
+        console.warn(`Audio element ${id} not found`);
+      }
+    });
     console.log('Volumes updated successfully');
   } catch (e) {
     console.error('Update volumes failed:', e.message);
@@ -493,9 +484,7 @@ function playMenuSound() {
   try {
     const menuSound = document.getElementById('menu-sound');
     if (menuSound) {
-      menuSound.play().catch(e => {
-        console.error('Menu sound failed:', e.message);
-      });
+      menuSound.play().catch(e => console.warn('Menu sound failed:', e.message));
     } else {
       console.warn('Menu sound element not found');
     }
@@ -509,7 +498,7 @@ function playBuyingSound() {
   try {
     const buyingSound = document.getElementById('buying-sound');
     if (buyingSound) {
-      buyingSound.play().catch(e => console.error('Buying sound failed:', e.message));
+      buyingSound.play().catch(e => console.warn('Buying sound failed:', e.message));
     }
   } catch (e) {
     console.error('Play buying sound failed:', e.message);
@@ -521,7 +510,7 @@ function playCoinSound() {
   try {
     const coinSound = document.getElementById('coin-sound');
     if (coinSound) {
-      coinSound.play().catch(e => console.error('Coin sound failed:', e.message));
+      coinSound.play().catch(e => console.warn('Coin sound failed:', e.message));
     }
   } catch (e) {
     console.error('Play coin sound failed:', e.message);
@@ -532,25 +521,26 @@ function switchTab(tab) {
   console.log('Switching to tab:', tab);
   try {
     const tabElement = document.getElementById(tab);
-    if (!tabElement) {
-      console.error(`Tab element ${tab} not found!`);
-      throw new Error(`Tab element ${tab} not found`);
-    }
+    if (!tabElement) throw new Error(`Tab element ${tab} not found`);
+
     document.querySelectorAll('.tab-content').forEach(content => {
       content.style.display = 'none';
     });
     tabElement.style.display = 'block';
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.classList.remove('active');
     });
     const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
     if (activeBtn) activeBtn.classList.add('active');
+
     if (tab === 'farm') renderFarm();
     if (tab === 'shop') renderShop();
     if (tab === 'inventory') renderInventory();
     if (tab === 'exchange') renderExchange();
     if (tab === 'leaderboard') renderLeaderboard();
     if (tab === 'achievements') renderAchievements();
+
     playMenuSound();
     console.log('Tab switched successfully');
   } catch (e) {
@@ -563,6 +553,7 @@ function initializePlots() {
   console.log('Initializing farm plots...');
   try {
     const farmArea = document.getElementById('farm-area');
+    if (!farmArea) throw new Error('Farm area not found');
     farmArea.innerHTML = '';
     const totalPlots = plotCount + upgrades.extraPlot;
     for (let i = 0; i < totalPlots; i++) {
@@ -584,12 +575,13 @@ function renderFarm() {
   try {
     farmPlots.forEach((plot, index) => {
       const plotElement = document.querySelector(`.plot[data-index="${index}"]`);
+      if (!plotElement) return;
       plotElement.innerHTML = '';
       if (plot.vegetable) {
         const veg = vegetables.find(v => v.id === plot.vegetable);
         const frame = Math.min(Math.floor((plot.growth / veg.growthTime) * veg.frames), veg.frames - 1);
         const img = document.createElement('img');
-        img.src = `../assets/img/plant/${veg.id}/${veg.id}_${frame + 1}.png`;
+        img.src = `assets/img/plant/${veg.id}/${veg.id}_${frame + 1}.png`;
         img.alt = veg.name[currentLang];
         img.className = 'plant-img';
         if (plot.growth >= veg.growthTime) {
@@ -644,13 +636,8 @@ function water(index) {
       return;
     }
     water--;
-    if (upgrades.wateringCan) {
-      farmPlots[index].watered = true;
-      farmPlots[index].growth += 2;
-    } else {
-      farmPlots[index].watered = true;
-      farmPlots[index].growth += 1;
-    }
+    farmPlots[index].watered = true;
+    farmPlots[index].growth += upgrades.wateringCan ? 2 : 1;
     const veg = vegetables.find(v => v.id === farmPlots[index].vegetable);
     if (farmPlots[index].growth >= veg.growthTime) {
       farmPlots[index].growth = veg.growthTime;
@@ -658,7 +645,7 @@ function water(index) {
     updateWallet();
     renderFarm();
     const wateringSound = document.getElementById('watering-sound');
-    if (wateringSound) wateringSound.play().catch(e => console.error('Watering sound failed:', e.message));
+    if (wateringSound) wateringSound.play().catch(e => console.warn('Watering sound failed:', e.message));
   } catch (e) {
     console.error('Water plot failed:', e.message);
   }
@@ -669,9 +656,7 @@ function harvest(index) {
   try {
     const veg = vegetables.find(v => v.id === farmPlots[index].vegetable);
     let yieldAmount = veg.yield;
-    if (upgrades.yieldBoost) {
-      yieldAmount = Math.round(yieldAmount * 1.5);
-    }
+    if (upgrades.yieldBoost) yieldAmount = Math.round(yieldAmount * 1.5);
     inventory.push({ id: veg.id, amount: yieldAmount });
     farmPlots[index] = { vegetable: null, growth: 0, watered: false };
     farmCoins += yieldAmount;
@@ -684,7 +669,7 @@ function harvest(index) {
     updateLevelBar();
     renderFarm();
     const harvestSound = document.getElementById('harvest-sound');
-    if (harvestSound) harvestSound.play().catch(e => console.error('Harvest sound failed:', e.message));
+    if (harvestSound) harvestSound.play().catch(e => console.warn('Harvest sound failed:', e.message));
     showNotification(`${langData[currentLang].harvested} ${veg.name[currentLang]}! +${yieldAmount} ${langData[currentLang].coinLabel}, +10 XP`);
   } catch (e) {
     console.error('Harvest failed:', e.message);
@@ -692,16 +677,17 @@ function harvest(index) {
 }
 
 function renderShop() {
-  console.log('Rendering shop');
+  console.log('Rendering shop...');
   try {
     const seedList = document.getElementById('seed-list');
+    if (!seedList) throw new Error('Seed list not found');
     seedList.innerHTML = '';
     let farmCoinPurchases = bag.filter(seed => seed.boughtWith === 'farm').length;
     vegetables.forEach(veg => {
       const div = document.createElement('div');
       div.className = 'seed-item';
       const img = document.createElement('img');
-      img.src = veg.image || `../assets/img/plant/${veg.id}/${veg.id}_${veg.frames}.png`;
+      img.src = veg.image || `assets/img/plant/${veg.id}/${veg.id}_${veg.frames}.png`;
       img.alt = veg.name[currentLang];
       img.onerror = () => console.error(`Failed to load image: ${img.src}`);
       const span = document.createElement('span');
@@ -760,14 +746,15 @@ function renderBag() {
   console.log('Rendering bag...');
   try {
     const bagList = document.getElementById('bag-list');
-    const bagIcon = document.getElementById('bag').querySelector('img');
+    const bagIcon = document.getElementById('bag')?.querySelector('img');
+    if (!bagList || !bagIcon) throw new Error('Bag list or icon not found');
     bagList.innerHTML = bag.length === 0 ? langData[currentLang].emptyBag : '';
     bag.forEach((seedObj, idx) => {
       const veg = vegetables.find(v => v.id === seedObj.id);
       const div = document.createElement('div');
       div.className = 'bag-item';
       const img = document.createElement('img');
-      img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
+      img.src = `assets/img/plant/${veg.id}/${veg.id}_1.png`;
       img.alt = veg.name[currentLang];
       const span = document.createElement('span');
       span.textContent = veg.name[currentLang];
@@ -783,9 +770,10 @@ function renderBag() {
 }
 
 function toggleBag() {
-  console.log('Toggling bag list');
+  console.log('Toggling bag list...');
   try {
     const bagList = document.getElementById('bag-list');
+    if (!bagList) throw new Error('Bag list not found');
     bagList.classList.toggle('show');
     playMenuSound();
   } catch (e) {
@@ -822,6 +810,7 @@ function buyUpgrade(type, currency) {
 }
 
 function applyUpgrade(type) {
+  console.log('Applying upgrade:', type);
   try {
     if (type === 'wateringCan' || type === 'yieldBoost') {
       upgrades[type] = true;
@@ -838,13 +827,14 @@ function renderInventory() {
   console.log('Rendering inventory...');
   try {
     const inventoryList = document.getElementById('inventory-list');
+    if (!inventoryList) throw new Error('Inventory list not found');
     inventoryList.innerHTML = inventory.length === 0 ? langData[currentLang].emptyInventory : '';
     inventory.forEach(item => {
       const veg = vegetables.find(v => v.id === item.id);
       const div = document.createElement('div');
       div.className = 'inventory-item';
       const img = document.createElement('img');
-      img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
+      img.src = `assets/img/plant/${veg.id}/${veg.id}_1.png`;
       img.alt = veg.name[currentLang];
       const span = document.createElement('span');
       span.textContent = `${veg.name[currentLang]}: ${item.amount}`;
@@ -866,6 +856,7 @@ function renderExchange() {
 }
 
 function convertCurrency() {
+  console.log('Converting currency...');
   try {
     const farmInput = document.getElementById('farm-to-pi');
     const piInput = document.getElementById('pi-to-farm');
@@ -914,6 +905,7 @@ function renderLeaderboard() {
   console.log('Rendering leaderboard...');
   try {
     const leaderboardList = document.getElementById('leaderboard-list');
+    if (!leaderboardList) throw new Error('Leaderboard list not found');
     leaderboardList.innerHTML = 'Loading...';
     db.collection('leaderboard')
       .orderBy('pi', 'desc')
@@ -930,7 +922,7 @@ function renderLeaderboard() {
         });
       })
       .catch(e => {
-        console.error('Leaderboard fetch failed:', e);
+        console.error('Leaderboard fetch failed:', e.message);
         leaderboardList.innerHTML = 'Failed to load leaderboard.';
       });
   } catch (e) {
@@ -945,7 +937,7 @@ function updateLeaderboard() {
     db.collection('leaderboard').doc(auth.currentUser.uid).set({
       name: playerName,
       pi: pi
-    }).catch(e => console.error('Leaderboard update failed:', e));
+    }).catch(e => console.error('Leaderboard update failed:', e.message));
   } catch (e) {
     console.error('Update leaderboard failed:', e.message);
   }
@@ -955,6 +947,7 @@ function renderAchievements() {
   console.log('Rendering achievements...');
   try {
     const achievementList = document.getElementById('achievement-list');
+    if (!achievementList) throw new Error('Achievement list not found');
     achievementList.innerHTML = '';
     const achievementsData = [
       { id: 'harvest10', name: langData[currentLang].achievementHarvest10, completed: achievements.harvest10 },
@@ -976,11 +969,11 @@ function checkAchievements() {
   try {
     if (harvestCount >= 10 && !achievements.harvest10) {
       achievements.harvest10 = true;
-      showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementHarvest10);
+      showNotification(`${langData[currentLang].achievementUnlocked} ${langData[currentLang].achievementHarvest10}`);
     }
     if (pi >= 10 && !achievements.pi10) {
       achievements.pi10 = true;
-      showNotification(langData[currentLang].achievementUnlocked + ' ' + langData[currentLang].achievementPi10);
+      showNotification(`${langData[currentLang].achievementUnlocked} ${langData[currentLang].achievementPi10}`);
     }
     localStorage.setItem('achievements', JSON.stringify(achievements));
     localStorage.setItem('harvestCount', JSON.stringify(harvestCount));
@@ -997,8 +990,10 @@ function checkDailyReward() {
   try {
     const now = Date.now();
     const claimRewardBtn = document.getElementById('claim-reward-btn');
+    if (!claimRewardBtn) throw new Error('Claim reward button not found');
     if (now - lastRewardClaim >= dailyRewardCooldown) {
       claimRewardBtn.disabled = false;
+      claimRewardBtn.textContent = langData[currentLang].claimRewardBtn;
     } else {
       claimRewardBtn.disabled = true;
       claimRewardBtn.textContent = langData[currentLang].rewardCooldown;
@@ -1032,9 +1027,13 @@ function claimDailyReward() {
 function updateWallet() {
   console.log('Updating wallet...');
   try {
-    document.getElementById('coin-balance').textContent = farmCoins;
-    document.getElementById('pi-balance').textContent = pi.toFixed(2);
-    document.getElementById('water-balance').textContent = water;
+    const coinBalance = document.getElementById('coin-balance');
+    const piBalance = document.getElementById('pi-balance');
+    const waterBalance = document.getElementById('water-balance');
+    if (!coinBalance || !piBalance || !waterBalance) throw new Error('Wallet elements not found');
+    coinBalance.textContent = farmCoins;
+    piBalance.textContent = pi.toFixed(2);
+    waterBalance.textContent = water;
     savePlayerData();
   } catch (e) {
     console.error('Update wallet failed:', e.message);
@@ -1044,10 +1043,14 @@ function updateWallet() {
 function updateLevelBar() {
   console.log('Updating level bar...');
   try {
-    document.getElementById('level-display').textContent = level;
-    document.getElementById('xp-display').textContent = xp;
+    const levelDisplay = document.getElementById('level-display');
+    const xpDisplay = document.getElementById('xp-display');
+    const xpProgress = document.getElementById('xp-progress');
+    if (!levelDisplay || !xpDisplay || !xpProgress) throw new Error('Level bar elements not found');
+    levelDisplay.textContent = level;
+    xpDisplay.textContent = xp;
     const progress = (xp / (xpPerLevel * level)) * 100;
-    document.getElementById('xp-progress').style.width = `${progress}%`;
+    xpProgress.style.width = `${progress}%`;
   } catch (e) {
     console.error('Update level bar failed:', e.message);
   }
@@ -1057,6 +1060,7 @@ function showNotification(message) {
   console.log('Showing notification:', message);
   try {
     const notification = document.getElementById('notification');
+    if (!notification) throw new Error('Notification element not found');
     notification.textContent = message;
     notification.style.display = 'block';
     setTimeout(() => {
@@ -1099,4 +1103,5 @@ setInterval(() => {
   }
 }, 5000);
 
-loadData();
+// Remove duplicate loadData call
+// loadData(); // Already called in DOMContentLoaded
