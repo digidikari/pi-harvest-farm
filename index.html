@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=14">
+  <link rel="stylesheet" href="farm/style.css?v=15">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -105,6 +105,12 @@
       <div id="achievement-list"></div>
     </div>
     <div id="notification"></div>
+    <!-- Tambah tombol bahasa, settings, dan exit di dalam game -->
+    <div class="game-buttons">
+      <button id="game-lang-toggle">Switch Language (EN/ID)</button>
+      <button id="game-settings-btn">⚙️</button>
+      <button id="exit-game-btn">Exit</button>
+    </div>
   </div>
   <audio id="bg-music" src="assets/sfx/music/main-bgm.mp3" loop></audio>
   <audio id="bg-voice" src="assets/sfx/voice/main-bgv.mp3" loop></audio>
@@ -113,11 +119,11 @@
   <audio id="menu-sound" src="assets/sfx/voice/menu-bgv.mp3"></audio>
   <audio id="buying-sound" src="assets/sfx/voice/buying-bgv.mp3"></audio>
   <audio id="coin-sound" src="assets/sfx/voice/coin-bgv.mp3"></audio>
-  <script src="farm/main.js?v=14"></script>
+  <script src="farm/main.js?v=15"></script>
   <script>
     console.log('Inline script running... Checking main.js load.');
     const mainScript = document.createElement('script');
-    mainScript.src = 'farm/main.js?v=14';
+    mainScript.src = 'farm/main.js?v=15';
     mainScript.onload = () => console.log('main.js loaded successfully!');
     mainScript.onerror = () => {
       console.error('Failed to load main.js! Check Network tab for status.');
@@ -125,6 +131,6 @@
     };
     document.head.appendChild(mainScript);
   </script>
-  <!-- Force redeploy - April 19, 2025, debug start game, settings, language v14 -->
+  <!-- Force redeploy - April 19, 2025, debug game features v15 -->
 </body>
 </html>
