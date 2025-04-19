@@ -536,6 +536,7 @@ function initializePlots() {
 
 // Handle plot click (planting, watering, harvesting)
 function handlePlotClick(index) {
+function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
   const plot = farmPlots[index];
   const plotElement = document.querySelectorAll('.plot')[index];
