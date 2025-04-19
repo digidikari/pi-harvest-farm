@@ -1,5 +1,5 @@
 body {
-  background: url('../assets/img/background.png') no-repeat center center fixed;
+  background: url('../assets/img/ui/farm_bg.png') no-repeat center center fixed;
   background-size: cover;
   font-family: Arial, sans-serif;
   color: #fff;
@@ -147,6 +147,7 @@ body {
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -177,7 +178,7 @@ body {
 .plot {
   width: 100px;
   height: 100px;
-  background: url('../assets/img/plot.png');
+  background: url('../assets/img/ui/farm_bg.png');
   background-size: cover;
   cursor: pointer;
   position: relative;
@@ -298,3 +299,90 @@ body {
   padding: 10px 20px;
   border-radius: 5px;
 }
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  #title, #game-title {
+    font-size: 24px;
+  }
+
+  .start-text {
+    font-size: 20px;
+  }
+
+  .corner-buttons {
+    top: 5px;
+    right: 5px;
+    gap: 5px;
+  }
+
+  #lang-toggle, #settings-btn {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .tabs {
+    gap: 5px;
+  }
+
+  .tab-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  #farm-area {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+
+  .plot {
+    width: 80px;
+    height: 80px;
+  }
+
+  #bag img {
+    width: 40px;
+  }
+
+  #claim-reward-btn, #claim-pi-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  #title, #game-title {
+    font-size: 20px;
+  }
+
+  .start-text {
+    font-size: 16px;
+  }
+
+  #lang-toggle, #settings-btn {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .tab-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  #farm-area {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  }
+
+  .plot {
+    width: 60px;
+    height: 60px;
+  }
+
+  #bag img {
+    width: 30px;
+  }
+
+  #claim-reward-btn, #claim-pi-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  }
