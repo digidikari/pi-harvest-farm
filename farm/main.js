@@ -22,6 +22,10 @@ let achievements = JSON.parse(localStorage.getItem('achievements')) || {
 let harvestCount = JSON.parse(localStorage.getItem('harvestCount')) || 0;
 let lastRewardClaim = JSON.parse(localStorage.getItem('lastRewardClaim')) || 0;
 
+// Tambah variabel buat volume
+let musicVolume = localStorage.getItem('musicVolume') ? parseInt(localStorage.getItem('musicVolume')) : 50;
+let voiceVolume = localStorage.getItem('voiceVolume') ? parseInt(localStorage.getItem('voiceVolume')) : 50;
+
 const plotCount = 8;
 const xpPerLevel = 100;
 const dailyRewardCooldown = 24 * 60 * 60 * 1000;
@@ -88,8 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
   initializeFirebaseAuth();
   loadData();
-  document.getElementById('start-btn').onclick = startGame;
+  // Ganti event listener buat teks Start Game
+  document.getElementById('start-text').onclick = startGame;
   document.getElementById('lang-toggle').onclick = toggleLanguage;
+  // Tambah event listener buat setting
+  initializeSettings();
+  // Set volume awal dan play background music
+  updateVolumes();
+  document.getElementById('bg-music').play().catch(e => console.warn('Background music failed to play:', e));
 });
 
 async function loadData() {
@@ -116,7 +126,7 @@ async function loadData() {
       throw new Error('Failed to load vegetables.json');
     }
     const vegData = await vegRes.json();
-    vegetables = vegData.vegetables; // Ambil array dari key "vegetables"
+    vegetables = vegData.vegetables;
     console.log('Loaded vegetables.json:', vegetables);
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
@@ -171,13 +181,15 @@ function toggleLanguage() {
   localStorage.setItem('lang', currentLang);
   document.getElementById('lang-toggle').textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
   updateUIText();
-  switchTab(document.querySelector('.tab-btn.active').getAttribute('data-tab'));
+  // Update teks Start Game sesuai bahasa
+  document.getElementById('start-text').textContent = langData[currentLang].startBtn;
+  switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
 }
 
 function updateUIText() {
   console.log('Updating UI text...');
   document.getElementById('title').textContent = langData[currentLang].title;
-  document.getElementById('start-btn').textContent = langData[currentLang].startBtn;
+  document.getElementById('start-text').textContent = langData[currentLang].startBtn;
   document.getElementById('game-title').textContent = langData[currentLang].title;
   document.getElementById('shop-title').textContent = langData[currentLang].shopTab;
   document.getElementById('upgrades-title').textContent = langData[currentLang].upgradesTab;
@@ -196,18 +208,70 @@ function updateUIText() {
     const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab', 'leaderboardTab', 'achievementsTab'];
     btn.textContent = langData[currentLang][tabs[idx]];
   });
-  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'shop') {
+  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'shop') {
     renderShop();
   }
-  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'inventory') {
+  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'inventory') {
     renderInventory();
   }
-  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'leaderboard') {
+  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'leaderboard') {
     renderLeaderboard();
   }
-  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'achievements') {
+  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'achievements') {
     renderAchievements();
   }
+}
+
+// Tambah fungsi buat handle setting
+function initializeSettings() {
+  const modal = document.getElementById('settings-modal');
+  const btn = document.getElementById('settings-btn');
+  const closeBtn = document.getElementById('close-settings');
+  const musicSlider = document.getElementById('music-volume');
+  const voiceSlider = document.getElementById('voice-volume');
+
+  // Set nilai awal slider dari localStorage
+  musicSlider.value = musicVolume;
+  voiceSlider.value = voiceVolume;
+
+  // Buka modal
+  btn.onclick = () => {
+    modal.style.display = 'block';
+  };
+
+  // Tutup modal
+  closeBtn.onclick = () => {
+    modal.style.display = 'none';
+  };
+
+  // Tutup modal kalo klik di luar
+  window.onclick = (event) => {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  };
+
+  // Update volume music
+  musicSlider.oninput = () => {
+    musicVolume = parseInt(musicSlider.value);
+    localStorage.setItem('musicVolume', musicVolume);
+    updateVolumes();
+  };
+
+  // Update volume voice/SFX
+  voiceSlider.oninput = () => {
+    voiceVolume = parseInt(voiceSlider.value);
+    localStorage.setItem('voiceVolume', voiceVolume);
+    updateVolumes();
+  };
+}
+
+// Update volume audio elements
+function updateVolumes() {
+  const bgMusic = document.getElementById('bg-music');
+  const harvestSound = document.getElementById('harvest-sound');
+  bgMusic.volume = musicVolume / 100;
+  harvestSound.volume = voiceVolume / 100;
 }
 
 function switchTab(tab) {
@@ -535,7 +599,7 @@ function checkAchievements() {
   }
   localStorage.setItem('achievements', JSON.stringify(achievements));
   localStorage.setItem('harvestCount', JSON.stringify(harvestCount));
-  if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'achievements') {
+  if (document.querySelector('.tab-btn.active')?.getAttribute('data-tab') === 'achievements') {
     renderAchievements();
   }
 }
