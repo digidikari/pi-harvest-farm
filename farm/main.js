@@ -52,6 +52,7 @@ function initializeGame() {
   updateUIText();
   initializePlots();
   updateWallet();
+  updateLevelBar();
   renderBag();
 }
 
@@ -80,6 +81,10 @@ function updateUIText() {
   document.getElementById('upgrades-title').textContent = langData[currentLang].upgradesTab;
   document.getElementById('inventory-title').textContent = langData[currentLang].inventoryTab;
   document.getElementById('coin-label').textContent = langData[currentLang].coinLabel;
+  const claimPiBtn = document.querySelector('#claim-pi-btn');
+  if (claimPiBtn) {
+    claimPiBtn.textContent = langData[currentLang].claimPiBtn;
+  }
   document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
     const tabs = ['farmTab', 'shopTab', 'upgradesTab', 'inventoryTab'];
     btn.textContent = langData[currentLang][tabs[idx]];
@@ -148,8 +153,9 @@ function renderFarm() {
       const veg = vegetables.find(v => v.id === plot.vegetable);
       const frame = Math.min(Math.floor((plot.growth / veg.growthTime) * veg.frames), veg.frames - 1);
       const img = document.createElement('img');
-      img.src = `./assets/img/plant/${veg.id}/${veg.id}_${frame + 1}.png`;
+      img.src = `../assets/img/plant/${veg.id}/${veg.id}_${frame + 1}.png`;
       img.alt = veg.name[currentLang];
+      img.className = 'plant-img';
       if (plot.growth >= veg.growthTime) {
         plotElement.classList.add('ready');
         plotElement.onclick = () => harvest(index);
@@ -208,11 +214,18 @@ function harvest(index) {
   inventory.push({ id: veg.id, amount: yieldAmount });
   farmPlots[index] = { vegetable: null, growth: 0, watered: false };
   coins += veg.price;
+  pi += veg.piPrice / 2;
   xp += 10;
   checkLevelUp();
   updateWallet();
+  updateLevelBar();
   renderFarm();
-  showNotification(`${langData[currentLang].harvested} ${veg.name[currentLang]}! +${veg.price} ${langData[currentLang].coinLabel}, +10 XP`);
+  try {
+    document.getElementById('harvest-sound').play();
+  } catch (e) {
+    console.warn('Harvest sound failed:', e);
+  }
+  showNotification(`${langData[currentLang].harvested} ${veg.name[currentLang]}! +${veg.price} ${langData[currentLang].coinLabel}, +${(veg.piPrice / 2).toFixed(2)} Pi, +10 XP`);
 }
 
 function renderShop() {
@@ -223,7 +236,7 @@ function renderShop() {
     const div = document.createElement('div');
     div.className = 'seed-item';
     const img = document.createElement('img');
-    img.src = `./assets/img/plant/${veg.id}/${veg.id}_1.png`;
+    img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
     img.alt = veg.name[currentLang];
     const span = document.createElement('span');
     span.textContent = `${veg.name[currentLang]} - ${veg.price} ${langData[currentLang].coinLabel} / ${veg.piPrice} Pi`;
@@ -264,7 +277,7 @@ function renderBag() {
     const div = document.createElement('div');
     div.className = 'bag-item';
     const img = document.createElement('img');
-    img.src = `./assets/img/plant/${veg.id}/${veg.id}_1.png`;
+    img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
     img.alt = veg.name[currentLang];
     const span = document.createElement('span');
     span.textContent = veg.name[currentLang];
@@ -313,7 +326,7 @@ function renderInventory() {
     const div = document.createElement('div');
     div.className = 'inventory-item';
     const img = document.createElement('img');
-    img.src = `./assets/img/plant/${veg.id}/${veg.id}_1.png`;
+    img.src = `../assets/img/plant/${veg.id}/${veg.id}_1.png`;
     img.alt = veg.name[currentLang];
     const span = document.createElement('span');
     span.textContent = `${veg.name[currentLang]}: ${item.amount}`;
@@ -322,10 +335,35 @@ function renderInventory() {
   });
 }
 
+function claimPi() {
+  console.log('Claiming Pi...');
+  if (inventory.length === 0) {
+    showNotification(langData[currentLang].emptyInventory);
+    return;
+  }
+  const totalPi = inventory.reduce((sum, item) => {
+    const veg = vegetables.find(v => v.id === item.id);
+    return sum + (item.amount * (veg.piPrice / 10));
+  }, 0);
+  pi += totalPi;
+  inventory = [];
+  updateWallet();
+  renderInventory();
+  showNotification(`${langData[currentLang].claimedPi} ${totalPi.toFixed(2)} Pi!`);
+}
+
 function updateWallet() {
   console.log('Updating wallet...');
   document.getElementById('coin-balance').textContent = coins;
   document.getElementById('pi-balance').textContent = pi.toFixed(2);
+}
+
+function updateLevelBar() {
+  console.log('Updating level bar...');
+  document.getElementById('level-display').textContent = level;
+  document.getElementById('xp-display').textContent = xp;
+  const progress = (xp / (xpPerLevel * level)) * 100;
+  document.getElementById('xp-progress').style.width = `${progress}%`;
 }
 
 function showNotification(message) {
@@ -344,6 +382,7 @@ function checkLevelUp() {
     level++;
     xp = 0;
     showNotification(`${langData[currentLang].levelUp} ${level}!`);
+    updateLevelBar();
   }
 }
 
