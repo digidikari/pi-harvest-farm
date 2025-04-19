@@ -22,7 +22,6 @@ let achievements = JSON.parse(localStorage.getItem('achievements')) || {
 let harvestCount = JSON.parse(localStorage.getItem('harvestCount')) || 0;
 let lastRewardClaim = JSON.parse(localStorage.getItem('lastRewardClaim')) || 0;
 
-// Tambah variabel buat volume
 let musicVolume = localStorage.getItem('musicVolume') ? parseInt(localStorage.getItem('musicVolume')) : 50;
 let voiceVolume = localStorage.getItem('voiceVolume') ? parseInt(localStorage.getItem('voiceVolume')) : 50;
 
@@ -30,7 +29,6 @@ const plotCount = 8;
 const xpPerLevel = 100;
 const dailyRewardCooldown = 24 * 60 * 60 * 1000;
 
-// Fallback data kalo lang.json gagal diload
 const fallbackLangData = {
   "en": {
     "title": "Pi Harvest Farm",
@@ -92,12 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
   initializeFirebaseAuth();
   loadData();
-  // Ganti event listener buat teks Start Game
   document.getElementById('start-text').onclick = startGame;
   document.getElementById('lang-toggle').onclick = toggleLanguage;
-  // Tambah event listener buat setting
   initializeSettings();
-  // Set volume awal dan play background music
   updateVolumes();
   document.getElementById('bg-music').play().catch(e => console.warn('Background music failed to play:', e));
 });
@@ -118,7 +113,6 @@ async function loadData() {
     langData = fallbackLangData;
   }
 
-  // Load vegetables.json
   try {
     const vegRes = await fetch('../data/vegetables.json');
     if (!vegRes.ok) {
@@ -134,7 +128,6 @@ async function loadData() {
     return;
   }
 
-  // Load inventory.json
   try {
     const invRes = await fetch('../data/inventory.json');
     if (!invRes.ok) {
@@ -181,7 +174,6 @@ function toggleLanguage() {
   localStorage.setItem('lang', currentLang);
   document.getElementById('lang-toggle').textContent = `Switch Language (${currentLang === 'en' ? 'ID' : 'EN'})`;
   updateUIText();
-  // Update teks Start Game sesuai bahasa
   document.getElementById('start-text').textContent = langData[currentLang].startBtn;
   switchTab(document.querySelector('.tab-btn.active')?.getAttribute('data-tab') || 'farm');
 }
@@ -222,7 +214,6 @@ function updateUIText() {
   }
 }
 
-// Tambah fungsi buat handle setting
 function initializeSettings() {
   const modal = document.getElementById('settings-modal');
   const btn = document.getElementById('settings-btn');
@@ -230,35 +221,29 @@ function initializeSettings() {
   const musicSlider = document.getElementById('music-volume');
   const voiceSlider = document.getElementById('voice-volume');
 
-  // Set nilai awal slider dari localStorage
   musicSlider.value = musicVolume;
   voiceSlider.value = voiceVolume;
 
-  // Buka modal
   btn.onclick = () => {
     modal.style.display = 'block';
   };
 
-  // Tutup modal
   closeBtn.onclick = () => {
     modal.style.display = 'none';
   };
 
-  // Tutup modal kalo klik di luar
   window.onclick = (event) => {
     if (event.target === modal) {
       modal.style.display = 'none';
     }
   };
 
-  // Update volume music
   musicSlider.oninput = () => {
     musicVolume = parseInt(musicSlider.value);
     localStorage.setItem('musicVolume', musicVolume);
     updateVolumes();
   };
 
-  // Update volume voice/SFX
   voiceSlider.oninput = () => {
     voiceVolume = parseInt(voiceSlider.value);
     localStorage.setItem('voiceVolume', voiceVolume);
@@ -266,7 +251,6 @@ function initializeSettings() {
   };
 }
 
-// Update volume audio elements
 function updateVolumes() {
   const bgMusic = document.getElementById('bg-music');
   const harvestSound = document.getElementById('harvest-sound');
@@ -641,7 +625,9 @@ function updateWallet() {
 }
 
 function updateLevelBar() {
-  console.log('Updating level bar...');
+ 
+
+ console.log('Updating level bar...');
   document.getElementById('level-display').textContent = level;
   document.getElementById('xp-display').textContent = xp;
   const progress = (xp / (xpPerLevel * level)) * 100;
