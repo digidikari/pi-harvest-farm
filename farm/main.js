@@ -112,6 +112,7 @@ const fallbackVegetables = [
   { id: "water", name: { en: "Water", id: "Air" }, farmPrice: 10, piPrice: 0.02, amount: 10 }
 ];
 
+// Initialize game on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
   try {
@@ -125,11 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!settingsBtn) throw new Error('Settings button not found');
     if (!claimRewardBtn) throw new Error('Claim reward button not found');
 
-    startText.removeEventListener('click', startGame);
-    langToggle.removeEventListener('click', toggleLanguage);
-    settingsBtn.removeEventListener('click', openSettings);
-    claimRewardBtn.removeEventListener('click', claimDailyReward);
-
     startText.addEventListener('click', startGame);
     langToggle.addEventListener('click', toggleLanguage);
     settingsBtn.addEventListener('click', openSettings);
@@ -139,22 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       const tab = btn.getAttribute('data-tab');
-      btn.removeEventListener('click', () => switchTab(tab));
       btn.addEventListener('click', () => switchTab(tab));
     });
     console.log('Tab button listeners attached');
-
-    try {
-      if (typeof initializeFirebaseAuth === 'function') {
-        initializeFirebaseAuth();
-        console.log('Firebase initialized successfully');
-      } else {
-        console.warn('initializeFirebaseAuth not found, skipping Firebase initialization');
-      }
-    } catch (e) {
-      console.error('Firebase initialization failed:', e.message);
-      // Lanjutkan tanpa Firebase
-    }
 
     loadData();
     initializeSettings();
@@ -166,10 +149,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Load JSON data with fallback
 async function loadData() {
   console.log('Loading data...');
   try {
-    const langRes = await fetch('/data/lang.json');
+    const langRes = await fetch('./data/lang.json');
     if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
     langData = await langRes.json();
     console.log('Language data loaded:', langData);
@@ -180,7 +164,7 @@ async function loadData() {
   }
 
   try {
-    const vegRes = await fetch('/data/vegetables.json');
+    const vegRes = await fetch('./data/vegetables.json');
     if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables || vegData;
@@ -192,7 +176,7 @@ async function loadData() {
   }
 
   try {
-    const invRes = await fetch('/data/inventory.json');
+    const invRes = await fetch('./data/inventory.json');
     if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
     inventory = await invRes.json();
     console.log('Inventory data loaded:', inventory);
@@ -205,6 +189,7 @@ async function loadData() {
   initializeGame();
 }
 
+// Initialize game state
 function initializeGame() {
   console.log('Initializing game...');
   try {
@@ -232,6 +217,7 @@ function initializeGame() {
   }
 }
 
+// Start the game
 function startGame() {
   console.log('Starting game...');
   try {
@@ -268,6 +254,7 @@ function startGame() {
   }
 }
 
+// Toggle language
 function toggleLanguage() {
   console.log('Toggling language...');
   try {
@@ -292,9 +279,16 @@ function toggleLanguage() {
   }
 }
 
+// Update UI text
 function updateUIText() {
   console.log('Updating UI text...');
   try {
+    // Ensure langData is populated, use fallback if empty
+    if (!langData[currentLang]) {
+      langData = fallbackLangData;
+      console.log('langData was empty, using fallbackLangData');
+    }
+
     const elements = {
       title: document.getElementById('title'),
       startText: document.getElementById('start-text'),
@@ -338,6 +332,7 @@ function updateUIText() {
   }
 }
 
+// Open settings modal
 function openSettings() {
   console.log('Opening settings...');
   const modal = document.getElementById('settings-modal');
@@ -349,6 +344,7 @@ function openSettings() {
   }
 }
 
+// Initialize settings
 function initializeSettings() {
   console.log('Initializing settings...');
   try {
@@ -364,9 +360,6 @@ function initializeSettings() {
     musicSlider.value = musicVolume;
     voiceSlider.value = voiceVolume;
     console.log('Settings sliders initialized');
-
-    closeBtn.removeEventListener('click', closeSettings);
-    window.removeEventListener('click', closeSettingsOnWindowClick);
 
     closeBtn.addEventListener('click', closeSettings);
     window.addEventListener('click', closeSettingsOnWindowClick);
@@ -404,4 +397,70 @@ function initializeSettings() {
     console.error('Initialize settings failed:', e.message);
     alert('Failed to initialize settings. Check console for errors.');
   }
+}
+
+// Placeholder functions (to avoid errors)
+function loadPlayerData() {
+  console.log('Loading player data (placeholder)...');
+  // Add logic if needed
+}
+
+function switchTab(tab) {
+  console.log(`Switching to ${tab} tab (placeholder)...`);
+  // Add logic if needed
+}
+
+function initializePlots() {
+  console.log('Initializing plots (placeholder)...');
+  // Add logic if needed
+}
+
+function updateWallet() {
+  console.log('Updating wallet (placeholder)...');
+  // Add logic if needed
+}
+
+function updateLevelBar() {
+  console.log('Updating level bar (placeholder)...');
+  // Add logic if needed
+}
+
+function renderBag() {
+  console.log('Rendering bag (placeholder)...');
+  // Add logic if needed
+}
+
+function renderAchievements() {
+  console.log('Rendering achievements (placeholder)...');
+  // Add logic if needed
+}
+
+function checkDailyReward() {
+  console.log('Checking daily reward (placeholder)...');
+  // Add logic if needed
+}
+
+function claimDailyReward() {
+  console.log('Claiming daily reward (placeholder)...');
+  // Add logic if needed
+}
+
+function playMenuSound() {
+  console.log('Playing menu sound (placeholder)...');
+  // Add logic if needed
+}
+
+function updateVolumes() {
+  console.log('Updating volumes (placeholder)...');
+  // Add logic if needed
+}
+
+function convertCurrency() {
+  console.log('Converting currency (placeholder)...');
+  // Add logic if needed
+}
+
+function buyUpgrade(type, currency) {
+  console.log(`Buying upgrade ${type} with ${currency} (placeholder)...`);
+  // Add logic if needed
       }
