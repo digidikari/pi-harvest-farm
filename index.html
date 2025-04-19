@@ -27,9 +27,9 @@
       </div>
       <div id="bag">
         <img src="./assets/img/ui/bag_icon.png" alt="Bag">
+        <div id="bag-list"></div> <!-- Pindah ke dalam id="bag" -->
       </div>
       <div id="farm-area"></div>
-      <div id="bag-list"></div>
     </div>
     <div id="shop" class="tab-content" style="display: none;">
       <h2 id="shop-title">Shop</h2>
@@ -37,10 +37,10 @@
     </div>
     <div id="upgrades" class="tab-content" style="display: none;">
       <h2 id="upgrades-title">Upgrades</h2>
-      <button id="wateringCan-btn">Watering Can (50 Coins / 0.2 Pi)</button>
-      <button id="extraPlotCoins-btn">Extra Plot (200 Coins)</button>
-      <button id="extraPlotPi-btn">Extra Plots (1 Pi)</button>
-      <button id="yieldBoost-btn">Yield Boost (100 Coins / 0.5 Pi)</button>
+      <button id="wateringCan-btn" onclick="buyUpgrade('wateringCan')">Watering Can (50 Coins / 0.2 Pi)</button>
+      <button id="extraPlotCoins-btn" onclick="buyUpgrade('extraPlotCoins')">Extra Plot (200 Coins)</button>
+      <button id="extraPlotPi-btn" onclick="buyUpgrade('extraPlotPi')">Extra Plots (1 Pi)</button>
+      <button id="yieldBoost-btn" onclick="buyUpgrade('yieldBoost')">Yield Boost (100 Coins / 0.5 Pi)</button>
     </div>
     <div id="inventory" class="tab-content" style="display: none;">
       <h2 id="inventory-title">Inventory</h2>
