@@ -24,7 +24,65 @@ let lastRewardClaim = JSON.parse(localStorage.getItem('lastRewardClaim')) || 0;
 
 const plotCount = 8;
 const xpPerLevel = 100;
-const dailyRewardCooldown = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
+const dailyRewardCooldown = 24 * 60 * 60 * 1000;
+
+// Fallback data kalo lang.json gagal diload
+const fallbackLangData = {
+  "en": {
+    "title": "Pi Harvest Farm",
+    "startBtn": "Start Game",
+    "farmTab": "Farm",
+    "shopTab": "Shop",
+    "upgradesTab": "Upgrades",
+    "inventoryTab": "Inventory",
+    "leaderboardTab": "Leaderboard",
+    "achievementsTab": "Achievements",
+    "coinLabel": "Coins",
+    "buyLabel": "Buy",
+    "emptyBag": "Bag is empty!",
+    "emptyInventory": "Inventory is empty!",
+    "notEnoughMoney": "Not enough money!",
+    "bought": "Bought",
+    "harvested": "Harvested",
+    "upgradeBought": "Upgrade bought",
+    "levelUp": "Level up to",
+    "claimPiBtn": "Claim Pi",
+    "claimedPi": "Claimed",
+    "claimRewardBtn": "Claim Daily Reward",
+    "rewardClaimed": "Daily Reward Claimed!",
+    "rewardCooldown": "Reward Available Tomorrow!",
+    "achievementHarvest10": "Harvest 10 Plants",
+    "achievementPi10": "Collect 10 Pi",
+    "achievementUnlocked": "Achievement Unlocked!"
+  },
+  "id": {
+    "title": "Pi Harvest Farm",
+    "startBtn": "Mulai Permainan",
+    "farmTab": "Ladang",
+    "shopTab": "Toko",
+    "upgradesTab": "Peningkatan",
+    "inventoryTab": "Inventaris",
+    "leaderboardTab": "Papan Peringkat",
+    "achievementsTab": "Pencapaian",
+    "coinLabel": "Koin",
+    "buyLabel": "Beli",
+    "emptyBag": "Tas kosong!",
+    "emptyInventory": "Inventaris kosong!",
+    "notEnoughMoney": "Uang tidak cukup!",
+    "bought": "Dibeli",
+    "harvested": "Dipanen",
+    "upgradeBought": "Peningkatan dibeli",
+    "levelUp": "Naik level ke",
+    "claimPiBtn": "Klaim Pi",
+    "claimedPi": "Diklaim",
+    "claimRewardBtn": "Klaim Hadiah Harian",
+    "rewardClaimed": "Hadiah Harian Diklaim!",
+    "rewardCooldown": "Hadiah Tersedia Besok!",
+    "achievementHarvest10": "Panen 10 Tanaman",
+    "achievementPi10": "Kumpulkan 10 Pi",
+    "achievementUnlocked": "Pencapaian Dibuka!"
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
@@ -38,20 +96,48 @@ async function loadData() {
   console.log('Loading data...');
   try {
     const langRes = await fetch('../data/lang.json');
-    const vegRes = await fetch('../data/vegetables.json');
-    const invRes = await fetch('../data/inventory.json');
-    if (!langRes.ok) throw new Error('Failed to load lang.json');
-    if (!vegRes.ok) throw new Error('Failed to load vegetables.json');
-    if (!invRes.ok) throw new Error('Failed to load inventory.json');
+    if (!langRes.ok) {
+      console.error(`Failed to load lang.json, status: ${langRes.status}, statusText: ${langRes.statusText}`);
+      throw new Error('Failed to load lang.json');
+    }
     langData = await langRes.json();
-    vegetables = await vegRes.json();
-    inventory = await invRes.json();
-    console.log('Loaded JSON:', { langData, vegetables, inventory });
-    initializeGame();
+    console.log('Loaded lang.json:', langData);
   } catch (e) {
-    console.error('JSON load failed:', e);
-    alert('JSON error: ' + e.message);
+    console.error('Lang JSON load failed:', e.message);
+    console.warn('Using fallback lang data...');
+    langData = fallbackLangData; // Pakai fallback kalo gagal
   }
+
+  // Load vegetables.json
+  try {
+    const vegRes = await fetch('../data/vegetables.json');
+    if (!vegRes.ok) {
+      console.error(`Failed to load vegetables.json, status: ${vegRes.status}, statusText: ${vegRes.statusText}`);
+      throw new Error('Failed to load vegetables.json');
+    }
+    vegetables = await vegRes.json();
+    console.log('Loaded vegetables.json:', vegetables);
+  } catch (e) {
+    console.error('Vegetables JSON load failed:', e.message);
+    alert('Failed to load vegetables.json: ' + e.message);
+    return; // Stop kalo vegetables.json gagal, karena ini kritikal
+  }
+
+  // Load inventory.json
+  try {
+    const invRes = await fetch('../data/inventory.json');
+    if (!invRes.ok) {
+      console.error(`Failed to load inventory.json, status: ${invRes.status}, statusText: ${invRes.statusText}`);
+      throw new Error('Failed to load inventory.json');
+    }
+    inventory = await invRes.json();
+    console.log('Loaded inventory.json:', inventory);
+  } catch (e) {
+    console.error('Inventory JSON load failed:', e.message);
+    inventory = []; // Fallback ke array kosong
+  }
+
+  initializeGame();
 }
 
 function initializeGame() {
