@@ -171,22 +171,22 @@ function drawTimerArc(index) {
 
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const radius = 20;
+  const radius = 15; // Sesuaikan dengan ukuran plot
   const startAngle = -Math.PI / 2;
   const progress = plot.countdown / plot.totalCountdown;
   const endAngle = startAngle + (2 * Math.PI * progress);
 
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 3;
   ctx.strokeStyle = '#333';
   ctx.stroke();
 
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 3;
   ctx.strokeStyle = '#0ff'; // Cyan neon
-  ctx.shadowBlur = 10;
+  ctx.shadowBlur = 8;
   ctx.shadowColor = '#0ff';
   ctx.stroke();
   ctx.shadowBlur = 0;
