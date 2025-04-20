@@ -37,12 +37,12 @@
     "convertSuccess": "Exchange successful!",
     "exchanged": "Exchanged PI to Farm Coins!",
     "exchangeBtn": "Exchange",
-    "farmPage": "Farm {0}", // Ditambah buat nama halaman
-    "lockedFarm": "Locked", // Ditambah buat status terkunci
-    "unlockLevel": "Reach Level {0}", // Ditambah buat syarat level
-    "unlockFCCost": "Unlock for {0} FC", // Ditambah buat syarat FC
-    "unlockPICost": "Unlock for {0} PI", // Ditambah buat syarat PI
-    "unlocked": "Farm Unlocked!" // Ditambah buat notifikasi unlock
+    "farmPage": "Farm {0}",
+    "lockedFarm": "Locked",
+    "unlockLevel": "Reach Level {0}",
+    "unlockFCCost": "Unlock for {0} FC",
+    "unlockPICost": "Unlock for {0} PI",
+    "unlocked": "Farm Unlocked!"
   },
   "id": {
     "title": "Pi Harvest Farm",
@@ -82,11 +82,11 @@
     "convertSuccess": "Penukaran berhasil!",
     "exchanged": "Menukar PI ke Farm Coins!",
     "exchangeBtn": "Tukar",
-    "farmPage": "Ladang {0}", // Ditambah
-    "lockedFarm": "Terkunci", // Ditambah
-    "unlockLevel": "Capai Level {0}", // Ditambah
-    "unlockFCCost": "Buka dengan {0} FC", // Ditambah
-    "unlockPICost": "Buka dengan {0} PI", // Ditambah
-    "unlocked": "Ladang Terbuka!" // Ditambah
+    "farmPage": "Ladang {0}",
+    "lockedFarm": "Terkunci",
+    "unlockLevel": "Capai Level {0}",
+    "unlockFCCost": "Buka dengan {0} FC",
+    "unlockPICost": "Buka dengan {0} PI",
+    "unlocked": "Ladang Terbuka!"
   }
 }
