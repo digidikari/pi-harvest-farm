@@ -134,17 +134,17 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(2, 100px);
-  grid-template-rows: repeat(2, 10px);
-  gap: 40px; /* Jarak antar plot sesuai tinggi tanaman */
+  grid-template-columns: repeat(2, 120px);
+  grid-template-rows: repeat(2, 12px);
+  gap: 60px; /* Jarak antar plot lebih besar */
   justify-content: center;
   align-content: center;
   background: #8b4513;
   padding: 20px;
   border-radius: 10px;
   width: 90%; /* Maksimal sampe pinggir layar */
-  max-width: 300px; /* Batasi lebar maksimal biar gak terlalu lelet di layar kecil */
-  height: 140px; /* 2 * 10px (plot) + 40px (gap) + 40px (padding) */
+  max-width: 360px; /* Lebar maksimal lebih besar */
+  height: 164px; /* 2 * 12px (plot) + 60px (gap) + 40px (padding) */
   margin: 0 auto;
 }
 
@@ -159,8 +159,9 @@ h1 {
   cursor: pointer;
   transition: transform 0.1s;
   position: relative;
-  width: 100px;
-  height: 10px;
+  width: 120px;
+  height: 12px;
+  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff; /* Efek neon cyan */
 }
 
 .plot-content {
@@ -178,11 +179,29 @@ h1 {
   height: 40px;
 }
 
+.countdown-bar {
+  position: absolute;
+  top: 10px; /* Posisikan di bawah tanaman */
+  width: 80px;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.countdown-fill {
+  width: 0%;
+  height: 100%;
+  background: #0ff; /* Cyan neon */
+  box-shadow: 0 0 10px #0ff;
+  transition: width 0.1s linear;
+}
+
 .plot-status {
   font-size: 8px;
   color: #ffeb3b;
   position: absolute;
-  bottom: -10px; /* Posisikan status di bawah plot */
+  top: 20px; /* Posisikan di bawah countdown bar */
   text-align: center;
   line-height: 1.2;
   width: 100%;
@@ -441,17 +460,18 @@ input[type="range"] {
   /* Responsive adjustments */
 @media (max-width: 600px) {
   #farm-area {
-    grid-template-columns: repeat(2, 80px);
-    grid-template-rows: repeat(2, 8px);
-    gap: 30px;
+    grid-template-columns: repeat(2, 100px);
+    grid-template-rows: repeat(2, 10px);
+    gap: 50px;
     width: 90%;
-    max-width: 240px;
-    height: 116px;
+    max-width: 300px;
+    height: 140px;
   }
 
   .plot {
-    width: 80px;
-    height: 8px;
+    width: 100px;
+    height: 10px;
+    box-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
   }
 
   .plot-content {
@@ -464,9 +484,15 @@ input[type="range"] {
     height: 30px;
   }
 
+  .countdown-bar {
+    top: 8px;
+    width: 60px;
+    height: 5px;
+  }
+
   .plot-status {
     font-size: 6px;
-    bottom: -8px;
+    top: 16px;
   }
 
   .plot-timer {
