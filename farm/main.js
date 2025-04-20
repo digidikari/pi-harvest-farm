@@ -1004,7 +1004,7 @@ function initializeGame() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
   try {
-    const startText = document.getElementById('start-text');
+    const startGameBtn = document.getElementById('start-game-btn');
     const langToggle = document.getElementById('lang-toggle');
     const settingsBtn = document.getElementById('settings-btn');
     const claimRewardBtn = document.getElementById('claim-reward-btn');
@@ -1017,16 +1017,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('carousel-prev');
     const nextBtn = document.getElementById('carousel-next');
 
-    console.log('Start Text Element:', startText);
+    console.log('Start Game Button Element:', startGameBtn);
     console.log('Lang Toggle Element:', langToggle);
     console.log('Settings Button Element:', settingsBtn);
     console.log('Game Lang Toggle Element:', gameLangToggle);
 
-    if (startText) {
-      startText.addEventListener('click', startGame);
-      console.log('Start Text listener attached');
+    if (startGameBtn) {
+      startGameBtn.addEventListener('click', startGame);
+      console.log('Start Game Button listener attached');
     } else {
-      console.warn('Start Text element not found');
+      console.warn('Start Game Button element not found');
     }
 
     if (langToggle) {
