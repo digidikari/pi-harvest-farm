@@ -147,7 +147,9 @@ function initializePlots() {
     plot.classList.add('plot');
     plot.innerHTML = `
       <div class="plot-content"></div>
-      <canvas class="plot-timer" width="50" height="50"></canvas>
+      <div class="countdown-bar">
+        <div class="countdown-fill"></div>
+      </div>
       <div class="plot-status"></div>
     `;
     plot.addEventListener('click', () => handlePlotClick(i));
