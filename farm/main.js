@@ -171,7 +171,7 @@ function drawTimerArc(index) {
 
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const radius = 15; // Sesuaikan dengan ukuran plot
+  const radius = 18; // Sesuaikan dengan ukuran plot
   const startAngle = -Math.PI / 2;
   const progress = plot.countdown / plot.totalCountdown;
   const endAngle = startAngle + (2 * Math.PI * progress);
