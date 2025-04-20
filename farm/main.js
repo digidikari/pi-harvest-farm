@@ -137,7 +137,7 @@ async function loadData() {
 // Load player data
 function loadPlayerData() {
   console.log('Loading player data...');
-  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 100;
+  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 1000;
   pi = localStorage.getItem('pi') ? parseFloat(localStorage.getItem('pi')) : 0;
   water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 100;
   level = localStorage.getItem('level') ? parseInt(localStorage.getItem('level')) : 1;
@@ -146,7 +146,7 @@ function loadPlayerData() {
   harvestCount = localStorage.getItem('harvestCount') ? parseInt(localStorage.getItem('harvestCount')) : 0;
 
   if (!localStorage.getItem('farmCoins')) {
-    farmCoins = 100;
+    farmCoins = 1000;
     localStorage.setItem('farmCoins', farmCoins);
   }
   if (!localStorage.getItem('water')) {
@@ -187,12 +187,12 @@ function initializePlots() {
     plot.classList.add('plot');
     plot.addEventListener('click', () => handlePlotClick(i));
     farmArea.appendChild(plot);
-    farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false });
+    farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1 });
   }
   console.log('Plots initialized:', farmPlots);
 }
 
-// Handle plot click
+// Handle plot click with animation
 function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
   const plot = farmPlots[index];
@@ -206,7 +206,19 @@ function handlePlotClick(index) {
       plot.vegetable = vegetable;
       plot.progress = 0;
       plot.watered = false;
-      plotElement.innerHTML = `<img src="${vegetable.image}" class="plant-img">`;
+      plot.currentFrame = 1;
+      plotElement.innerHTML = `<img src="assets/img/plant/beet/beet_${plot.currentFrame}.png" class="plant-img">`;
+      
+      // Animate growth
+      const growthInterval = setInterval(() => {
+        if (!plot.planted || plot.watered) {
+          clearInterval(growthInterval);
+          return;
+        }
+        plot.currentFrame = Math.min(plot.currentFrame + 1, vegetable.frames);
+        plotElement.innerHTML = `<img src="assets/img/plant/beet/beet_${plot.currentFrame}.png" class="plant-img">`;
+      }, vegetable.growthTime * 1000 / vegetable.frames);
+
       bag.splice(seedIndex, 1);
       renderBag();
       showNotification(langData[currentLang].bought);
@@ -242,6 +254,7 @@ function handlePlotClick(index) {
     plot.vegetable = null;
     plot.progress = 0;
     plot.watered = false;
+    plot.currentFrame = 1;
     plotElement.innerHTML = '';
     plotElement.classList.remove('ready');
     harvestCount++;
@@ -258,7 +271,21 @@ function handlePlotClick(index) {
 // Render bag items
 function renderBag() {
   const bagItems = document.getElementById('bag-items');
-  bagItems.innerHTML = bag.map(item => `<span>${item}</span>`).join('');
+  if (bagItems) {
+    bagItems.innerHTML = bag.map(item => `<span>${item}</span>`).join('');
+    console.log('Bag rendered:', bag);
+  } else {
+    console.error('Bag items element not found');
+  }
+}
+
+// Toggle bag visibility
+function toggleBag() {
+  const bagItems = document.getElementById('bag-items');
+  if (bagItems) {
+    bagItems.classList.toggle('hidden');
+    console.log('Bag visibility toggled');
+  }
 }
 
 // Render shop
@@ -281,7 +308,7 @@ function renderShop() {
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
     vegItem.innerHTML = `
-      <img src="${veg.image}" alt="${veg.name[currentLang]}" class="shop-item-img">
+      <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img">
       <h3>${veg.name[currentLang]}</h3>
       <p>Farm Price: ${veg.farmPrice} Coins</p>
       <p>PI Price: ${veg.piPrice} PI</p>
@@ -346,7 +373,7 @@ function renderInventory() {
     const invItem = document.createElement('div');
     invItem.classList.add('inventory-item');
     invItem.innerHTML = `
-      <img src="${item.vegetable.image}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
+      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
       <h3>${item.vegetable.name[currentLang]}</h3>
       <p>Quantity: ${item.quantity}</p>
     `;
@@ -363,7 +390,7 @@ function renderSellSection() {
     sellItem.classList.add('sell-item');
     const sellPrice = Math.floor(item.vegetable.farmPrice * 0.5);
     sellItem.innerHTML = `
-      <img src="${item.vegetable.image}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
+      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
       <h3>${item.vegetable.name[currentLang]}</h3>
       <p>Quantity: ${item.quantity}</p>
       <p>Sell Price: ${sellPrice} Coins</p>
@@ -438,6 +465,8 @@ function switchTab(tab) {
       renderInventory();
     } else if (tab === 'achievements') {
       renderAchievements();
+    } else if (tab === 'exchange') {
+      updateExchangeResult();
     }
 
     playMenuSound();
@@ -462,9 +491,17 @@ function exchangePi() {
     showNotification(langData[currentLang].exchanged);
     playCoinSound();
     checkCoinAchievement();
+    updateExchangeResult();
   } else {
     showNotification(langData[currentLang].notEnoughPi);
   }
+}
+
+// Update exchange result
+function updateExchangeResult() {
+  const amount = parseFloat(document.getElementById('exchange-amount').value) || 0;
+  const farmCoinsResult = amount * piToFarmRate;
+  document.getElementById('exchange-result').textContent = farmCoinsResult;
 }
 
 // Claim daily reward
@@ -487,6 +524,7 @@ function claimDailyReward() {
   document.getElementById('claim-reward-btn').disabled = true;
   showNotification(langData[currentLang].dailyReward);
   playCoinSound();
+  console.log('Daily reward claimed, bag:', bag);
 }
 
 // Check harvest achievement
@@ -579,14 +617,17 @@ function exitGame() {
 // Toggle language
 function toggleLanguage() {
   currentLang = currentLang === 'en' ? 'id' : 'en';
-  document.getElementById('lang-toggle').textContent = `Switch Language (EN/ID)`;
-  document.getElementById('game-lang-toggle').textContent = `Switch Language (EN/ID)`;
+  const langToggle = document.getElementById('lang-toggle');
+  const gameLangToggle = document.getElementById('game-lang-toggle');
+  if (langToggle) langToggle.textContent = `Switch Language (EN/ID)`;
+  if (gameLangToggle) gameLangToggle.textContent = `Switch Language (EN/ID)`;
   updateWallet();
   renderShop();
   renderInventory();
   renderSellSection();
   renderAchievements();
   playMenuSound();
+  console.log('Language toggled to:', currentLang);
 }
 
 // Open settings
@@ -652,10 +693,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameSettingsBtn = document.getElementById('game-settings-btn');
     const exitGameBtn = document.getElementById('exit-game-btn');
     const exchangeBtn = document.getElementById('exchange-btn');
+    const exchangeAmount = document.getElementById('exchange-amount');
+    const bagIcon = document.getElementById('bag-icon');
 
     console.log('Start Text Element:', startText);
     console.log('Lang Toggle Element:', langToggle);
     console.log('Settings Button Element:', settingsBtn);
+    console.log('Game Lang Toggle Element:', gameLangToggle);
 
     if (startText) {
       startText.addEventListener('click', startGame);
@@ -711,6 +755,18 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Exchange Button listener attached');
     } else {
       console.warn('Exchange Button element not found');
+    }
+
+    if (exchangeAmount) {
+      exchangeAmount.addEventListener('input', updateExchangeResult);
+      console.log('Exchange Amount listener attached');
+    }
+
+    if (bagIcon) {
+      bagIcon.addEventListener('click', toggleBag);
+      console.log('Bag Icon listener attached');
+    } else {
+      console.warn('Bag Icon element not found');
     }
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
