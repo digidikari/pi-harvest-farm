@@ -14,10 +14,10 @@ let harvestCount = 0;
 const plotCount = 36; // 6x6 grid
 const piToFarmRate = 10000; // 1 PI = 10,000 Farm Coins
 
-// Fallback langData (dipertahankan karena gak kritis)
+// Fallback langData
 const fallbackLangData = {
   en: {
-    planted: "Planted!", // Tambah key 'planted'
+    planted: "Planted!",
     bought: "Planted a vegetable!",
     notEnoughCoins: "Not enough Farm Coins!",
     notEnoughPi: "Not enough PI!",
@@ -32,7 +32,7 @@ const fallbackLangData = {
     achievementCoinsDesc: "Collect 1000 Farm Coins"
   },
   id: {
-    planted: "Menanam!", // Tambah key 'planted'
+    planted: "Menanam!",
     bought: "Menanam sayuran!",
     notEnoughCoins: "Farm Coins tidak cukup!",
     notEnoughPi: "PI tidak cukup!",
@@ -216,63 +216,18 @@ function handlePlotClick(index) {
       plot.watered = false;
       plot.currentFrame = 1;
       plot.countdown = vegetable.growthTime;
-      plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
+      plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
       plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
 
       bag.splice(seedIndex, 1);
       renderBag();
-      showNotification(langData[currentLang].planted); // Ubah jadi 'planted'
+      showNotification(langData[currentLang].planted);
       playBuyingSound();
       console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
     } else {
       showNotification("No Seeds in bag!");
     }
-  } else if (plot.planted && !plot.watered) {
-    const waterIndex = bag.findIndex(item => item.includes('Water'));
-    const waterItem = waterIndex !== -1 ? bag[waterIndex] : null;
-    const waterAmount = waterItem ? parseInt(waterItem.split('x')[1]) : 0;
-    const waterNeeded = plot.vegetable.waterNeeded || 1; // Ambil kebutuhan air dari tanaman
-
-    if (waterIndex !== -1 && waterAmount >= waterNeeded) { // Cek air di bag cukup
-      plot.watered = true;
-      if (waterAmount > waterNeeded) {
-        bag[waterIndex] = `Water x${waterAmount - waterNeeded}`;
-      } else {
-        bag.splice(waterIndex, 1);
-      }
-      renderBag();
-      playWateringSound();
-
-      // Start countdown
-      plot.countdown = plot.vegetable.growthTime;
-      const countdownInterval = setInterval(() => {
-        if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
-          clearInterval(countdownInterval);
-          return;
-        }
-        plot.countdown--;
-        if (plot.countdown <= 0) {
-          plot.currentFrame++;
-          plot.watered = false;
-          plot.countdown = plot.vegetable.growthTime;
-          plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
-          if (plot.currentFrame >= plot.vegetable.frames) {
-            plotElement.classList.add('ready');
-            plotStatus.innerHTML = `Ready to Harvest`;
-            clearInterval(countdownInterval);
-          } else {
-            plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
-          }
-        } else {
-          plotStatus.innerHTML = `Growing<br>Countdown: ${plot.countdown}s`;
-        }
-      }, 1000);
-
-      console.log(`Watered plot ${index}, used ${waterNeeded} water`);
-    } else {
-      showNotification(langData[currentLang].notEnoughWater);
-    }
-  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
+  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) { // Prioritaskan panen
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
     localStorage.setItem('inventory', JSON.stringify(inventory));
     plot.planted = false;
@@ -292,6 +247,55 @@ function handlePlotClick(index) {
     renderInventory();
     renderSellSection();
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
+  } else if (plot.planted && !plot.watered) {
+    const waterIndex = bag.findIndex(item => item.includes('Water'));
+    const waterItem = waterIndex !== -1 ? bag[waterIndex] : null;
+    const waterAmount = waterItem ? parseInt(waterItem.split('x')[1]) : 0;
+    const waterNeeded = plot.vegetable.waterNeeded || 1;
+
+    if (waterIndex !== -1 && waterAmount >= waterNeeded) {
+      plot.watered = true;
+      if (waterAmount > waterNeeded) {
+        bag[waterIndex] = `Water x${waterAmount - waterNeeded}`;
+      } else {
+        bag.splice(waterIndex, 1);
+      }
+      renderBag();
+      playWateringSound();
+
+      // Start countdown hanya kalau disiram
+      const countdownInterval = setInterval(() => {
+        if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
+          clearInterval(countdownInterval);
+          return;
+        }
+        if (plot.watered) {
+          plot.countdown--;
+          if (plot.countdown <= 0) {
+            plot.currentFrame++;
+            plot.watered = false; // Reset watered setelah countdown selesai
+            plot.countdown = plot.vegetable.growthTime;
+            plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+            if (plot.currentFrame >= plot.vegetable.frames) {
+              plotElement.classList.add('ready');
+              plotStatus.innerHTML = `Ready to Harvest`;
+              clearInterval(countdownInterval);
+            } else {
+              plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
+            }
+          } else {
+            plotStatus.innerHTML = `Growing<br>Countdown: ${plot.countdown}s`;
+          }
+        } else {
+          plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
+          clearInterval(countdownInterval); // Stop countdown kalau belum disiram
+        }
+      }, 1000);
+
+      console.log(`Watered plot ${index}, used ${waterNeeded} water`);
+    } else {
+      showNotification(langData[currentLang].notEnoughWater);
+    }
   }
 }
 
@@ -334,10 +338,11 @@ function renderShop() {
   vegetables.forEach(veg => {
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
+    const farmPrice = veg.farmPrice !== undefined ? veg.farmPrice : 0; // Fallback kalau farmPrice undefined
     vegItem.innerHTML = `
       <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${veg.name[currentLang]}</h3>
-      <p>Farm Price: ${veg.farmPrice} Coins</p>
+      <p>Farm Price: ${farmPrice} Coins</p>
       <p>PI Price: ${veg.piPrice} PI</p>
       <button class="buy-btn" data-id="${veg.id}">Buy (Farm)</button>
       <button class="buy-pi-btn" data-id="${veg.id}">Buy (PI)</button>
@@ -545,7 +550,7 @@ function claimDailyReward() {
     return;
   }
 
-  bag.push('Seed x1', 'Water x2');
+  bag.push('Seed x1', 'Water x2'); // Cuma tambah Seed dan Water
   renderBag();
   localStorage.setItem('lastClaim', now);
   document.getElementById('claim-reward-btn').disabled = true;
@@ -654,7 +659,7 @@ function toggleLanguage() {
   if (langToggle) langToggle.textContent = `Switch Language (EN/ID)`;
   if (gameLangToggle) gameLangToggle.textContent = `Switch Language (EN/ID)`;
   updateWallet();
-  renderBag(); // Update bag UI
+  renderBag();
   renderShop();
   renderInventory();
   renderSellSection();
