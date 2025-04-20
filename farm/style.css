@@ -18,11 +18,10 @@ body {
 
 #start-text {
   font-size: 48px;
-  cursor: pointer;
   margin-bottom: 20px;
 }
 
-#lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn, #claim-reward-btn {
+#start-game-btn, #lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn, #claim-reward-btn {
   background: #555;
   color: white;
   border: none;
@@ -32,7 +31,7 @@ body {
   border-radius: 5px;
 }
 
-#lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover, #claim-reward-btn:hover {
+#start-game-btn:hover, #lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover, #claim-reward-btn:hover {
   background: #666;
 }
 
