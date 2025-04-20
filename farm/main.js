@@ -20,7 +20,7 @@ const fallbackLangData = {
   en: {
     planted: "Planted!",
     watered: "Watered!",
-    bought: "Bought a vegetable!",
+    bought: "Bought!",
     notEnoughCoins: "Not enough Farm Coins!",
     notEnoughPi: "Not enough PI!",
     notEnoughWater: "Not enough Water!",
@@ -34,9 +34,9 @@ const fallbackLangData = {
     achievementCoinsDesc: "Collect 1000 Farm Coins"
   },
   id: {
-    planted: "Menanam!",
-    watered: "Menyiram!",
-    bought: "Menanam sayuran!",
+    planted: "Ditanam!",
+    watered: "Disiram!",
+    bought: "Membeli!",
     notEnoughCoins: "Farm Coins tidak cukup!",
     notEnoughPi: "PI tidak cukup!",
     notEnoughWater: "Air tidak cukup!",
@@ -416,21 +416,21 @@ function renderShop() {
 function buyVegetable(id, currency) {
   if (id === 'water') {
     if (currency === 'farm') {
-      if (farmCoins >= 50) {
-        farmCoins -= 50;
-        water += 50;
+      if (farmCoins >= 100) {
+        farmCoins -= 100;
+        water += 10;
         updateWallet();
-        showTransactionAnimation(`-50`, false, document.querySelector(`.buy-btn[data-id="water"]`));
+        showTransactionAnimation(`-10`, false, document.querySelector(`.buy-btn[data-id="water"]`));
         playBuyingSound();
       } else {
         showNotification(langData[currentLang].notEnoughCoins);
       }
     } else {
-      if (pi >= 0.00005) { // Sesuai rate baru
-        pi -= 0.00005;
-        water += 50;
+      if (pi >= 0.00001) { // Sesuai rate baru
+        pi -= 0.00001;
+        water += 10;
         updateWallet();
-        showTransactionAnimation(`-0.00005 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
+        showTransactionAnimation(`-0.00001 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
         playBuyingSound();
       } else {
         showNotification(langData[currentLang].notEnoughPi);
