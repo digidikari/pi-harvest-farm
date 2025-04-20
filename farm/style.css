@@ -134,16 +134,17 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(2, 80px);
-  grid-template-rows: repeat(2, 8px);
-  gap: 10px;
+  grid-template-columns: repeat(2, 100px);
+  grid-template-rows: repeat(2, 10px);
+  gap: 40px; /* Jarak antar plot sesuai tinggi tanaman */
   justify-content: center;
   align-content: center;
   background: #8b4513;
   padding: 20px;
   border-radius: 10px;
-  width: 180px;
-  height: 56px;
+  width: 90%; /* Maksimal sampe pinggir layar */
+  max-width: 300px; /* Batasi lebar maksimal biar gak terlalu lelet di layar kecil */
+  height: 140px; /* 2 * 10px (plot) + 40px (gap) + 40px (padding) */
   margin: 0 auto;
 }
 
@@ -158,8 +159,8 @@ h1 {
   cursor: pointer;
   transition: transform 0.1s;
   position: relative;
-  width: 80px;
-  height: 8px;
+  width: 100px;
+  height: 10px;
 }
 
 .plot-content {
@@ -191,7 +192,7 @@ h1 {
 .plot-timer {
   position: absolute;
   top: -36px;
-  width: 80px;
+  width: 100px;
   height: 40px;
 }
 
@@ -440,15 +441,17 @@ input[type="range"] {
   /* Responsive adjustments */
 @media (max-width: 600px) {
   #farm-area {
-    grid-template-columns: repeat(2, 60px);
-    grid-template-rows: repeat(2, 6px);
-    width: 140px;
-    height: 44px;
+    grid-template-columns: repeat(2, 80px);
+    grid-template-rows: repeat(2, 8px);
+    gap: 30px;
+    width: 90%;
+    max-width: 240px;
+    height: 116px;
   }
 
   .plot {
-    width: 60px;
-    height: 6px;
+    width: 80px;
+    height: 8px;
   }
 
   .plot-content {
@@ -468,7 +471,7 @@ input[type="range"] {
 
   .plot-timer {
     top: -26px;
-    width: 60px;
+    width: 80px;
     height: 30px;
   }
 
