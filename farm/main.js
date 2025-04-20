@@ -17,6 +17,7 @@ const piToFarmRate = 10000; // 1 PI = 10,000 Farm Coins
 // Fallback langData (dipertahankan karena gak kritis)
 const fallbackLangData = {
   en: {
+    planted: "Planted!", // Tambah key 'planted'
     bought: "Planted a vegetable!",
     notEnoughCoins: "Not enough Farm Coins!",
     notEnoughPi: "Not enough PI!",
@@ -31,6 +32,7 @@ const fallbackLangData = {
     achievementCoinsDesc: "Collect 1000 Farm Coins"
   },
   id: {
+    planted: "Menanam!", // Tambah key 'planted'
     bought: "Menanam sayuran!",
     notEnoughCoins: "Farm Coins tidak cukup!",
     notEnoughPi: "PI tidak cukup!",
@@ -219,7 +221,7 @@ function handlePlotClick(index) {
 
       bag.splice(seedIndex, 1);
       renderBag();
-      showNotification(langData[currentLang].bought);
+      showNotification(langData[currentLang].planted); // Ubah jadi 'planted'
       playBuyingSound();
       console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
     } else {
@@ -227,14 +229,14 @@ function handlePlotClick(index) {
     }
   } else if (plot.planted && !plot.watered) {
     const waterIndex = bag.findIndex(item => item.includes('Water'));
-    if (waterIndex !== -1 && water > 0) {
+    const waterItem = waterIndex !== -1 ? bag[waterIndex] : null;
+    const waterAmount = waterItem ? parseInt(waterItem.split('x')[1]) : 0;
+    const waterNeeded = plot.vegetable.waterNeeded || 1; // Ambil kebutuhan air dari tanaman
+
+    if (waterIndex !== -1 && waterAmount >= waterNeeded) { // Cek air di bag cukup
       plot.watered = true;
-      water--;
-      updateWallet();
-      const waterItem = bag[waterIndex];
-      const waterAmount = parseInt(waterItem.split('x')[1]);
-      if (waterAmount > 1) {
-        bag[waterIndex] = `Water x${waterAmount - 1}`;
+      if (waterAmount > waterNeeded) {
+        bag[waterIndex] = `Water x${waterAmount - waterNeeded}`;
       } else {
         bag.splice(waterIndex, 1);
       }
@@ -266,7 +268,7 @@ function handlePlotClick(index) {
         }
       }, 1000);
 
-      console.log(`Watered plot ${index}`);
+      console.log(`Watered plot ${index}, used ${waterNeeded} water`);
     } else {
       showNotification(langData[currentLang].notEnoughWater);
     }
