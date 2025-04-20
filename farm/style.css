@@ -1,5 +1,5 @@
 body {
-  background: url('../assets/img/background.jpg') no-repeat center center fixed;
+  background: url('../assets/img/ui/farm_bg.png') no-repeat center center fixed;
   background-size: cover;
   color: white;
   font-family: Arial, sans-serif;
@@ -102,6 +102,8 @@ body {
   width: 200px;
   margin: 0 auto;
   padding: 20px;
+  background: rgba(0, 0, 0, 0.5); /* Tambah background biar keliatan */
+  border-radius: 10px;
 }
 
 .farm-title {
