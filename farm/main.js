@@ -68,33 +68,33 @@ async function loadData() {
   console.log('Loading data...');
   try {
     const langRes = await fetch('./data/lang.json');
-    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
+    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status}, url: ${langRes.url})`);
     langData = await langRes.json();
     console.log('Language data loaded:', langData);
   } catch (e) {
     console.error('Lang JSON load failed:', e.message);
-    throw new Error('Cannot proceed without language data. Please check lang.json.');
+    throw new Error('Cannot proceed without language data. Please check lang.json in ./data/ directory.');
   }
 
   try {
     const vegRes = await fetch('./data/vegetables.json');
-    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
+    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status}, url: ${vegRes.url})`);
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables || vegData;
     console.log('Vegetables data loaded:', vegetables);
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
-    throw new Error('Cannot proceed without vegetables data. Please check vegetables.json.');
+    throw new Error('Cannot proceed without vegetables data. Please check vegetables.json in ./data/ directory.');
   }
 
   try {
     const invRes = await fetch('./data/inventory.json');
-    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
+    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status}, url: ${invRes.url})`);
     inventory = await invRes.json();
     console.log('Inventory data loaded:', inventory);
   } catch (e) {
     console.error('Inventory JSON load failed:', e.message);
-    throw new Error('Cannot proceed without inventory data. Please check inventory.json.');
+    throw new Error('Cannot proceed without inventory data. Please check inventory.json in ./data/ directory.');
   }
 
   initializeGame();
