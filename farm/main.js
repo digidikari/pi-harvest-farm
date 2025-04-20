@@ -11,7 +11,7 @@ let langData = {};
 let currentLang = 'en';
 let farmPlots = [];
 let harvestCount = 0;
-const plotsPerPage = 16; // 4x4 grid per halaman
+const plotsPerPage = 4; // 2x2 grid per halaman
 const totalPages = 10; // 10 halaman, total 40 plot
 let currentPage = 0; // Halaman saat ini (0 = Farm 1)
 let unlockedFarms = [true, false, false, false, false, false, false, false, false, false]; // Farm 1 terbuka, lainnya terkunci
@@ -198,12 +198,13 @@ function initializePlots() {
     return;
   }
 
-  // Inisialisasi 40 plot (10 halaman x 16 plot)
+  // Inisialisasi 40 plot (10 halaman x 4 plot)
   farmPlots = [];
   for (let i = 0; i < totalPages * plotsPerPage; i++) {
     farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1, countdown: 0, totalCountdown: 0 });
   }
 
+  console.log('Total plots initialized:', farmPlots.length);
   renderCurrentPage();
   updateCarouselControls();
 }
@@ -211,6 +212,11 @@ function initializePlots() {
 // Render halaman saat ini
 function renderCurrentPage() {
   const farmArea = document.getElementById('farm-area');
+  if (!farmArea) {
+    console.error('Farm area element not found during render');
+    return;
+  }
+
   farmArea.innerHTML = '';
 
   const farmTitle = document.createElement('div');
@@ -234,7 +240,8 @@ function renderCurrentPage() {
 
   // Render plot untuk halaman saat ini
   const startIndex = currentPage * plotsPerPage;
-  for (let i = startIndex; i < startIndex + plotsPerPage; i++) {
+  const endIndex = Math.min(startIndex + plotsPerPage, farmPlots.length);
+  for (let i = startIndex; i < endIndex; i++) {
     const plot = document.createElement('div');
     plot.classList.add('plot');
     plot.innerHTML = `
@@ -282,8 +289,10 @@ function updatePlotUI(index) {
 function updateCarouselControls() {
   const prevBtn = document.getElementById('carousel-prev');
   const nextBtn = document.getElementById('carousel-next');
-  prevBtn.disabled = currentPage === 0;
-  nextBtn.disabled = currentPage === totalPages - 1;
+  if (prevBtn && nextBtn) {
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage === totalPages - 1;
+  }
 }
 
 // Pindah halaman
@@ -298,16 +307,6 @@ function changePage(direction) {
 
 // Syarat unlock farm
 function getUnlockCondition(page) {
-  // Contoh syarat:
-  // Farm 2: Level 2
-  // Farm 3: 500 FC
-  // Farm 4: 0.001 PI
-  // Farm 5: Harvest 20 tanaman
-  // Farm 6: Level 5
-  // Farm 7: 1000 FC
-  // Farm 8: 0.002 PI
-  // Farm 9: Harvest 50 tanaman
-  // Farm 10: Level 10
   const conditions = [
     null, // Farm 1 terbuka
     { type: 'level', value: 2 },
@@ -487,7 +486,9 @@ function handlePlotClick(index) {
       water -= waterNeeded;
       plot.watered = true;
       updateWallet();
-      showNotification(langData[currentLang].watered);
+      showNotification(langData
+
+[currentLang].watered);
       playWateringSound();
 
       const countdownInterval = setInterval(() => {
@@ -566,7 +567,6 @@ function renderShop() {
     return;
   }
 
-  // Render sayuran
   vegetables.forEach(veg => {
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
@@ -582,14 +582,13 @@ function renderShop() {
     shopContent.appendChild(vegItem);
   });
 
-  // Tambah item Water dengan harga baru
   const waterItem = document.createElement('div');
   waterItem.classList.add('shop-item');
   waterItem.innerHTML = `
     <img src="assets/img/ui/water.png" alt="Water" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
     <h3>Water</h3>
     <p>Farm Price: 100 Coins</p>
-    <p>PI Price: 0.0001 PI</p> <!-- 100 FC / 1,000,000 = 0.0001 PI -->
+    <p>PI Price: 0.0001 PI</p>
     <button class="buy-btn" data-id="water">Buy (Farm)</button>
     <button class="buy-pi-btn" data-id="water">Buy (PI)</button>
   `;
@@ -612,13 +611,13 @@ function renderShop() {
   console.log('Shop rendered successfully');
 }
 
-// Buy vegetable or water with updated Water amount
+// Buy vegetable or water
 function buyVegetable(id, currency) {
   if (id === 'water') {
     if (currency === 'farm') {
       if (farmCoins >= 100) {
         farmCoins -= 100;
-        water += 10; // Diubah dari 50 jadi 10
+        water += 10;
         updateWallet();
         showTransactionAnimation(`-100`, false, document.querySelector(`.buy-btn[data-id="water"]`));
         playBuyingSound();
@@ -628,7 +627,7 @@ function buyVegetable(id, currency) {
     } else {
       if (pi >= 0.0001) {
         pi -= 0.0001;
-        water += 10; // Diubah dari 50 jadi 10
+        water += 10;
         updateWallet();
         showTransactionAnimation(`-0.0001 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
         playBuyingSound();
@@ -1101,7 +1100,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Listener untuk tombol unlock
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('unlock-btn')) {
         const page = parseInt(e.target.getAttribute('data-page'));
