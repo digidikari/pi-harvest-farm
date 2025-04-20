@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="farm/style.css">
 </head>
 <body>
   <div id="start-screen">
@@ -44,7 +44,7 @@
         <button id="carousel-prev">←</button>
         <button id="carousel-next">→</button>
       </div>
-      <img id="bag-icon" src="assets/img/ui/bag.png" alt="Bag">
+      <img id="bag-icon" src="assets/img/ui/bag_icon.png" alt="Bag">
       <div id="bag-items" class="hidden"></div>
     </div>
 
@@ -89,14 +89,16 @@
     </div>
   </div>
 
-  <audio id="bg-music" loop src="assets/audio/background.mp3"></audio>
-  <audio id="bg-voice" loop src="assets/audio/voice.mp3"></audio>
-  <audio id="harvest-sound" src="assets/audio/harvest.mp3"></audio>
-  <audio id="watering-sound" src="assets/audio/watering.mp3"></audio>
-  <audio id="menu-sound" src="assets/audio/menu.mp3"></audio>
-  <audio id="buying-sound" src="assets/audio/buying.mp3"></audio>
-  <audio id="coin-sound" src="assets/audio/coin.mp3"></audio>
+  <audio id="bg-music" loop src="assets/sfx/music/main-bgm.mp3"></audio>
+  <audio id="bg-voice" loop src="assets/sfx/voice/main-bgv.mp3"></audio>
+  <audio id="harvest-sound" src="assets/sfx/voice/harvesting-bgv.mp3"></audio>
+  <audio id="watering-sound" src="assets/sfx/voice/watering-bgv.mp3"></audio>
+  <audio id="menu-sound" src="assets/sfx/voice/menu-bgv.mp3"></audio>
+  <audio id="buying-sound" src="assets/sfx/voice/buying-bgv.mp3"></audio>
+  <audio id="coin-sound" src="assets/sfx/voice/coin-bgv.mp3"></audio>
 
-  <script src="main.js"></script>
+  <script src="firebase/firebase-config.js"></script>
+  <script src="firebase/firebase-functions.js"></script>
+  <script src="farm/main.js"></script>
 </body>
 </html>
