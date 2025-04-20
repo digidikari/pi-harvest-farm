@@ -12,44 +12,7 @@ let currentLang = 'en';
 let farmPlots = [];
 let harvestCount = 0;
 const plotCount = 36; // 6x6 grid
-const piToFarmRate = 1000000; // 1 PI = 1,000,000 Farm Coins (diupdate)
-
-
-// Fallback langData
-const fallbackLangData = {
-  en: {
-    planted: "Planted!",
-    watered: "Watered!",
-    bought: "Bought!",
-    notEnoughCoins: "Not enough Farm Coins!",
-    notEnoughPi: "Not enough PI!",
-    notEnoughWater: "Not enough Water!",
-    harvested: "Harvested!",
-    exchanged: "Exchanged PI to Farm Coins!",
-    dailyReward: "Claimed daily reward: 100 FC, 1 Beet, 50 Water",
-    achievementUnlocked: "Achievement Unlocked!",
-    achievementHarvest: "Harvest Master",
-    achievementHarvestDesc: "Harvest 10 plants",
-    achievementCoins: "Coin Collector",
-    achievementCoinsDesc: "Collect 1000 Farm Coins"
-  },
-  id: {
-    planted: "Ditanam!",
-    watered: "Disiram!",
-    bought: "Membeli!",
-    notEnoughCoins: "Farm Coins tidak cukup!",
-    notEnoughPi: "PI tidak cukup!",
-    notEnoughWater: "Air tidak cukup!",
-    harvested: "Panen selesai!",
-    exchanged: "Menukar PI ke Farm Coins!",
-    dailyReward: "Mengklaim hadiah harian: 100 FC, 1 Bit, 50 Air",
-    achievementUnlocked: "Pencapaian Terbuka!",
-    achievementHarvest: "Ahli Panen",
-    achievementHarvestDesc: "Panen 10 tanaman",
-    achievementCoins: "Pengumpul Koin",
-    achievementCoinsDesc: "Kumpulkan 1000 Farm Coins"
-  }
-};
+const piToFarmRate = 1000000; // 1 PI = 1,000,000 Farm Coins
 
 // Audio elements
 const bgMusic = document.getElementById('bg-music');
@@ -110,8 +73,7 @@ async function loadData() {
     console.log('Language data loaded:', langData);
   } catch (e) {
     console.error('Lang JSON load failed:', e.message);
-    langData = fallbackLangData;
-    console.log('Using fallback language data');
+    throw new Error('Cannot proceed without language data. Please check lang.json.');
   }
 
   try {
@@ -132,8 +94,7 @@ async function loadData() {
     console.log('Inventory data loaded:', inventory);
   } catch (e) {
     console.error('Inventory JSON load failed:', e.message);
-    inventory = [];
-    console.log('Using empty inventory');
+    throw new Error('Cannot proceed without inventory data. Please check inventory.json.');
   }
 
   initializeGame();
@@ -157,9 +118,9 @@ function loadPlayerData() {
 
 // Update wallet UI
 function updateWallet() {
-  document.getElementById('farm-coins').textContent = `${farmCoins} Farm Coins`;
+  document.getElementById('farm-coins').textContent = `${farmCoins} ${langData[currentLang].coinLabel}`;
   document.getElementById('pi-coins').textContent = `${pi.toFixed(2)} PI`;
-  document.getElementById('water').textContent = `${water} Water`;
+  document.getElementById('water').textContent = `${water} ${langData[currentLang].waterLabel || 'Water'}`; // Fallback 'Water' diganti di lang.json
   document.getElementById('level').textContent = `Level: ${level} | XP: ${xp}`;
   const xpPercentage = (xp / (level * 100)) * 100;
   document.getElementById('xp-fill').style.width = `${xpPercentage}%`;
@@ -194,6 +155,9 @@ function initializePlots() {
     farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1, countdown: 0, totalCountdown: 0 });
   }
   console.log('Plots initialized:', farmPlots);
+
+  // Update teks UI setelah plots diinisialisasi
+  updateUIText();
 }
 
 // Draw timer arc with neon effect
@@ -248,7 +212,7 @@ function handlePlotClick(index) {
       plot.countdown = randomVegetable.growthTime;
       plot.totalCountdown = randomVegetable.growthTime;
       plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
-      plotStatus.innerHTML = `Needs Water`;
+      plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water'; // Ambil dari lang.json
 
       bag.splice(seedIndex, 1);
       renderBag();
@@ -256,7 +220,7 @@ function handlePlotClick(index) {
       playBuyingSound();
       console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
     } else {
-      showNotification("No Seeds in bag!");
+      showNotification(langData[currentLang].noSeeds || 'No Seeds in bag!'); // Ambil dari lang.json
     }
   } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
@@ -280,7 +244,7 @@ function handlePlotClick(index) {
     renderSellSection();
     drawTimerArc(index);
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
-  } else if (namaPlot.planted && !plot.watered) {
+  } else if (plot.planted && !plot.watered) {
     const waterNeeded = plot.vegetable.waterNeeded || 1;
 
     if (water >= waterNeeded) {
@@ -307,17 +271,17 @@ function handlePlotClick(index) {
             plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
             if (plot.currentFrame >= plot.vegetable.frames) {
               plotElement.classList.add('ready');
-              plotStatus.innerHTML = `Ready to Harvest`;
+              plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
               clearInterval(countdownInterval);
               drawTimerArc(index);
             } else {
-              plotStatus.innerHTML = `Needs Water`;
+              plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
             }
           } else {
-            plotStatus.innerHTML = `Growing`;
+            plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
           }
         } else {
-          plotStatus.innerHTML = `Needs Water`;
+          plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
           clearInterval(countdownInterval);
           drawTimerArc(index);
         }
@@ -362,7 +326,7 @@ function renderShop() {
   shopContent.innerHTML = '';
   if (!vegetables || vegetables.length === 0) {
     console.warn('No vegetables data available');
-    shopContent.innerHTML = '<p>No items available in shop. Please check vegetables.json.</p>';
+    shopContent.innerHTML = `<p>${langData[currentLang].noItems || 'No items available in shop. Please check vegetables.json.'}</p>`;
     return;
   }
 
@@ -374,10 +338,10 @@ function renderShop() {
     vegItem.innerHTML = `
       <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${veg.name[currentLang]}</h3>
-      <p>Farm Price: ${farmPrice} Coins</p>
-      <p>PI Price: ${veg.piPrice} PI</p>
-      <button class="buy-btn" data-id="${veg.id}">Buy (Farm)</button>
-      <button class="buy-pi-btn" data-id="${veg.id}">Buy (PI)</button>
+      <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: ${farmPrice} ${langData[currentLang].coinLabel}</p>
+      <p>${langData[currentLang].piPriceLabel || 'PI Price'}: ${veg.piPrice} PI</p>
+      <button class="buy-btn" data-id="${veg.id}">${langData[currentLang].buyLabel} (Farm)</button>
+      <button class="buy-pi-btn" data-id="${veg.id}">${langData[currentLang].buyLabel} (PI)</button>
     `;
     shopContent.appendChild(vegItem);
   });
@@ -386,12 +350,12 @@ function renderShop() {
   const waterItem = document.createElement('div');
   waterItem.classList.add('shop-item');
   waterItem.innerHTML = `
-    <img src="assets/img/ui/water.png" alt="Water" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
-    <h3>Water</h3>
-    <p>Farm Price: 50 Coins</p>
-    <p>PI Price: 0.00005 PI</p> <!-- 50 FC / 1,000,000 = 0.00005 PI -->
-    <button class="buy-btn" data-id="water">Buy (Farm)</button>
-    <button class="buy-pi-btn" data-id="water">Buy (PI)</button>
+    <img src="assets/img/ui/water.png" alt="${langData[currentLang].waterLabel || 'Water'}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+    <h3>${langData[currentLang].waterLabel || 'Water'}</h3>
+    <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: 50 ${langData[currentLang].coinLabel}</p>
+    <p>${langData[currentLang].piPriceLabel || 'PI Price'}: 0.00005 PI</p>
+    <button class="buy-btn" data-id="water">${langData[currentLang].buyLabel} (Farm)</button>
+    <button class="buy-pi-btn" data-id="water">${langData[currentLang].buyLabel} (PI)</button>
   `;
   shopContent.appendChild(waterItem);
 
@@ -420,13 +384,13 @@ function buyVegetable(id, currency) {
         farmCoins -= 100;
         water += 10;
         updateWallet();
-        showTransactionAnimation(`-10`, false, document.querySelector(`.buy-btn[data-id="water"]`));
+        showTransactionAnimation(`-100`, false, document.querySelector(`.buy-btn[data-id="water"]`));
         playBuyingSound();
       } else {
         showNotification(langData[currentLang].notEnoughCoins);
       }
     } else {
-      if (pi >= 0.00001) { // Sesuai rate baru
+      if (pi >= 0.00001) {
         pi -= 0.00001;
         water += 10;
         updateWallet();
@@ -445,7 +409,7 @@ function buyVegetable(id, currency) {
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
       farmCoins -= veg.farmPrice;
-      bag.push(`Seed x1`);
+      bag.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
       renderBag();
       updateWallet();
       showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
@@ -456,7 +420,7 @@ function buyVegetable(id, currency) {
   } else {
     if (pi >= veg.piPrice) {
       pi -= veg.piPrice;
-      bag.push(`Seed x1`);
+      bag.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
       renderBag();
       updateWallet();
       showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${id}"]`));
@@ -477,7 +441,7 @@ function renderInventory() {
     invItem.innerHTML = `
       <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${item.vegetable.name[currentLang]}</h3>
-      <p>Quantity: ${item.quantity}</p>
+      <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
     `;
     inventoryContent.appendChild(invItem);
   });
@@ -494,9 +458,9 @@ function renderSellSection() {
     sellItem.innerHTML = `
       <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${item.vegetable.name[currentLang]}</h3>
-      <p>Quantity: ${item.quantity}</p>
-      <p>Sell Price: ${sellPrice} Coins</p>
-      <button class="sell-btn" data-index="${index}">Sell</button>
+      <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
+      <p>${langData[currentLang].sellPriceLabel || 'Sell Price'}: ${sellPrice} ${langData[currentLang].coinLabel}</p>
+      <button class="sell-btn" data-index="${index}">${langData[currentLang].sellLabel || 'Sell'}</button>
     `;
     sellContent.appendChild(sellItem);
   });
@@ -534,7 +498,7 @@ function checkLevelUp() {
   while (xp >= xpRequired) {
     xp -= xpRequired;
     level++;
-    showNotification(`Level Up! You are now Level ${level}`);
+    showNotification(`${langData[currentLang].levelUp} ${level}`);
   }
   updateWallet();
 }
@@ -582,7 +546,7 @@ function switchTab(tab) {
 function exchangePi() {
   const amount = parseFloat(document.getElementById('exchange-amount').value);
   if (isNaN(amount) || amount <= 0) {
-    showNotification('Invalid amount!');
+    showNotification(langData[currentLang].invalidAmount || 'Invalid amount!');
     return;
   }
 
@@ -616,13 +580,13 @@ function claimDailyReward() {
     const timeLeft = oneDay - (now - lastClaim);
     const hoursLeft = Math.floor(timeLeft / (60 * 60 * 1000));
     const minutesLeft = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
-    showNotification(`Wait ${hoursLeft}h ${minutesLeft}m to claim again!`);
+    showNotification(`${langData[currentLang].waitLabel || 'Wait'} ${hoursLeft}h ${minutesLeft}m ${langData[currentLang].toClaimAgain || 'to claim again!'}`);
     return;
   }
 
   farmCoins += 100;
   water += 50;
-  bag.push('Beet Seed x1');
+  bag.push(`${langData[currentLang].beetSeedLabel || 'Beet Seed'} x1`);
   updateWallet();
   renderBag();
   localStorage.setItem('lastClaim', now);
@@ -699,6 +663,36 @@ function showTransactionAnimation(amount, isPositive, element) {
   setTimeout(() => anim.remove(), 1000);
 }
 
+// Update UI text based on langData
+function updateUIText() {
+  document.getElementById('title').textContent = langData[currentLang].title;
+  document.getElementById('start-text').textContent = langData[currentLang].startBtn;
+  document.getElementById('lang-toggle').textContent = langData[currentLang].switchLangLabel || 'Switch Language (EN/ID)';
+  document.getElementById('game-lang-toggle').textContent = langData[currentLang].switchLangLabel || 'Switch Language (EN/ID)';
+  document.getElementById('game-title').textContent = langData[currentLang].title;
+  document.querySelector('.tab-btn[data-tab="farm"]').textContent = langData[currentLang].farmTab;
+  document.querySelector('.tab-btn[data-tab="shop"]').textContent = langData[currentLang].shopTab;
+  document.querySelector('.tab-btn[data-tab="upgrades"]').textContent = langData[currentLang].upgradesTab;
+  document.querySelector('.tab-btn[data-tab="inventory"]').textContent = langData[currentLang].inventoryTab;
+  document.querySelector('.tab-btn[data-tab="exchange"]').textContent = langData[currentLang].exchangeTab;
+  document.querySelector('.tab-btn[data-tab="leaderboard"]').textContent = langData[currentLang].leaderboardTab;
+  document.querySelector('.tab-btn[data-tab="achievements"]').textContent = langData[currentLang].achievementsTab;
+  document.getElementById('claim-reward-btn').textContent = langData[currentLang].claimRewardBtn;
+  document.getElementById('upgrades-title').textContent = langData[currentLang].upgradesTab;
+  document.getElementById('upgrades-content').textContent = langData[currentLang].comingSoon || 'Coming soon...';
+  document.getElementById('leaderboard-title').textContent = langData[currentLang].leaderboardTab;
+  document.getElementById('leaderboard-content').textContent = langData[currentLang].comingSoon || 'Coming soon...';
+  document.getElementById('exchange-title').textContent = langData[currentLang].exchangeTab;
+  document.getElementById('exchange-rate').textContent = langData[currentLang].exchangeRateLabel || `1 PI = ${piToFarmRate} ${langData[currentLang].coinLabel}`;
+  document.getElementById('exchange-amount').placeholder = langData[currentLang].enterPiAmount || 'Enter PI amount';
+  document.getElementById('exchange-result-label').textContent = `${langData[currentLang].coinLabel}: `;
+  document.getElementById('exchange-btn').textContent = langData[currentLang].exchangeBtn;
+  document.getElementById('sell-section-title').textContent = langData[currentLang].sellItemsLabel || 'Sell Items';
+  document.getElementById('settings-title').textContent = langData[currentLang].settingsLabel || 'Settings';
+  document.getElementById('music-volume-label').textContent = langData[currentLang].musicVolumeLabel || 'Music Volume:';
+  document.getElementById('voice-volume-label').textContent = langData[currentLang].voiceVolumeLabel || 'Voice/SFX Volume:';
+}
+
 // Start game
 function startGame() {
   document.getElementById('start-screen').style.display = 'none';
@@ -727,10 +721,7 @@ function exitGame() {
 // Toggle language
 function toggleLanguage() {
   currentLang = currentLang === 'en' ? 'id' : 'en';
-  const langToggle = document.getElementById('lang-toggle');
-  const gameLangToggle = document.getElementById('game-lang-toggle');
-  if (langToggle) langToggle.textContent = `Switch Language (EN/ID)`;
-  if (gameLangToggle) gameLangToggle.textContent = `Switch Language (EN/ID)`;
+  updateUIText();
   updateWallet();
   renderBag();
   renderShop();
@@ -889,7 +880,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadData().catch(err => {
       console.error('Load data failed:', err);
-      alert('Failed to load game data. Please check vegetables.json and try again.');
+      alert('Failed to load game data. Please check the required JSON files and try again.');
     });
   } catch (e) {
     console.error('Initialization failed:', e.message);
