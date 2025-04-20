@@ -5,18 +5,19 @@ body {
   color: #fff;
   text-align: center;
   margin: 0;
-  padding: 0;
+  padding: 10px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 h1 {
   font-size: 36px;
   color: #ffeb3b;
   text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336;
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .start-text {
@@ -38,11 +39,12 @@ h1 {
 }
 
 .corner-buttons {
-  position: absolute;
+  position: fixed;
   top: 10px;
   right: 10px;
   display: flex;
   gap: 10px;
+  z-index: 1000;
 }
 
 #lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn {
@@ -62,18 +64,22 @@ h1 {
 }
 
 #wallet {
-  margin: 10px 0;
-  font-size: 16px;
+  margin: 10px auto;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 8px;
+  width: fit-content;
 }
 
 #level {
   margin-top: 5px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 #xp-bar {
-  width: 200px;
-  height: 10px;
+  width: 150px;
+  height: 8px;
   background: #333;
   border: 2px solid #fff;
   border-radius: 5px;
@@ -90,18 +96,20 @@ h1 {
 
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   margin: 10px 0;
+  padding: 0 10px;
 }
 
 .tab-btn {
   background: #333;
   color: #fff;
   border: 2px solid #fff;
-  padding: 10px 20px;
+  padding: 8px 16px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 8px;
   transition: all 0.3s;
 }
@@ -117,6 +125,7 @@ h1 {
 
 .tab-content {
   display: none;
+  padding: 10px;
 }
 
 .tab-content.active {
@@ -125,17 +134,17 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(6, 80px); /* 6 kolom, tiap kolom 80px */
-  grid-template-rows: repeat(6, 60px); /* 6 baris, tiap baris 60px */
+  grid-template-columns: repeat(6, 50px);
+  grid-template-rows: repeat(6, 40px);
   gap: 5px;
-  justify-content: center; /* Center secara horizontal */
-  align-content: center; /* Center secara vertikal */
+  justify-content: center;
+  align-content: center;
   background: #8b4513;
   padding: 10px;
   border-radius: 10px;
-  width: 510px; /* Lebar total: 6 kolom x 80px + 5 gap x 5px */
-  height: 390px; /* Tinggi total: 6 baris x 60px + 5 gap x 5px */
-  margin: 0 auto; /* Center di parent */
+  width: 330px;
+  height: 270px;
+  margin: 0 auto;
 }
 
 .plot {
@@ -159,8 +168,8 @@ h1 {
 }
 
 .plant-img {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
 }
 
 #bag {
@@ -171,15 +180,23 @@ h1 {
   gap: 10px;
 }
 
-#bag img {
+#bag-icon {
   width: 40px;
   height: 40px;
+  cursor: pointer;
 }
 
 #bag-items {
   display: flex;
   gap: 10px;
   font-size: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+#bag-items.hidden {
+  display: none;
 }
 
 #claim-reward-btn {
@@ -201,8 +218,8 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
-  padding: 20px;
+  gap: 15px;
+  padding: 15px;
 }
 
 .shop-item, .inventory-item, .sell-item {
@@ -210,22 +227,22 @@ h1 {
   border: 2px solid #fff;
   border-radius: 10px;
   padding: 10px;
-  width: 150px;
+  width: 120px;
   text-align: center;
 }
 
 .shop-item-img {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
 }
 
 .shop-item h3, .inventory-item h3, .sell-item h3 {
-  font-size: 14px;
-  margin: 10px 0;
+  font-size: 12px;
+  margin: 8px 0;
 }
 
 .shop-item p, .inventory-item p, .sell-item p {
-  font-size: 12px;
+  font-size: 10px;
   margin: 5px 0;
 }
 
@@ -235,7 +252,7 @@ button {
   border: 2px solid #fff;
   padding: 8px 12px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 8px;
   transition: all 0.3s;
 }
@@ -245,22 +262,28 @@ button:hover {
 }
 
 #sell-section {
-  margin-top: 20px;
-  padding: 20px;
+  margin-top: 15px;
+  padding: 15px;
   background: #444;
   border-radius: 10px;
 }
 
 #exchange-amount {
   padding: 8px;
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 5px;
   border: 2px solid #fff;
-  margin-right: 10px;
+  margin: 5px 0;
+  width: 150px;
+}
+
+#exchange-result {
+  font-size: 14px;
+  color: #ffeb3b;
 }
 
 #achievements-content {
-  padding: 20px;
+  padding: 15px;
 }
 
 .achievement {
@@ -269,7 +292,7 @@ button:hover {
   border-radius: 10px;
   padding: 10px;
   margin: 10px auto;
-  width: 300px;
+  width: 250px;
   text-align: left;
 }
 
@@ -336,7 +359,7 @@ input[type="range"] {
 
 .transaction-animation {
   position: absolute;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   animation: floatUp 1s ease-out forwards;
 }
@@ -352,4 +375,91 @@ input[type="range"] {
 @keyframes floatUp {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-50px); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .start-text {
+    font-size: 20px;
+  }
+
+  #wallet {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  #level {
+    font-size: 10px;
+  }
+
+  #xp-bar {
+    width: 120px;
+    height: 6px;
+  }
+
+  .tabs {
+    gap: 5px;
+  }
+
+  .tab-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+
+  #farm-area {
+    grid-template-columns: repeat(6, 40px);
+    grid-template-rows: repeat(6, 30px);
+    width: 270px;
+    height: 210px;
+  }
+
+  .plant-img {
+    width: 30px;
+    height: 30px;
+  }
+
+  #bag-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  #bag-items {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .shop-item, .inventory-item, .sell-item {
+    width: 100px;
+    padding: 8px;
+  }
+
+  .shop-item-img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .shop-item h3, .inventory-item h3, .sell-item h3 {
+    font-size: 10px;
+  }
+
+  .shop-item p, .inventory-item p, .sell-item p {
+    font-size: 9px;
+  }
+
+  button {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  #exchange-amount {
+    width: 120px;
+  }
+
+  .achievement {
+    width: 200px;
+  }
 }
