@@ -19,13 +19,14 @@
     "notEnoughWater": "Not enough water!",
     "bought": "Bought a vegetable!",
     "planted": "Planted!",
+    "watered": "Watered!",
     "harvested": "Harvested!",
     "upgradeBought": "Upgrade bought",
     "levelUp": "Level up to",
     "claimRewardBtn": "Claim Daily Reward",
     "rewardClaimed": "Daily Reward Claimed!",
     "rewardCooldown": "Reward Available Tomorrow!",
-    "dailyReward": "Claimed daily reward: 1 Seed, 2 Water",
+    "dailyReward": "Claimed daily reward: 100 FC, 1 Beet, 50 Water",
     "achievementHarvest10": "Harvest 10 Plants",
     "achievementPi10": "Collect 10 Pi",
     "achievementUnlocked": "Achievement Unlocked!",
@@ -35,7 +36,13 @@
     "achievementCoinsDesc": "Collect 1000 Farm Coins",
     "convertSuccess": "Exchange successful!",
     "exchanged": "Exchanged PI to Farm Coins!",
-    "exchangeBtn": "Exchange"
+    "exchangeBtn": "Exchange",
+    "farmPage": "Farm {0}", // Ditambah buat nama halaman
+    "lockedFarm": "Locked", // Ditambah buat status terkunci
+    "unlockLevel": "Reach Level {0}", // Ditambah buat syarat level
+    "unlockFCCost": "Unlock for {0} FC", // Ditambah buat syarat FC
+    "unlockPICost": "Unlock for {0} PI", // Ditambah buat syarat PI
+    "unlocked": "Farm Unlocked!" // Ditambah buat notifikasi unlock
   },
   "id": {
     "title": "Pi Harvest Farm",
@@ -56,14 +63,15 @@
     "notEnoughPi": "PI tidak cukup!",
     "notEnoughWater": "Air tidak cukup!",
     "bought": "Membeli sayuran!",
-    "planted": "Ditananam!",
+    "planted": "Menanam!",
+    "watered": "Menyiram!",
     "harvested": "Panen selesai!",
     "upgradeBought": "Peningkatan dibeli",
     "levelUp": "Naik level ke",
     "claimRewardBtn": "Klaim Hadiah Harian",
     "rewardClaimed": "Hadiah Harian Diklaim!",
     "rewardCooldown": "Hadiah Tersedia Besok!",
-    "dailyReward": "Mengklaim hadiah harian: 1 Benih, 2 Air",
+    "dailyReward": "Mengklaim hadiah harian: 100 FC, 1 Bit, 50 Air",
     "achievementHarvest10": "Panen 10 Tanaman",
     "achievementPi10": "Kumpulkan 10 Pi",
     "achievementUnlocked": "Pencapaian Dibuka!",
@@ -73,6 +81,12 @@
     "achievementCoinsDesc": "Kumpulkan 1000 Farm Coins",
     "convertSuccess": "Penukaran berhasil!",
     "exchanged": "Menukar PI ke Farm Coins!",
-    "exchangeBtn": "Tukar"
+    "exchangeBtn": "Tukar",
+    "farmPage": "Ladang {0}", // Ditambah
+    "lockedFarm": "Terkunci", // Ditambah
+    "unlockLevel": "Capai Level {0}", // Ditambah
+    "unlockFCCost": "Buka dengan {0} FC", // Ditambah
+    "unlockPICost": "Buka dengan {0} PI", // Ditambah
+    "unlocked": "Ladang Terbuka!" // Ditambah
   }
 }
