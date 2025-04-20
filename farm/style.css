@@ -1,9 +1,105 @@
+body {
+  background: url('../assets/img/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+#start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+#start-text {
+  font-size: 48px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+#lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn, #claim-reward-btn {
+  background: #555;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover, #claim-reward-btn:hover {
+  background: #666;
+}
+
+.wallet {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.wallet span {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.xp-bar {
+  width: 150px;
+  height: 10px;
+  background: #333;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.xp-fill {
+  height: 100%;
+  background: #0f0;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: #555;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.tab-btn.active, .tab-btn:hover {
+  background: #777;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
+  gap: 15px;
   position: relative;
-  width: 300px;
+  width: 200px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -17,8 +113,8 @@
 
 .plot {
   position: relative;
-  width: 60px;
-  height: 50px;
+  width: 80px;
+  height: 60px;
   background: #8b4513;
   border-radius: 50% / 30%;
   border: 2px solid #654321;
@@ -36,14 +132,14 @@
 }
 
 .plant-img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
 }
 
 .progress-bar {
   position: absolute;
   bottom: 15px;
-  width: 50px;
+  width: 60px;
   height: 5px;
   background: #333;
   border-radius: 2px;
@@ -136,4 +232,148 @@
 
 .carousel-controls button:hover:not(:disabled) {
   background: #666;
+}
+
+#bag-icon {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 40px;
+  cursor: pointer;
+}
+
+#bag-items {
+  position: fixed;
+  bottom: 60px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+}
+
+#bag-items.hidden {
+  display: none;
+}
+
+#notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+.shop-item, .sell-item, .inventory-item {
+  background: rgba(0, 0, 0, 0.5);
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 5px;
+  width: 200px;
+  text-align: center;
+}
+
+.shop-item-img {
+  width: 50px;
+  height: 50px;
+}
+
+.buy-btn, .buy-pi-btn, .sell-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.buy-btn:hover, .buy-pi-btn:hover, .sell-btn:hover {
+  background: #45a049;
+}
+
+#exchange-amount {
+  padding: 5px;
+  margin: 10px;
+}
+
+.transaction-animation {
+  position: absolute;
+  font-size: 14px;
+  animation: float 1s ease forwards;
+}
+
+.transaction-animation.positive {
+  color: #0f0;
+}
+
+.transaction-animation.negative {
+  color: #f00;
+}
+
+@keyframes float {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+#settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #333;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.modal-content label {
+  margin-right: 10px;
+}
+
+.modal-content input {
+  margin-bottom: 20px;
+}
+
+#close-settings {
+  background: #555;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#close-settings:hover {
+  background: #666;
+}
+
+.achievement {
+  background: rgba(0, 0, 0, 0.5);
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 5px;
+  width: 200px;
+  text-align: center;
+}
+
+.achievement.completed {
+  background: rgba(0, 255, 0, 0.3);
 }
