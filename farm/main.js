@@ -5,63 +5,46 @@ let water = 0;
 let level = 1;
 let xp = 0;
 let inventory = [];
-let bag = [];
+let bag = ['Seed x1', 'Water x2'];
 let vegetables = [];
 let langData = {};
 let currentLang = 'en';
 let farmPlots = [];
 let harvestCount = 0;
-const plotsPerPage = 16; // 4x4 grid per halaman
-const totalPages = 10; // 10 halaman, total 40 plot
-let currentPage = 0; // Halaman saat ini (0 = Farm 1)
-let unlockedFarms = [true, false, false, false, false, false, false, false, false, false]; // Farm 1 terbuka, lainnya terkunci
-const piToFarmRate = 1000000; // 1 PI = 1,000,000 Farm Coins
+const plotCount = 36; // 6x6 grid
+const piToFarmRate = 10000; // 1 PI = 10,000 Farm Coins
 
 // Fallback langData
 const fallbackLangData = {
   en: {
     planted: "Planted!",
-    watered: "Watered!",
-    bought: "Bought a vegetable!",
+    bought: "Planted a vegetable!",
     notEnoughCoins: "Not enough Farm Coins!",
     notEnoughPi: "Not enough PI!",
-    notEnoughWater: "Not enough water!",
+    notEnoughWater: "Not enough Water!",
     harvested: "Harvested!",
     exchanged: "Exchanged PI to Farm Coins!",
-    dailyReward: "Claimed daily reward: 100 FC, 1 Beet, 50 Water",
+    dailyReward: "Claimed daily reward: 1 Seed, 2 Water",
     achievementUnlocked: "Achievement Unlocked!",
     achievementHarvest: "Harvest Master",
     achievementHarvestDesc: "Harvest 10 plants",
     achievementCoins: "Coin Collector",
-    achievementCoinsDesc: "Collect 1000 Farm Coins",
-    farmPage: "Farm {0}",
-    lockedFarm: "Locked",
-    unlockLevel: "Reach Level {0}",
-    unlockFCCost: "Unlock for {0} FC",
-    unlockPICost: "Unlock for {0} PI",
-    unlocked: "Farm Unlocked!"
+    achievementCoinsDesc: "Collect 1000 Farm Coins"
   },
   id: {
     planted: "Menanam!",
-    watered: "Menyiram!",
     bought: "Menanam sayuran!",
     notEnoughCoins: "Farm Coins tidak cukup!",
     notEnoughPi: "PI tidak cukup!",
     notEnoughWater: "Air tidak cukup!",
     harvested: "Panen selesai!",
     exchanged: "Menukar PI ke Farm Coins!",
-    dailyReward: "Mengklaim hadiah harian: 100 FC, 1 Bit, 50 Air",
+    dailyReward: "Mengklaim hadiah harian: 1 Benih, 2 Air",
     achievementUnlocked: "Pencapaian Terbuka!",
     achievementHarvest: "Ahli Panen",
     achievementHarvestDesc: "Panen 10 tanaman",
     achievementCoins: "Pengumpul Koin",
-    achievementCoinsDesc: "Kumpulkan 1000 Farm Coins",
-    farmPage: "Ladang {0}",
-    lockedFarm: "Terkunci",
-    unlockLevel: "Capai Level {0}",
-    unlockFCCost: "Buka dengan {0} FC",
-    unlockPICost: "Buka dengan {0} PI",
-    unlocked: "Ladang Terbuka!"
+    achievementCoinsDesc: "Kumpulkan 1000 Farm Coins"
   }
 };
 
@@ -156,19 +139,23 @@ async function loadData() {
 // Load player data
 function loadPlayerData() {
   console.log('Loading player data...');
-  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 0;
+  farmCoins = localStorage.getItem('farmCoins') ? parseInt(localStorage.getItem('farmCoins')) : 1000;
   pi = localStorage.getItem('pi') ? parseFloat(localStorage.getItem('pi')) : 0;
-  water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 0;
+  water = localStorage.getItem('water') ? parseInt(localStorage.getItem('water')) : 100;
   level = localStorage.getItem('level') ? parseInt(localStorage.getItem('level')) : 1;
   xp = localStorage.getItem('xp') ? parseInt(localStorage.getItem('xp')) : 0;
   inventory = JSON.parse(localStorage.getItem('inventory')) || [];
   harvestCount = localStorage.getItem('harvestCount') ? parseInt(localStorage.getItem('harvestCount')) : 0;
-  unlockedFarms = JSON.parse(localStorage.getItem('unlockedFarms')) || [true, false, false, false, false, false, false, false, false, false];
 
-  localStorage.setItem('farmCoins', farmCoins);
-  localStorage.setItem('water', water);
-  localStorage.setItem('unlockedFarms', JSON.stringify(unlockedFarms));
-  console.log('Player data loaded:', { farmCoins, pi, water, level, xp, inventory, unlockedFarms });
+  if (!localStorage.getItem('farmCoins')) {
+    farmCoins = 1000;
+    localStorage.setItem('farmCoins', farmCoins);
+  }
+  if (!localStorage.getItem('water')) {
+    water = 100;
+    localStorage.setItem('water', water);
+  }
+  console.log('Player data loaded:', { farmCoins, pi, water, level, xp, inventory });
 }
 
 // Update wallet UI
@@ -184,9 +171,6 @@ function updateWallet() {
   localStorage.setItem('water', water);
   localStorage.setItem('level', level);
   localStorage.setItem('xp', xp);
-
-  // Cek unlock berdasarkan level
-  checkFarmUnlockConditions();
 }
 
 // Initialize farm plots
@@ -198,266 +182,52 @@ function initializePlots() {
     return;
   }
 
-  // Inisialisasi 40 plot (10 halaman x 16 plot)
   farmPlots = [];
-  for (let i = 0; i < totalPages * plotsPerPage; i++) {
-    farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1, countdown: 0, totalCountdown: 0 });
-  }
-
-  renderCurrentPage();
-  updateCarouselControls();
-}
-
-// Render halaman saat ini
-function renderCurrentPage() {
-  const farmArea = document.getElementById('farm-area');
   farmArea.innerHTML = '';
-
-  const farmTitle = document.createElement('div');
-  farmTitle.classList.add('farm-title');
-  farmTitle.textContent = langData[currentLang].farmPage.replace('{0}', currentPage + 1);
-  farmArea.appendChild(farmTitle);
-
-  // Cek kalau halaman terkunci
-  if (!unlockedFarms[currentPage]) {
-    const lockOverlay = document.createElement('div');
-    lockOverlay.classList.add('lock-overlay');
-    lockOverlay.innerHTML = `
-      <div class="lock-message">
-        <h3>${langData[currentLang].lockedFarm}</h3>
-        ${getUnlockCondition(currentPage)}
-      </div>
-    `;
-    farmArea.appendChild(lockOverlay);
-    return;
-  }
-
-  // Render plot untuk halaman saat ini
-  const startIndex = currentPage * plotsPerPage;
-  for (let i = startIndex; i < startIndex + plotsPerPage; i++) {
+  for (let i = 0; i < plotCount; i++) {
     const plot = document.createElement('div');
     plot.classList.add('plot');
     plot.innerHTML = `
       <div class="plot-content"></div>
-      <div class="progress-bar"><div class="progress-fill"></div></div>
       <div class="plot-status"></div>
     `;
     plot.addEventListener('click', () => handlePlotClick(i));
     farmArea.appendChild(plot);
-    updatePlotUI(i);
+    farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1, countdown: 0 });
   }
-}
-
-// Update UI untuk plot tertentu
-function updatePlotUI(index) {
-  const plot = farmPlots[index];
-  const plotElement = document.querySelectorAll('.plot')[index % plotsPerPage];
-  if (!plotElement) return;
-
-  const plotContent = plotElement.querySelector('.plot-content');
-  const progressBar = plotElement.querySelector('.progress-fill');
-  const plotStatus = plotElement.querySelector('.plot-status');
-
-  if (plot.planted) {
-    plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
-    const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
-    progressBar.style.width = `${progress}%`;
-    if (plot.currentFrame >= plot.vegetable.frames) {
-      plotElement.classList.add('ready');
-      plotStatus.textContent = `Ready to Harvest`;
-    } else if (plot.watered) {
-      plotStatus.textContent = `Growing`;
-    } else {
-      plotStatus.textContent = `Needs Water`;
-    }
-  } else {
-    plotContent.innerHTML = '';
-    progressBar.style.width = '0%';
-    plotStatus.textContent = '';
-    plotElement.classList.remove('ready');
-  }
-}
-
-// Update kontrol karosel
-function updateCarouselControls() {
-  const prevBtn = document.getElementById('carousel-prev');
-  const nextBtn = document.getElementById('carousel-next');
-  prevBtn.disabled = currentPage === 0;
-  nextBtn.disabled = currentPage === totalPages - 1;
-}
-
-// Pindah halaman
-function changePage(direction) {
-  currentPage += direction;
-  if (currentPage < 0) currentPage = 0;
-  if (currentPage >= totalPages) currentPage = totalPages - 1;
-  renderCurrentPage();
-  updateCarouselControls();
-  playMenuSound();
-}
-
-// Syarat unlock farm
-function getUnlockCondition(page) {
-  // Contoh syarat:
-  // Farm 2: Level 2
-  // Farm 3: 500 FC
-  // Farm 4: 0.001 PI
-  // Farm 5: Harvest 20 tanaman
-  // Farm 6: Level 5
-  // Farm 7: 1000 FC
-  // Farm 8: 0.002 PI
-  // Farm 9: Harvest 50 tanaman
-  // Farm 10: Level 10
-  const conditions = [
-    null, // Farm 1 terbuka
-    { type: 'level', value: 2 },
-    { type: 'fc', value: 500 },
-    { type: 'pi', value: 0.001 },
-    { type: 'harvest', value: 20 },
-    { type: 'level', value: 5 },
-    { type: 'fc', value: 1000 },
-    { type: 'pi', value: 0.002 },
-    { type: 'harvest', value: 50 },
-    { type: 'level', value: 10 }
-  ];
-
-  const condition = conditions[page];
-  if (!condition) return '';
-
-  let conditionText = '';
-  if (condition.type === 'level') {
-    conditionText = langData[currentLang].unlockLevel.replace('{0}', condition.value);
-  } else if (condition.type === 'fc') {
-    conditionText = langData[currentLang].unlockFCCost.replace('{0}', condition.value);
-  } else if (condition.type === 'pi') {
-    conditionText = langData[currentLang].unlockPICost.replace('{0}', condition.value);
-  } else if (condition.type === 'harvest') {
-    conditionText = `Harvest ${condition.value} Plants`;
-  }
-
-  if (condition.type === 'fc' || condition.type === 'pi') {
-    conditionText += `<br><button class="unlock-btn" data-page="${page}">Unlock</button>`;
-  }
-
-  return `<p>${conditionText}</p>`;
-}
-
-// Cek syarat unlock otomatis
-function checkFarmUnlockConditions() {
-  const conditions = [
-    null, // Farm 1 terbuka
-    { type: 'level', value: 2 },
-    { type: 'fc', value: 500 },
-    { type: 'pi', value: 0.001 },
-    { type: 'harvest', value: 20 },
-    { type: 'level', value: 5 },
-    { type: 'fc', value: 1000 },
-    { type: 'pi', value: 0.002 },
-    { type: 'harvest', value: 50 },
-    { type: 'level', value: 10 }
-  ];
-
-  let changed = false;
-  for (let i = 1; i < totalPages; i++) {
-    if (unlockedFarms[i]) continue;
-
-    const condition = conditions[i];
-    if (condition.type === 'level' && level >= condition.value) {
-      unlockedFarms[i] = true;
-      changed = true;
-      showNotification(langData[currentLang].unlocked);
-    } else if (condition.type === 'harvest' && harvestCount >= condition.value) {
-      unlockedFarms[i] = true;
-      changed = true;
-      showNotification(langData[currentLang].unlocked);
-    }
-  }
-
-  if (changed) {
-    localStorage.setItem('unlockedFarms', JSON.stringify(unlockedFarms));
-    renderCurrentPage();
-  }
-}
-
-// Unlock farm dengan FC atau PI
-function unlockFarm(page) {
-  const conditions = [
-    null, // Farm 1 terbuka
-    { type: 'level', value: 2 },
-    { type: 'fc', value: 500 },
-    { type: 'pi', value: 0.001 },
-    { type: 'harvest', value: 20 },
-    { type: 'level', value: 5 },
-    { type: 'fc', value: 1000 },
-    { type: 'pi', value: 0.002 },
-    { type: 'harvest', value: 50 },
-    { type: 'level', value: 10 }
-  ];
-
-  const condition = conditions[page];
-  if (condition.type === 'fc') {
-    if (farmCoins >= condition.value) {
-      farmCoins -= condition.value;
-      unlockedFarms[page] = true;
-      updateWallet();
-      localStorage.setItem('unlockedFarms', JSON.stringify(unlockedFarms));
-      showNotification(langData[currentLang].unlocked);
-      renderCurrentPage();
-      playCoinSound();
-    } else {
-      showNotification(langData[currentLang].notEnoughCoins);
-    }
-  } else if (condition.type === 'pi') {
-    if (pi >= condition.value) {
-      pi -= condition.value;
-      unlockedFarms[page] = true;
-      updateWallet();
-      localStorage.setItem('unlockedFarms', JSON.stringify(unlockedFarms));
-      showNotification(langData[currentLang].unlocked);
-      renderCurrentPage();
-      playCoinSound();
-    } else {
-      showNotification(langData[currentLang].notEnoughPi);
-    }
-  }
+  console.log('Plots initialized:', farmPlots);
 }
 
 // Handle plot click with manual growth
 function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
-  if (!unlockedFarms[currentPage]) {
-    showNotification(langData[currentLang].lockedFarm);
-    return;
-  }
-
   const plot = farmPlots[index];
-  const plotElement = document.querySelectorAll('.plot')[index % plotsPerPage];
+  const plotElement = document.querySelectorAll('.plot')[index];
   const plotContent = plotElement.querySelector('.plot-content');
   const plotStatus = plotElement.querySelector('.plot-status');
 
   if (!plot.planted) {
     const seedIndex = bag.findIndex(item => item.includes('Seed'));
     if (seedIndex !== -1) {
-      const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
+      const vegetable = vegetables.find(veg => veg.id === "beet");
       plot.planted = true;
-      plot.vegetable = randomVegetable;
+      plot.vegetable = vegetable;
       plot.progress = 0;
       plot.watered = false;
       plot.currentFrame = 1;
-      plot.countdown = randomVegetable.growthTime;
-      plot.totalCountdown = randomVegetable.growthTime;
-      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
-      plotStatus.textContent = `Needs Water`;
+      plot.countdown = vegetable.growthTime;
+      plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+      plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
 
       bag.splice(seedIndex, 1);
       renderBag();
       showNotification(langData[currentLang].planted);
       playBuyingSound();
-      console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
+      console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
     } else {
       showNotification("No Seeds in bag!");
     }
-  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
+  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) { // Prioritaskan panen
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
     localStorage.setItem('inventory', JSON.stringify(inventory));
     plot.planted = false;
@@ -466,60 +236,59 @@ function handlePlotClick(index) {
     plot.watered = false;
     plot.currentFrame = 1;
     plot.countdown = 0;
-    plot.totalCountdown = 0;
     plotContent.innerHTML = '';
-    plotStatus.textContent = '';
+    plotStatus.innerHTML = '';
     plotElement.classList.remove('ready');
     harvestCount++;
     localStorage.setItem('harvestCount', harvestCount);
     checkHarvestAchievement();
-    checkFarmUnlockConditions();
     showNotification(langData[currentLang].harvested);
     playHarvestSound();
     renderInventory();
     renderSellSection();
-    updatePlotUI(index);
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
   } else if (plot.planted && !plot.watered) {
+    const waterIndex = bag.findIndex(item => item.includes('Water'));
+    const waterItem = waterIndex !== -1 ? bag[waterIndex] : null;
+    const waterAmount = waterItem ? parseInt(waterItem.split('x')[1]) : 0;
     const waterNeeded = plot.vegetable.waterNeeded || 1;
 
-    if (water >= waterNeeded) {
-      water -= waterNeeded;
+    if (waterIndex !== -1 && waterAmount >= waterNeeded) {
       plot.watered = true;
-      updateWallet();
-      showNotification(langData[currentLang].watered);
+      if (waterAmount > waterNeeded) {
+        bag[waterIndex] = `Water x${waterAmount - waterNeeded}`;
+      } else {
+        bag.splice(waterIndex, 1);
+      }
+      renderBag();
       playWateringSound();
 
+      // Start countdown hanya kalau disiram
       const countdownInterval = setInterval(() => {
         if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
           clearInterval(countdownInterval);
-          updatePlotUI(index);
           return;
         }
         if (plot.watered) {
           plot.countdown--;
-          updatePlotUI(index);
           if (plot.countdown <= 0) {
             plot.currentFrame++;
-            plot.watered = false;
+            plot.watered = false; // Reset watered setelah countdown selesai
             plot.countdown = plot.vegetable.growthTime;
-            plot.totalCountdown = plot.vegetable.growthTime;
             plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
             if (plot.currentFrame >= plot.vegetable.frames) {
               plotElement.classList.add('ready');
-              plotStatus.textContent = `Ready to Harvest`;
+              plotStatus.innerHTML = `Ready to Harvest`;
               clearInterval(countdownInterval);
-              updatePlotUI(index);
             } else {
-              plotStatus.textContent = `Needs Water`;
+              plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
             }
           } else {
-            plotStatus.textContent = `Growing`;
+            plotStatus.innerHTML = `Growing<br>Countdown: ${plot.countdown}s`;
           }
         } else {
-          plotStatus.textContent = `Needs Water`;
-          clearInterval(countdownInterval);
-          updatePlotUI(index);
+          plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
+          clearInterval(countdownInterval); // Stop countdown kalau belum disiram
         }
       }, 1000);
 
@@ -550,7 +319,7 @@ function toggleBag() {
   }
 }
 
-// Render shop with updated Water price
+// Render shop
 function renderShop() {
   console.log('Rendering shop with vegetables:', vegetables);
   const shopContent = document.getElementById('shop-content');
@@ -566,11 +335,10 @@ function renderShop() {
     return;
   }
 
-  // Render sayuran
   vegetables.forEach(veg => {
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
-    const farmPrice = veg.farmPrice !== undefined ? veg.farmPrice : 0;
+    const farmPrice = veg.farmPrice !== undefined ? veg.farmPrice : 0; // Fallback kalau farmPrice undefined
     vegItem.innerHTML = `
       <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${veg.name[currentLang]}</h3>
@@ -582,64 +350,26 @@ function renderShop() {
     shopContent.appendChild(vegItem);
   });
 
-  // Tambah item Water dengan harga baru
-  const waterItem = document.createElement('div');
-  waterItem.classList.add('shop-item');
-  waterItem.innerHTML = `
-    <img src="assets/img/ui/water.png" alt="Water" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
-    <h3>Water</h3>
-    <p>Farm Price: 100 Coins</p>
-    <p>PI Price: 0.0001 PI</p> <!-- 100 FC / 1,000,000 = 0.0001 PI -->
-    <button class="buy-btn" data-id="water">Buy (Farm)</button>
-    <button class="buy-pi-btn" data-id="water">Buy (PI)</button>
-  `;
-  shopContent.appendChild(waterItem);
-
   document.querySelectorAll('.buy-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = e.target.getAttribute('data-id');
-      buyVegetable(id, 'farm');
+      const vegId = e.target.getAttribute('data-id');
+      buyVegetable(vegId, 'farm');
     });
   });
 
   document.querySelectorAll('.buy-pi-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = e.target.getAttribute('data-id');
-      buyVegetable(id, 'pi');
+      const vegId = e.target.getAttribute('data-id');
+      buyVegetable(vegId, 'pi');
     });
   });
 
   console.log('Shop rendered successfully');
 }
 
-// Buy vegetable or water with updated Water amount
-function buyVegetable(id, currency) {
-  if (id === 'water') {
-    if (currency === 'farm') {
-      if (farmCoins >= 100) {
-        farmCoins -= 100;
-        water += 10; // Diubah dari 50 jadi 10
-        updateWallet();
-        showTransactionAnimation(`-100`, false, document.querySelector(`.buy-btn[data-id="water"]`));
-        playBuyingSound();
-      } else {
-        showNotification(langData[currentLang].notEnoughCoins);
-      }
-    } else {
-      if (pi >= 0.0001) {
-        pi -= 0.0001;
-        water += 10; // Diubah dari 50 jadi 10
-        updateWallet();
-        showTransactionAnimation(`-0.0001 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
-        playBuyingSound();
-      } else {
-        showNotification(langData[currentLang].notEnoughPi);
-      }
-    }
-    return;
-  }
-
-  const veg = vegetables.find(v => v.id === id);
+// Buy vegetable
+function buyVegetable(vegId, currency) {
+  const veg = vegetables.find(v => v.id === vegId);
   if (!veg) return;
 
   if (currency === 'farm') {
@@ -648,7 +378,7 @@ function buyVegetable(id, currency) {
       bag.push(`Seed x1`);
       renderBag();
       updateWallet();
-      showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
+      showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${vegId}"]`));
       playBuyingSound();
     } else {
       showNotification(langData[currentLang].notEnoughCoins);
@@ -659,7 +389,7 @@ function buyVegetable(id, currency) {
       bag.push(`Seed x1`);
       renderBag();
       updateWallet();
-      showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${id}"]`));
+      showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${vegId}"]`));
       playBuyingSound();
     } else {
       showNotification(langData[currentLang].notEnoughPi);
@@ -820,10 +550,7 @@ function claimDailyReward() {
     return;
   }
 
-  farmCoins += 100;
-  water += 50;
-  bag.push('Beet Seed x1');
-  updateWallet();
+  bag.push('Seed x1', 'Water x2'); // Cuma tambah Seed dan Water
   renderBag();
   localStorage.setItem('lastClaim', now);
   document.getElementById('claim-reward-btn').disabled = true;
@@ -842,7 +569,6 @@ function checkHarvestAchievement() {
       playCoinSound();
     }
   }
-  checkFarmUnlockConditions();
 }
 
 // Check coin achievement
@@ -938,7 +664,6 @@ function toggleLanguage() {
   renderInventory();
   renderSellSection();
   renderAchievements();
-  renderCurrentPage();
   playMenuSound();
   console.log('Language toggled to:', currentLang);
 }
@@ -1008,8 +733,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const exchangeBtn = document.getElementById('exchange-btn');
     const exchangeAmount = document.getElementById('exchange-amount');
     const bagIcon = document.getElementById('bag-icon');
-    const prevBtn = document.getElementById('carousel-prev');
-    const nextBtn = document.getElementById('carousel-next');
 
     console.log('Start Text Element:', startText);
     console.log('Lang Toggle Element:', langToggle);
@@ -1084,29 +807,11 @@ document.addEventListener('DOMContentLoaded', () => {
       console.warn('Bag Icon element not found');
     }
 
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => changePage(-1));
-      console.log('Carousel Prev listener attached');
-    }
-
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => changePage(1));
-      console.log('Carousel Next listener attached');
-    }
-
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.getAttribute('data-tab');
         switchTab(tab);
       });
-    });
-
-    // Listener untuk tombol unlock
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('unlock-btn')) {
-        const page = parseInt(e.target.getAttribute('data-page'));
-        unlockFarm(page);
-      }
     });
 
     loadData().catch(err => {
