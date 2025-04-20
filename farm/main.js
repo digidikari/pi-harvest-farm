@@ -68,33 +68,33 @@ async function loadData() {
   console.log('Loading data...');
   try {
     const langRes = await fetch('./data/lang.json');
-    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
+    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status}, url: ${langRes.url})`);
     langData = await langRes.json();
     console.log('Language data loaded:', langData);
   } catch (e) {
     console.error('Lang JSON load failed:', e.message);
-    throw new Error('Cannot proceed without language data. Please check lang.json.');
+    throw new Error('Cannot proceed without language data. Please check lang.json in ./data/ directory.');
   }
 
   try {
     const vegRes = await fetch('./data/vegetables.json');
-    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
+    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status}, url: ${vegRes.url})`);
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables || vegData;
     console.log('Vegetables data loaded:', vegetables);
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
-    throw new Error('Cannot proceed without vegetables data. Please check vegetables.json.');
+    throw new Error('Cannot proceed without vegetables data. Please check vegetables.json in ./data/ directory.');
   }
 
   try {
     const invRes = await fetch('./data/inventory.json');
-    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
+    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status}, url: ${invRes.url})`);
     inventory = await invRes.json();
     console.log('Inventory data loaded:', inventory);
   } catch (e) {
     console.error('Inventory JSON load failed:', e.message);
-    throw new Error('Cannot proceed without inventory data. Please check inventory.json.');
+    throw new Error('Cannot proceed without inventory data. Please check inventory.json in ./data/ directory.');
   }
 
   initializeGame();
@@ -147,7 +147,9 @@ function initializePlots() {
     plot.classList.add('plot');
     plot.innerHTML = `
       <div class="plot-content"></div>
-      <canvas class="plot-timer" width="50" height="50"></canvas>
+      <div class="countdown-bar">
+        <div class="countdown-fill"></div>
+      </div>
       <div class="plot-status"></div>
     `;
     plot.addEventListener('click', () => handlePlotClick(i));
@@ -158,38 +160,6 @@ function initializePlots() {
 
   // Update teks UI setelah plots diinisialisasi
   updateUIText();
-}
-
-// Draw timer arc with neon effect
-function drawTimerArc(index) {
-  const plot = farmPlots[index];
-  if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) return;
-
-  const canvas = document.querySelectorAll('.plot-timer')[index];
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const radius = 15; // Sesuaikan dengan ukuran plot
-  const startAngle = -Math.PI / 2;
-  const progress = plot.countdown / plot.totalCountdown;
-  const endAngle = startAngle + (2 * Math.PI * progress);
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = '#333';
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = '#0ff'; // Cyan neon
-  ctx.shadowBlur = 8;
-  ctx.shadowColor = '#0ff';
-  ctx.stroke();
-  ctx.shadowBlur = 0;
 }
 
 // Handle plot click with manual growth
@@ -278,12 +248,101 @@ function handlePlotClick(index) {
               plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
             }
           } else {
+// Handle plot click with manual growth
+function handlePlotClick(index) {
+  console.log(`Plot ${index} clicked...`);
+  const plot = farmPlots[index];
+  const plotElement = document.querySelectorAll('.plot')[index];
+  const plotContent = plotElement.querySelector('.plot-content');
+  const plotStatus = plotElement.querySelector('.plot-status');
+  const countdownFill = plotElement.querySelector('.countdown-fill');
+
+  if (!plot.planted) {
+    const seedIndex = bag.findIndex(item => item.includes('Seed'));
+    if (seedIndex !== -1) {
+      const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
+      plot.planted = true;
+      plot.vegetable = randomVegetable;
+      plot.progress = 0;
+      plot.watered = false;
+      plot.currentFrame = 1;
+      plot.countdown = randomVegetable.growthTime;
+      plot.totalCountdown = randomVegetable.growthTime;
+      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+      plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water'; // Ambil dari lang.json
+
+      bag.splice(seedIndex, 1);
+      renderBag();
+      showNotification(langData[currentLang].planted);
+      playBuyingSound();
+      console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
+    } else {
+      showNotification(langData[currentLang].noSeeds || 'No Seeds in bag!'); // Ambil dari lang.json
+    }
+  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
+    inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+    plot.planted = false;
+    plot.vegetable = null;
+    plot.progress = 0;
+    plot.watered = false;
+    plot.currentFrame = 1;
+    plot.countdown = 0;
+    plot.totalCountdown = 0;
+    plotContent.innerHTML = '';
+    plotStatus.innerHTML = '';
+    countdownFill.style.width = '0%';
+    plotElement.classList.remove('ready');
+    harvestCount++;
+    localStorage.setItem('harvestCount', harvestCount);
+    checkHarvestAchievement();
+    showNotification(langData[currentLang].harvested);
+    playHarvestSound();
+    renderInventory();
+    renderSellSection();
+    console.log(`Harvested plot ${index}, added to inventory:`, inventory);
+  } else if (plot.planted && !plot.watered) {
+    const waterNeeded = plot.vegetable.waterNeeded || 1;
+
+    if (water >= waterNeeded) {
+      water -= waterNeeded;
+      plot.watered = true;
+      updateWallet();
+      showNotification(langData[currentLang].watered);
+      playWateringSound();
+
+      const countdownInterval = setInterval(() => {
+        if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
+          clearInterval(countdownInterval);
+          countdownFill.style.width = '0%';
+          return;
+        }
+        if (plot.watered) {
+          plot.countdown--;
+          const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
+          countdownFill.style.width = `${progress}%`;
+          if (plot.countdown <= 0) {
+            plot.currentFrame++;
+            plot.watered = false;
+            plot.countdown = plot.vegetable.growthTime;
+            plot.totalCountdown = plot.vegetable.growthTime;
+            plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+            if (plot.currentFrame >= plot.vegetable.frames) {
+              plotElement.classList.add('ready');
+              plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
+              clearInterval(countdownInterval);
+              countdownFill.style.width = '100%';
+            } else {
+              plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+              countdownFill.style.width = '0%';
+            }
+          } else {
             plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
           }
         } else {
           plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
           clearInterval(countdownInterval);
-          drawTimerArc(index);
+          countdownFill.style.width = '0%';
         }
       }, 1000);
 
