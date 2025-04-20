@@ -134,16 +134,16 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(6, 50px);
-  grid-template-rows: repeat(6, 40px);
-  gap: 5px;
+  grid-template-columns: repeat(2, 80px);
+  grid-template-rows: repeat(2, 8px);
+  gap: 10px;
   justify-content: center;
   align-content: center;
   background: #8b4513;
-  padding: 10px;
+  padding: 20px;
   border-radius: 10px;
-  width: 330px;
-  height: 270px;
+  width: 180px;
+  height: 56px;
   margin: 0 auto;
 }
 
@@ -158,15 +158,8 @@ h1 {
   cursor: pointer;
   transition: transform 0.1s;
   position: relative;
-}
-
-.plot:hover {
-  transform: scale(1.05);
-}
-
-.plot.ready {
-  border-color: #4caf50;
-  box-shadow: 0 0 10px #4caf50;
+  width: 80px;
+  height: 8px;
 }
 
 .plot-content {
@@ -174,7 +167,9 @@ h1 {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 70%;
+  height: 40px; /* Sesuaikan dengan tinggi bibit */
+  position: absolute;
+  top: -36px; /* Posisikan tanaman di atas plot */
 }
 
 .plant-img {
@@ -186,10 +181,18 @@ h1 {
   font-size: 8px;
   color: #ffeb3b;
   position: absolute;
-  bottom: 2px;
+  bottom: -10px; /* Posisikan status di bawah plot */
   text-align: center;
   line-height: 1.2;
   width: 100%;
+}
+
+/* Sesuaikan canvas timer biar sesuai ukuran plot */
+.plot-timer {
+  position: absolute;
+  top: -36px;
+  width: 80px;
+  height: 40px;
 }
 
 #bag {
@@ -434,70 +437,7 @@ input[type="range"] {
     font-size: 10px;
   }
 
-  #farm-area {
-  display: grid;
-  grid-template-columns: repeat(2, 80px);
-  grid-template-rows: repeat(2, 8px);
-  gap: 10px;
-  justify-content: center;
-  align-content: center;
-  background: #8b4513;
-  padding: 20px;
-  border-radius: 10px;
-  width: 180px;
-  height: 56px;
-  margin: 0 auto;
-}
-
-.plot {
-  background: #654321;
-  border: 2px solid #fff;
-  border-radius: 50% / 20%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: transform 0.1s;
-  position: relative;
-  width: 80px;
-  height: 8px;
-}
-
-.plot-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 40px; /* Sesuaikan dengan tinggi bibit */
-  position: absolute;
-  top: -36px; /* Posisikan tanaman di atas plot */
-}
-
-.plant-img {
-  width: 40px;
-  height: 40px;
-}
-
-.plot-status {
-  font-size: 8px;
-  color: #ffeb3b;
-  position: absolute;
-  bottom: -10px; /* Posisikan status di bawah plot */
-  text-align: center;
-  line-height: 1.2;
-  width: 100%;
-}
-
-/* Sesuaikan canvas timer biar sesuai ukuran plot */
-.plot-timer {
-  position: absolute;
-  top: -36px;
-  width: 80px;
-  height: 40px;
-}
-
-/* Responsive adjustments */
+  /* Responsive adjustments */
 @media (max-width: 600px) {
   #farm-area {
     grid-template-columns: repeat(2, 60px);
