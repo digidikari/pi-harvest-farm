@@ -834,11 +834,10 @@ function initializeGame() {
   console.log('Game initialized');
 }
 
-// DOM Content Loaded
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, initializing game...');
-
-  // Initialize elements and event listeners first
+// Function to attach event listeners
+function attachEventListeners() {
+  console.log('Attaching event listeners...');
+  
   const startText = document.getElementById('start-text');
   const langToggle = document.getElementById('lang-toggle');
   const settingsBtn = document.getElementById('settings-btn');
@@ -863,7 +862,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     console.log('Start Text listener attached');
   } else {
-    console.warn('Start Text element not found');
+    console.error('Start Text element not found. Please check index.html for <div id="start-text">');
   }
 
   if (langToggle) {
@@ -893,10 +892,24 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     console.warn('Game Settings Button element not found');
   }
+}
+
+// DOM Content Loaded
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded, initializing game...');
+
+  // Attach event listeners immediately
+  attachEventListeners();
 
   // Load data asynchronously
   loadData().catch(err => {
     console.error('Load data failed:', err.message);
-    alert('Failed to load game data. Please check the required JSON files (lang.json, vegetables.json, inventory.json) and try again.');
+    const retry = confirm('Failed to load game data. Please check the required JSON files (lang.json, vegetables.json, inventory.json). Do you want to retry loading the data?');
+    if (retry) {
+      loadData().catch(err => {
+        console.error('Retry failed:', err.message);
+        alert('Failed to load game data again. Please check console for errors and try refreshing the page.');
+      });
+    }
   });
 });
