@@ -118,7 +118,7 @@ function updateVolumes() {
 async function loadData() {
   console.log('Loading data...');
   try {
-    const langRes = await fetch('./data/lang.json');
+    const langRes = await fetch('data/lang.json');
     if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
     langData = await langRes.json();
     console.log('Language data loaded:', langData);
@@ -129,7 +129,7 @@ async function loadData() {
   }
 
   try {
-    const vegRes = await fetch('./data/vegetables.json');
+    const vegRes = await fetch('data/vegetables.json');
     if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables || vegData;
@@ -140,7 +140,7 @@ async function loadData() {
   }
 
   try {
-    const invRes = await fetch('./data/inventory.json');
+    const invRes = await fetch('data/inventory.json');
     if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
     inventory = await invRes.json();
     console.log('Inventory data loaded:', inventory);
@@ -211,6 +211,7 @@ function initializePlots() {
 
 // Render halaman saat ini
 function renderCurrentPage() {
+  console.log(`Rendering page ${currentPage + 1}...`);
   const farmArea = document.getElementById('farm-area');
   if (!farmArea) {
     console.error('Farm area element not found during render');
@@ -235,12 +236,14 @@ function renderCurrentPage() {
       </div>
     `;
     farmArea.appendChild(lockOverlay);
+    console.log(`Page ${currentPage + 1} is locked`);
     return;
   }
 
   // Render plot untuk halaman saat ini
   const startIndex = currentPage * plotsPerPage;
   const endIndex = Math.min(startIndex + plotsPerPage, farmPlots.length);
+  console.log(`Rendering plots from index ${startIndex} to ${endIndex - 1}`);
   for (let i = startIndex; i < endIndex; i++) {
     const plot = document.createElement('div');
     plot.classList.add('plot');
@@ -253,13 +256,17 @@ function renderCurrentPage() {
     farmArea.appendChild(plot);
     updatePlotUI(i);
   }
+  console.log(`Page ${currentPage + 1} rendered with ${endIndex - startIndex} plots`);
 }
 
 // Update UI untuk plot tertentu
 function updatePlotUI(index) {
   const plot = farmPlots[index];
   const plotElement = document.querySelectorAll('.plot')[index % plotsPerPage];
-  if (!plotElement) return;
+  if (!plotElement) {
+    console.error(`Plot element at index ${index % plotsPerPage} not found`);
+    return;
+  }
 
   const plotContent = plotElement.querySelector('.plot-content');
   const progressBar = plotElement.querySelector('.progress-fill');
@@ -292,6 +299,7 @@ function updateCarouselControls() {
   if (prevBtn && nextBtn) {
     prevBtn.disabled = currentPage === 0;
     nextBtn.disabled = currentPage === totalPages - 1;
+    console.log(`Carousel controls updated: Prev ${prevBtn.disabled ? 'disabled' : 'enabled'}, Next ${nextBtn.disabled ? 'disabled' : 'enabled'}`);
   }
 }
 
@@ -300,6 +308,7 @@ function changePage(direction) {
   currentPage += direction;
   if (currentPage < 0) currentPage = 0;
   if (currentPage >= totalPages) currentPage = totalPages - 1;
+  console.log(`Changing to page ${currentPage + 1}`);
   renderCurrentPage();
   updateCarouselControls();
   playMenuSound();
@@ -486,9 +495,7 @@ function handlePlotClick(index) {
       water -= waterNeeded;
       plot.watered = true;
       updateWallet();
-      showNotification(langData
-
-[currentLang].watered);
+      showNotification(langData[currentLang].watered);
       playWateringSound();
 
       const countdownInterval = setInterval(() => {
@@ -585,7 +592,7 @@ function renderShop() {
   const waterItem = document.createElement('div');
   waterItem.classList.add('shop-item');
   waterItem.innerHTML = `
-    <img src="assets/img/ui/water.png" alt="Water" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+    <img src="assets/img/ui/water_icon.png" alt="Water" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
     <h3>Water</h3>
     <p>Farm Price: 100 Coins</p>
     <p>PI Price: 0.0001 PI</p>
