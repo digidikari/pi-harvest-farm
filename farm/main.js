@@ -209,25 +209,26 @@ function handlePlotClick(index) {
   if (!plot.planted) {
     const seedIndex = bag.findIndex(item => item.includes('Seed'));
     if (seedIndex !== -1) {
-      const vegetable = vegetables.find(veg => veg.id === "beet");
+      // Pilih tanaman acak dari vegetables
+      const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
       plot.planted = true;
-      plot.vegetable = vegetable;
+      plot.vegetable = randomVegetable;
       plot.progress = 0;
       plot.watered = false;
       plot.currentFrame = 1;
-      plot.countdown = vegetable.growthTime;
-      plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+      plot.countdown = randomVegetable.growthTime;
+      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
       plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
 
       bag.splice(seedIndex, 1);
       renderBag();
       showNotification(langData[currentLang].planted);
       playBuyingSound();
-      console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
+      console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
     } else {
       showNotification("No Seeds in bag!");
     }
-  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) { // Prioritaskan panen
+  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
     localStorage.setItem('inventory', JSON.stringify(inventory));
     plot.planted = false;
@@ -263,7 +264,6 @@ function handlePlotClick(index) {
       renderBag();
       playWateringSound();
 
-      // Start countdown hanya kalau disiram
       const countdownInterval = setInterval(() => {
         if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
           clearInterval(countdownInterval);
@@ -273,7 +273,7 @@ function handlePlotClick(index) {
           plot.countdown--;
           if (plot.countdown <= 0) {
             plot.currentFrame++;
-            plot.watered = false; // Reset watered setelah countdown selesai
+            plot.watered = false;
             plot.countdown = plot.vegetable.growthTime;
             plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
             if (plot.currentFrame >= plot.vegetable.frames) {
@@ -288,7 +288,7 @@ function handlePlotClick(index) {
           }
         } else {
           plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
-          clearInterval(countdownInterval); // Stop countdown kalau belum disiram
+          clearInterval(countdownInterval);
         }
       }, 1000);
 
@@ -338,7 +338,7 @@ function renderShop() {
   vegetables.forEach(veg => {
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
-    const farmPrice = veg.farmPrice !== undefined ? veg.farmPrice : 0; // Fallback kalau farmPrice undefined
+    const farmPrice = veg.farmPrice !== undefined ? veg.farmPrice : 0;
     vegItem.innerHTML = `
       <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${veg.name[currentLang]}</h3>
@@ -550,7 +550,7 @@ function claimDailyReward() {
     return;
   }
 
-  bag.push('Seed x1', 'Water x2'); // Cuma tambah Seed dan Water
+  bag.push('Seed x1', 'Water x2');
   renderBag();
   localStorage.setItem('lastClaim', now);
   document.getElementById('claim-reward-btn').disabled = true;
