@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pi Harvest Farm</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="farm/style.css?v=24">
+  <link rel="stylesheet" href="farm/style.css?v=23">
 </head>
 <body>
   <div id="start-screen">
     <h1 id="title">Pi Harvest Farm</h1>
-    <button id="start-game-btn">Start Game</button>
+    <div id="start-text" class="start-text">Start Game</div>
     <div class="corner-buttons">
       <button id="lang-toggle">Switch Language (EN/ID)</button>
       <button id="settings-btn">⚙️</button>
@@ -52,10 +52,6 @@
     </div>
     <div id="farm" class="tab-content active">
       <div id="farm-area"></div>
-      <div class="carousel-controls">
-        <button id="carousel-prev">←</button>
-        <button id="carousel-next">→</button>
-      </div>
       <div id="bag">
         <img src="assets/img/ui/bag_icon.png" alt="Bag" id="bag-icon">
         <div id="bag-items" class="hidden"></div>
@@ -101,6 +97,6 @@
   <audio id="buying-sound" src="assets/sfx/voice/buying-bgv.mp3"></audio>
   <audio id="coin-sound" src="assets/sfx/voice/coin-bgv.mp3"></audio>
 
-  <script src="farm/main.js?v=24"></script>
+  <script src="farm/main.js?v=23"></script>
 </body>
 </html>
