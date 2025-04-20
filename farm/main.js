@@ -11,7 +11,7 @@ let langData = {};
 let currentLang = 'en';
 let farmPlots = [];
 let harvestCount = 0;
-const plotCount = 36; // 6x6 grid
+const plotCount = 4; // 2x2 grid
 const piToFarmRate = 1000000; // 1 PI = 1,000,000 Farm Coins
 
 // Audio elements
