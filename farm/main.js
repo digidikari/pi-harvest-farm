@@ -185,18 +185,24 @@ function initializePlots() {
   for (let i = 0; i < plotCount; i++) {
     const plot = document.createElement('div');
     plot.classList.add('plot');
+    plot.innerHTML = `
+      <div class="plot-content"></div>
+      <div class="plot-status"></div>
+    `;
     plot.addEventListener('click', () => handlePlotClick(i));
     farmArea.appendChild(plot);
-    farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1 });
+    farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1, countdown: 0 });
   }
   console.log('Plots initialized:', farmPlots);
 }
 
-// Handle plot click with animation
+// Handle plot click with manual growth
 function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
   const plot = farmPlots[index];
   const plotElement = document.querySelectorAll('.plot')[index];
+  const plotContent = plotElement.querySelector('.plot-content');
+  const plotStatus = plotElement.querySelector('.plot-status');
 
   if (!plot.planted) {
     const seedIndex = bag.findIndex(item => item.includes('Seed'));
@@ -207,17 +213,9 @@ function handlePlotClick(index) {
       plot.progress = 0;
       plot.watered = false;
       plot.currentFrame = 1;
-      plotElement.innerHTML = `<img src="assets/img/plant/beet/beet_${plot.currentFrame}.png" class="plant-img">`;
-      
-      // Animate growth
-      const growthInterval = setInterval(() => {
-        if (!plot.planted || plot.watered) {
-          clearInterval(growthInterval);
-          return;
-        }
-        plot.currentFrame = Math.min(plot.currentFrame + 1, vegetable.frames);
-        plotElement.innerHTML = `<img src="assets/img/plant/beet/beet_${plot.currentFrame}.png" class="plant-img">`;
-      }, vegetable.growthTime * 1000 / vegetable.frames);
+      plot.countdown = vegetable.growthTime;
+      plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
+      plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
 
       bag.splice(seedIndex, 1);
       renderBag();
@@ -233,7 +231,6 @@ function handlePlotClick(index) {
       plot.watered = true;
       water--;
       updateWallet();
-      plotElement.classList.add('ready');
       const waterItem = bag[waterIndex];
       const waterAmount = parseInt(waterItem.split('x')[1]);
       if (waterAmount > 1) {
@@ -243,11 +240,37 @@ function handlePlotClick(index) {
       }
       renderBag();
       playWateringSound();
+
+      // Start countdown
+      plot.countdown = plot.vegetable.growthTime;
+      const countdownInterval = setInterval(() => {
+        if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
+          clearInterval(countdownInterval);
+          return;
+        }
+        plot.countdown--;
+        if (plot.countdown <= 0) {
+          plot.currentFrame++;
+          plot.watered = false;
+          plot.countdown = plot.vegetable.growthTime;
+          plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
+          if (plot.currentFrame >= plot.vegetable.frames) {
+            plotElement.classList.add('ready');
+            plotStatus.innerHTML = `Ready to Harvest`;
+            clearInterval(countdownInterval);
+          } else {
+            plotStatus.innerHTML = `Needs Water<br>Countdown: ${plot.countdown}s`;
+          }
+        } else {
+          plotStatus.innerHTML = `Growing<br>Countdown: ${plot.countdown}s`;
+        }
+      }, 1000);
+
       console.log(`Watered plot ${index}`);
     } else {
       showNotification(langData[currentLang].notEnoughWater);
     }
-  } else if (plot.planted && plot.watered) {
+  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
     localStorage.setItem('inventory', JSON.stringify(inventory));
     plot.planted = false;
@@ -255,7 +278,9 @@ function handlePlotClick(index) {
     plot.progress = 0;
     plot.watered = false;
     plot.currentFrame = 1;
-    plotElement.innerHTML = '';
+    plot.countdown = 0;
+    plotContent.innerHTML = '';
+    plotStatus.innerHTML = '';
     plotElement.classList.remove('ready');
     harvestCount++;
     localStorage.setItem('harvestCount', harvestCount);
@@ -308,7 +333,7 @@ function renderShop() {
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
     vegItem.innerHTML = `
-      <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img">
+      <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${veg.name[currentLang]}</h3>
       <p>Farm Price: ${veg.farmPrice} Coins</p>
       <p>PI Price: ${veg.piPrice} PI</p>
@@ -373,7 +398,7 @@ function renderInventory() {
     const invItem = document.createElement('div');
     invItem.classList.add('inventory-item');
     invItem.innerHTML = `
-      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
+      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${item.vegetable.name[currentLang]}</h3>
       <p>Quantity: ${item.quantity}</p>
     `;
@@ -390,7 +415,7 @@ function renderSellSection() {
     sellItem.classList.add('sell-item');
     const sellPrice = Math.floor(item.vegetable.farmPrice * 0.5);
     sellItem.innerHTML = `
-      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
+      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${item.vegetable.name[currentLang]}</h3>
       <p>Quantity: ${item.quantity}</p>
       <p>Sell Price: ${sellPrice} Coins</p>
@@ -569,11 +594,16 @@ function renderAchievements() {
 // Show notification
 function showNotification(message) {
   const notification = document.getElementById('notification');
-  notification.textContent = message;
-  notification.style.display = 'block';
-  setTimeout(() => {
-    notification.style.display = 'none';
-  }, 2000);
+  if (notification) {
+    notification.textContent = message;
+    notification.style.display = 'block';
+    console.log('Notification shown:', message);
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, 2000);
+  } else {
+    console.error('Notification element not found');
+  }
 }
 
 // Show transaction animation
@@ -622,6 +652,7 @@ function toggleLanguage() {
   if (langToggle) langToggle.textContent = `Switch Language (EN/ID)`;
   if (gameLangToggle) gameLangToggle.textContent = `Switch Language (EN/ID)`;
   updateWallet();
+  renderBag(); // Update bag UI
   renderShop();
   renderInventory();
   renderSellSection();
