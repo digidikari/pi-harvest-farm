@@ -66,36 +66,28 @@ function updateVolumes() {
 // Load data from JSON files
 async function loadData() {
   console.log('Loading data...');
-  try {
-    const langRes = await fetch('./data/lang.json');
-    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status}, url: ${langRes.url})`);
-    langData = await langRes.json();
-    console.log('Language data loaded:', langData);
-  } catch (e) {
-    console.error('Lang JSON load failed:', e.message);
-    throw new Error('Cannot proceed without language data. Please check lang.json in ./data/ directory.');
-  }
 
-  try {
-    const vegRes = await fetch('./data/vegetables.json');
-    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status}, url: ${vegRes.url})`);
-    const vegData = await vegRes.json();
-    vegetables = vegData.vegetables || vegData;
-    console.log('Vegetables data loaded:', vegetables);
-  } catch (e) {
-    console.error('Vegetables JSON load failed:', e.message);
-    throw new Error('Cannot proceed without vegetables data. Please check vegetables.json in ./data/ directory.');
-  }
+  const langRes = await fetch('./data/lang.json');
+  if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status}, url: ${langRes.url})`);
+  langData = await langRes.json();
+  console.log('Language data loaded:', langData);
 
-  try {
-    const invRes = await fetch('./data/inventory.json');
-    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status}, url: ${invRes.url})`);
-    inventory = await invRes.json();
-    console.log('Inventory data loaded:', inventory);
-  } catch (e) {
-    console.error('Inventory JSON load failed:', e.message);
-    throw new Error('Cannot proceed without inventory data. Please check inventory.json in ./data/ directory.');
-  }
+  const vegRes = await fetch('./data/vegetables.json');
+  if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status}, url: ${vegRes.url})`);
+  const vegData = await vegRes.json();
+  vegetables = vegData.vegetables || vegData;
+  console.log('Vegetables data loaded:', vegetables);
+
+  const invRes = await fetch('./data/inventory.json');
+  if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status}, url: ${invRes.url})`);
+  inventory = await invRes.json();
+  console.log('Inventory data loaded:', inventory);
+
+  // Update teks UI setelah load data
+  const startText = document.getElementById('start-text');
+  const langToggle = document.getElementById('game-lang-toggle') || document.getElementById('lang-toggle');
+  if (startText) startText.innerHTML = langData[currentLang].startGame || "Start Game";
+  if (langToggle) langToggle.innerHTML = langData[currentLang].switchLanguage || "Switch Language (EN/ID)";
 
   initializeGame();
 }
@@ -409,7 +401,7 @@ function renderShop() {
   const waterItem = document.createElement('div');
   waterItem.classList.add('shop-item');
   waterItem.innerHTML = `
-    <img src="assets/img/ui/water.png" alt="${langData[currentLang].waterLabel || 'Water'}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+    <img src="assets/img/ui/water.png" alt="${langData[currentLang].waterLabel || 'Water'}" class="shop-item-img" onerror="this.src='assets/img/ui/water.png';">
     <h3>${langData[currentLang].waterLabel || 'Water'}</h3>
     <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: 50 ${langData[currentLang].coinLabel}</p>
     <p>${langData[currentLang].piPriceLabel || 'PI Price'}: 0.00005 PI</p>
@@ -773,8 +765,8 @@ function startGame() {
 function exitGame() {
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('start-screen').style.display = 'block';
-  if (bgMusic) bgMusic.pause();
-  if (bgVoice) bgVoice.pause();
+  if (bgMusic) bgMusic.stop();
+  if (bgVoice) bgVoice.stop();
 }
 
 // Toggle language
@@ -845,104 +837,66 @@ function initializeGame() {
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
-  try {
-    const startText = document.getElementById('start-text');
-    const langToggle = document.getElementById('lang-toggle');
-    const settingsBtn = document.getElementById('settings-btn');
-    const claimRewardBtn = document.getElementById('claim-reward-btn');
-    const gameLangToggle = document.getElementById('game-lang-toggle');
-    const gameSettingsBtn = document.getElementById('game-settings-btn');
-    const exitGameBtn = document.getElementById('exit-game-btn');
-    const exchangeBtn = document.getElementById('exchange-btn');
-    const exchangeAmount = document.getElementById('exchange-amount');
-    const bagIcon = document.getElementById('bag-icon');
 
-    console.log('Start Text Element:', startText);
-    console.log('Lang Toggle Element:', langToggle);
-    console.log('Settings Button Element:', settingsBtn);
-    console.log('Game Lang Toggle Element:', gameLangToggle);
+  // Initialize elements and event listeners first
+  const startText = document.getElementById('start-text');
+  const langToggle = document.getElementById('lang-toggle');
+  const settingsBtn = document.getElementById('settings-btn');
+  const gameLangToggle = document.getElementById('game-lang-toggle');
+  const gameSettingsBtn = document.getElementById('game-settings-btn');
 
-    if (startText) {
-      startText.addEventListener('click', startGame);
-      console.log('Start Text listener attached');
-    } else {
-      console.warn('Start Text element not found');
-    }
+  console.log('Elements found:', {
+    startText: !!startText,
+    langToggle: !!langToggle,
+    settingsBtn: !!settingsBtn,
+    gameLangToggle: !!gameLangToggle,
+    gameSettingsBtn: !!gameSettingsBtn
+  });
 
-    if (langToggle) {
-      langToggle.addEventListener('click', toggleLanguage);
-      console.log('Lang Toggle listener attached');
-    } else {
-      console.warn('Lang Toggle element not found');
-    }
-
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', openSettings);
-      console.log('Settings Button listener attached');
-    } else {
-      console.warn('Settings Button element not found');
-    }
-
-    if (claimRewardBtn) {
-      claimRewardBtn.addEventListener('click', claimDailyReward);
-      console.log('Claim Reward listener attached');
-    } else {
-      console.warn('Claim Reward button not found');
-    }
-
-    if (gameLangToggle) {
-      gameLangToggle.addEventListener('click', toggleLanguage);
-      console.log('Game Lang Toggle listener attached');
-    } else {
-      console.warn('Game Lang Toggle element not found');
-    }
-
-    if (gameSettingsBtn) {
-      gameSettingsBtn.addEventListener('click', openSettings);
-      console.log('Game Settings Button listener attached');
-    } else {
-      console.warn('Game Settings Button element not found');
-    }
-
-    if (exitGameBtn) {
-      exitGameBtn.addEventListener('click', exitGame);
-      console.log('Exit Game Button listener attached');
-    } else {
-      console.warn('Exit Game Button element not found');
-    }
-
-    if (exchangeBtn) {
-      exchangeBtn.addEventListener('click', exchangePi);
-      console.log('Exchange Button listener attached');
-    } else {
-      console.warn('Exchange Button element not found');
-    }
-
-    if (exchangeAmount) {
-      exchangeAmount.addEventListener('input', updateExchangeResult);
-      console.log('Exchange Amount listener attached');
-    }
-
-    if (bagIcon) {
-      bagIcon.addEventListener('click', toggleBag);
-      console.log('Bag Icon listener attached');
-    } else {
-      console.warn('Bag Icon element not found');
-    }
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.getAttribute('data-tab');
-        switchTab(tab);
-      });
+  if (startText) {
+    startText.addEventListener('click', () => {
+      if (!langData || !vegetables || !inventory) {
+        alert('Game data not loaded. Please check console for errors and ensure lang.json, vegetables.json, and inventory.json are available.');
+        return;
+      }
+      startGame();
     });
-
-    loadData().catch(err => {
-      console.error('Load data failed:', err);
-      alert('Failed to load game data. Please check the required JSON files and try again.');
-    });
-  } catch (e) {
-    console.error('Initialization failed:', e.message);
-    alert('Failed to initialize game. Check console for errors.');
+    console.log('Start Text listener attached');
+  } else {
+    console.warn('Start Text element not found');
   }
+
+  if (langToggle) {
+    langToggle.addEventListener('click', toggleLanguage);
+    console.log('Lang Toggle listener attached');
+  } else {
+    console.warn('Lang Toggle element not found');
+  }
+
+  if (settingsBtn) {
+    settingsBtn.addEventListener('click', openSettings);
+    console.log('Settings Button listener attached');
+  } else {
+    console.warn('Settings Button element not found');
+  }
+
+  if (gameLangToggle) {
+    gameLangToggle.addEventListener('click', toggleLanguage);
+    console.log('Game Lang Toggle listener attached');
+  } else {
+    console.warn('Game Lang Toggle element not found');
+  }
+
+  if (gameSettingsBtn) {
+    gameSettingsBtn.addEventListener('click', openSettings);
+    console.log('Game Settings Button listener attached');
+  } else {
+    console.warn('Game Settings Button element not found');
+  }
+
+  // Load data asynchronously
+  loadData().catch(err => {
+    console.error('Load data failed:', err.message);
+    alert('Failed to load game data. Please check the required JSON files (lang.json, vegetables.json, inventory.json) and try again.');
+  });
 });
