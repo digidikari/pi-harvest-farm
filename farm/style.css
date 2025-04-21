@@ -137,16 +137,16 @@ h1 {
   grid-template-columns: repeat(2, 140px);
   grid-template-rows: repeat(2, 14px);
   row-gap: 60px;
-  column-gap: 40px; /* Balik ke 40px */
+  column-gap: 40px;
   justify-content: center;
   align-content: space-around;
   background: #8b4513;
-  padding: 100px 20px 30px 40px; /* Kiri +10px, kanan -10px */
+  padding: 100px 20px 30px 50px; /* Kiri +10px lagi */
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
   height: 300px;
-  margin: 0 auto; /* Center, no margin-left */
+  margin: 0 auto;
 }
 
 .plot {
@@ -275,7 +275,7 @@ h1 {
     grid-template-rows: repeat(2, 12px);
     row-gap: 50px;
     column-gap: 30px;
-    padding: 90px 15px 25px 35px;
+    padding: 90px 15px 25px 45px; /* Kiri +10px */
     width: 90%;
     max-width: 400px;
     height: 260px;
@@ -330,7 +330,7 @@ h1 {
     grid-template-rows: repeat(2, 10px);
     row-gap: 40px;
     column-gap: 20px;
-    padding: 80px 10px 20px 30px;
+    padding: 80px 10px 20px 40px;
     width: 90%;
     max-width: 340px;
     height: 240px;
@@ -385,7 +385,7 @@ h1 {
     grid-template-rows: repeat(2, 8px);
     row-gap: 30px;
     column-gap: 15px;
-    padding: 70px 5px 15px 25px;
+    padding: 70px 5px 15px 35px;
     width: 90%;
     max-width: 280px;
     height: 220px;
