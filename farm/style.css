@@ -139,14 +139,19 @@ h1 {
   row-gap: 80px; /* Jarak vertikal lebih besar */
   column-gap: 60px; /* Jarak horizontal tetap */
   justify-content: center;
-  align-content: space-between; /* Plot atas lebih ke atas, plot bawah lebih ke bawah */
+  align-content: space-between; /* Biar plot bawah tetap di bawah */
   background: #8b4513;
-  padding: 20px;
+  padding: 20px 20px 20px 20px; /* padding atas dikurangi biar plot atas lebih ke tengah */
   border-radius: 10px;
   width: 90%;
-  max-width: 400px; /* Lebar maksimal lebih besar lagi */
+  max-width: 420px; /* Lebar maksimal ditambah sedikit lagi */
   height: 200px; /* 2 * 14px (plot) + 80px (row-gap) + 40px (padding) */
   margin: 0 auto;
+}
+
+/* Atur posisi baris pertama (plot atas) ke tengah dengan margin */
+#farm-area > .plot:nth-child(-n+2) {
+  margin-top: 10px; /* Geser plot atas ke bawah sedikit biar lebih ke tengah */
 }
 
 .plot {
@@ -175,8 +180,8 @@ h1 {
 }
 
 .plant-img {
-  width: 50px;
-  height: 50px;
+  width: 140px; /* Seukuran lebar plot */
+  height: auto; /* Tinggi proporsional */
 }
 
 .countdown-bar {
@@ -215,8 +220,12 @@ h1 {
     row-gap: 60px;
     column-gap: 50px;
     width: 90%;
-    max-width: 340px;
+    max-width: 360px; /* Sesuaikan dengan lebar farm area */
     height: 164px; /* 2 * 12px (plot) + 60px (row-gap) + 40px (padding) */
+  }
+
+  #farm-area > .plot:nth-child(-n+2) {
+    margin-top: 8px; /* Sesuaikan untuk versi responsive */
   }
 
   .plot {
@@ -230,8 +239,8 @@ h1 {
   }
 
   .plant-img {
-    width: 40px;
-    height: 40px;
+    width: 120px; /* Seukuran lebar plot di versi responsive */
+    height: auto;
   }
 
   .countdown-bar {
