@@ -134,14 +134,14 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(2, 130px); /* Kecilkan plot */
+  grid-template-columns: repeat(2, 140px); /* Kecilkan plot */
   grid-template-rows: repeat(2, 14px);
   row-gap: 60px;
   column-gap: 100px; /* Renggangin +20px */
   justify-content: center;
   align-content: space-around;
   background: #8b4513;
-  padding: 100px 20px 30px 50px;
+  padding: 100px 50px 30px 50px;
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
