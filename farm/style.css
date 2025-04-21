@@ -136,16 +136,16 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, 140px);
   grid-template-rows: repeat(2, 14px);
-  row-gap: 60px; /* Kurangin biar muat */
+  row-gap: 60px;
   column-gap: 40px;
   justify-content: center;
-  align-content: space-around; /* Pisah merata */
+  align-content: space-around;
   background: #8b4513;
-  padding: 60px 30px 10px 30px; /* Top besar, bottom kecil */
+  padding: 80px 30px 10px 30px; /* Top +20px biar turun */
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
-  height: 260px; /* Muat semua */
+  height: 280px; /* Muat padding-top baru */
   margin: 0 auto;
 }
 
@@ -275,10 +275,10 @@ h1 {
     grid-template-rows: repeat(2, 12px);
     row-gap: 50px;
     column-gap: 30px;
-    padding: 50px 20px 10px 20px;
+    padding: 70px 20px 10px 20px; /* Top +20px */
     width: 90%;
     max-width: 400px;
-    height: 220px;
+    height: 240px;
   }
 
   .plot {
@@ -329,10 +329,10 @@ h1 {
     grid-template-rows: repeat(2, 10px);
     row-gap: 40px;
     column-gap: 20px;
-    padding: 40px 15px 10px 15px;
+    padding: 60px 15px 10px 15px;
     width: 90%;
     max-width: 340px;
-    height: 200px;
+    height: 220px;
   }
 
   .plot {
@@ -383,10 +383,10 @@ h1 {
     grid-template-rows: repeat(2, 8px);
     row-gap: 30px;
     column-gap: 15px;
-    padding: 30px 10px 10px 10px;
+    padding: 50px 10px 10px 10px;
     width: 90%;
     max-width: 280px;
-    height: 180px;
+    height: 200px;
   }
 
   .plot {
