@@ -26,7 +26,13 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  transition: opacity 0.5s;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#loading-screen.screen-hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .loading-animation {
@@ -51,19 +57,49 @@ body {
 }
 
 #start-screen {
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+#start-screen.screen-active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+#start-screen.screen-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95);
 }
 
 #game-screen {
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   max-width: 600px;
   padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+#game-screen.screen-active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+#game-screen.screen-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95);
 }
 
 #title, #game-title {
@@ -77,11 +113,12 @@ body {
   border: 2px solid #fff;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 
 #start-text:hover, #lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover, #claim-reward-btn:hover {
   background: #555;
+  transform: scale(1.05);
 }
 
 #wallet {
@@ -128,16 +165,18 @@ body {
   border: 2px solid #fff;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .tab-btn:hover {
   background: #555;
+  transform: scale(1.05);
 }
 
 .tab-btn.active {
   background: #555;
   border-color: #ff0;
+  transform: scale(1);
 }
 
 .tab-content {
@@ -148,13 +187,21 @@ body {
   padding: 10px;
   width: 100%;
   max-width: 460px;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
 .tab-content.active {
   opacity: 1;
   visibility: visible;
   height: auto;
+  transform: scale(1);
+  animation: tabFade 0.3s ease;
+}
+
+@keyframes tabFade {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 #farm-area {
@@ -176,7 +223,7 @@ body {
 .plot {
   background: #654321;
   border: 2px solid #fff;
-  border-radius: 50% / 30%; /* Elips pipih, sesuaikan kalau punya nilai spesifik */
+  border-radius: 50% / 30%; /* Elips pipih */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -218,9 +265,34 @@ body {
   animation: plantPop 0.3s ease;
 }
 
+.plant-img.harvested {
+  animation: harvestPop 0.5s ease forwards;
+}
+
+.water-img {
+  width: 80px;
+  height: auto;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  animation: waterPop 0.5s ease forwards;
+}
+
 @keyframes plantPop {
-  0% { transform: translateX(-50%) scale(0); }
-  100% { transform: translateX(-50%) scale(1); }
+  0% { transform: translateX(-50%) translateY(50px); opacity: 0; }
+  100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+@keyframes harvestPop {
+  0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-50px); opacity: 0; }
+}
+
+@keyframes waterPop {
+  0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-50px); opacity: 0; }
 }
 
 .countdown-bar {
@@ -275,8 +347,13 @@ body {
   border-radius: 10px;
   padding: 10px;
   width: 120px;
-  flex: 0 0 calc(50% - 7.5px); /* 2 kolom, dikurangin gap/2 */
+  flex: 0 0 calc(50% - 7.5px); /* 2 kolom */
   text-align: center;
+  transition: transform 0.2s;
+}
+
+.shop-item:hover, .inventory-item:hover, .sell-item:hover {
+  transform: scale(1.05);
 }
 
 .shop-item-img {
@@ -293,10 +370,12 @@ body {
   cursor: pointer;
   margin-top: 5px;
   width: 100%;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .buy-btn:hover, .buy-pi-btn:hover, .sell-btn:hover {
   background: #777;
+  transform: scale(1.05);
 }
 
 #sell-section-title {
@@ -326,10 +405,12 @@ body {
   border: 1px solid #fff;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
 }
 
 #exchange-btn:hover {
   background: #777;
+  transform: scale(1.05);
 }
 
 #achievements-content {
@@ -345,6 +426,11 @@ body {
   border-radius: 10px;
   padding: 10px;
   text-align: center;
+  transition: transform 0.2s;
+}
+
+.achievement:hover {
+  transform: scale(1.05);
 }
 
 .achievement.completed {
@@ -366,8 +452,16 @@ body {
   border: 2px solid #fff;
   border-radius: 5px;
   padding: 10px 20px;
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
   z-index: 100;
+}
+
+#notification.notify-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
 }
 
 .transaction-animation {
@@ -394,15 +488,23 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.95);
   background: #333;
   border: 2px solid #fff;
   border-radius: 10px;
   padding: 20px;
   width: 300px;
   text-align: center;
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
   z-index: 100;
+}
+
+#reward-modal.modal-active, #settings-modal.modal-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 #reward-modal-close, #close-settings {
@@ -417,10 +519,12 @@ body {
   line-height: 20px;
   text-align: center;
   cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
 }
 
 #reward-modal-close:hover, #close-settings:hover {
   background: #777;
+  transform: scale(1.05);
 }
 
 #claim-modal-btn {
@@ -430,10 +534,12 @@ body {
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
+  transition: background 0.2s, transform 0.2s;
 }
 
 #claim-modal-btn:hover {
   background: #777;
+  transform: scale(1.05);
 }
 
 #settings-modal input {
@@ -453,9 +559,10 @@ body {
   }
   .plot { width: 120px; height: 120px; }
   .plant-img { width: 120px; max-height: 120px; }
+  .water-img { width: 60px; }
   .shop-item, .inventory-item, .sell-item {
     width: 100px;
-    flex: 0 0 calc(50% - 7.5px); /* Tetap 2 kolom */
+    flex: 0 0 calc(50% - 7.5px);
     padding: 8px;
   }
   .shop-item-img { width: 60px; height: 60px; }
@@ -473,9 +580,10 @@ body {
   }
   .plot { width: 100px; height: 100px; }
   .plant-img { width: 100px; max-height: 100px; }
+  .water-img { width: 50px; }
   .shop-item, .inventory-item, .sell-item {
     width: 100px;
-    flex: 0 0 calc(50% - 7.5px); /* Tetap 2 kolom */
+    flex: 0 0 calc(50% - 7.5px);
     padding: 8px;
   }
   #wallet, #xp-bar, .tab-content, #exchange { max-width: 340px; }
@@ -492,9 +600,10 @@ body {
   }
   .plot { width: 80px; height: 80px; }
   .plant-img { width: 80px; max-height: 80px; }
+  .water-img { width: 40px; }
   .shop-item, .inventory-item, .sell-item {
     width: 80px;
-    flex: 0 0 calc(50% - 7.5px); /* Tetap 2 kolom */
+    flex: 0 0 calc(50% - 7.5px);
     padding: 6px;
   }
   .shop-item-img { width: 50px; height: 50px; }
