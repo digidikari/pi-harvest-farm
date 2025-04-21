@@ -100,6 +100,7 @@ h1 {
   gap: 8px;
   margin: 10px 0;
   padding: 0 10px;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -122,43 +123,32 @@ h1 {
   border-color: #ffeb3b;
 }
 
-.tab-content-wrapper {
-  position: relative;
-  min-height: 400px; /* Sesuaikan tinggi biar gak lompat */
-  width: 100%;
-  margin: 0 auto;
-  max-width: 600px;
-}
-
 .tab-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .tab-content.active {
   opacity: 1;
-  pointer-events: auto;
+  visibility: visible;
+  height: auto;
 }
 
 #farm-area {
   display: grid;
   grid-template-columns: repeat(2, 160px);
-  grid-template-rows: repeat(2, 16px);
+  grid-template-rows: repeat(2, 160px);
   row-gap: 60px;
   column-gap: 60px;
   justify-content: center;
-  align-content: space-around;
   background: #8b4513;
   padding: 100px 30px 30px 30px;
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
-  height: 300px;
   margin: 0 auto;
 }
 
@@ -174,7 +164,7 @@ h1 {
   transition: transform 0.1s;
   position: relative;
   width: 160px;
-  height: 16px;
+  height: 160px;
 }
 
 .plot-content {
@@ -182,9 +172,9 @@ h1 {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 50px;
+  height: 100%;
   position: absolute;
-  top: -46px;
+  top: 0;
 }
 
 .plant-img {
@@ -384,36 +374,24 @@ input[type="range"] {
   100% { content: 'Loading...'; }
 }
 
-/* Responsive adjustments */
 @media (max-width: 600px) {
   #farm-area {
     grid-template-columns: repeat(2, 120px);
-    grid-template-rows: repeat(2, 12px);
+    grid-template-rows: repeat(2, 120px);
     row-gap: 50px;
     column-gap: 50px;
     padding: 90px 25px 25px 25px;
-    width: 90%;
     max-width: 400px;
-    height: 260px;
-    margin: 0 auto;
   }
 
   .plot {
     width: 120px;
-    height: 12px;
-  }
-
-  .plot-content {
-    height: 40px;
-    top: -36px;
+    height: 120px;
   }
 
   .plant-img {
     width: 120px;
     max-height: 120px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -427,10 +405,6 @@ input[type="range"] {
     top: 20px;
   }
 
-  #claim-reward-btn {
-    margin-top: 15px;
-  }
-
   .modal-content {
     margin: 25% auto;
   }
@@ -442,41 +416,26 @@ input[type="range"] {
   .loading-animation {
     font-size: 18px;
   }
-
-  .tab-content-wrapper {
-    min-height: 350px;
-  }
 }
 
 @media (max-width: 480px) {
   #farm-area {
     grid-template-columns: repeat(2, 100px);
-    grid-template-rows: repeat(2, 10px);
+    grid-template-rows: repeat(2, 100px);
     row-gap: 40px;
     column-gap: 40px;
     padding: 80px 20px 20px 20px;
-    width: 90%;
     max-width: 340px;
-    height: 240px;
-    margin: 0 auto;
   }
 
   .plot {
     width: 100px;
-    height: 10px;
-  }
-
-  .plot-content {
-    height: 30px;
-    top: -26px;
+    height: 100px;
   }
 
   .plant-img {
     width: 100px;
     max-height: 100px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -490,10 +449,6 @@ input[type="range"] {
     top: 16px;
   }
 
-  #claim-reward-btn {
-    margin-top: 10px;
-  }
-
   .modal-content {
     margin: 30% auto;
   }
@@ -505,41 +460,26 @@ input[type="range"] {
   .loading-animation {
     font-size: 16px;
   }
-
-  .tab-content-wrapper {
-    min-height: 300px;
-  }
 }
 
 @media (max-width: 360px) {
   #farm-area {
     grid-template-columns: repeat(2, 80px);
-    grid-template-rows: repeat(2, 8px);
+    grid-template-rows: repeat(2, 80px);
     row-gap: 30px;
     column-gap: 30px;
     padding: 70px 15px 15px 15px;
-    width: 90%;
     max-width: 280px;
-    height: 220px;
-    margin: 0 auto;
   }
 
   .plot {
     width: 80px;
-    height: 8px;
-  }
-
-  .plot-content {
-    height: 30px;
-    top: -26px;
+    height: 80px;
   }
 
   .plant-img {
     width: 80px;
     max-height: 80px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -553,10 +493,6 @@ input[type="range"] {
     top: 16px;
   }
 
-  #claim-reward-btn {
-    margin-top: 10px;
-  }
-
   .modal-content {
     margin: 35% auto;
   }
@@ -568,13 +504,8 @@ input[type="range"] {
   .loading-animation {
     font-size: 14px;
   }
-
-  .tab-content-wrapper {
-    min-height: 250px;
-  }
 }
 
-/* Sisanya sama */
 #shop-content, #inventory-content, #sell-content {
   display: flex;
   flex-wrap: wrap;
@@ -661,74 +592,4 @@ button:hover {
 .achievement.completed {
   border-color: #4caf50;
   background: #4caf50;
-}
-
-/* Responsive adjustments untuk body */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 24px;
-  }
-
-  .start-text {
-    font-size: 20px;
-  }
-
-  #wallet {
-    font-size: 12px;
-    padding: 8px;
-  }
-
-  #level {
-    font-size: 10px;
-  }
-
-  #xp-bar {
-    width: 120px;
-    height: 6px;
-  }
-
-  .tabs {
-    gap: 5px;
-  }
-
-  .tab-btn {
-    padding: 6px 12px;
-    font-size: 10px;
-  }
-
-  .shop-item, .inventory-item, .sell-item {
-    width: 100px;
-    padding: 8px;
-  }
-
-  .shop-item-img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .shop-item h3, .inventory-item h3, .sell-item h3 {
-    font-size: 10px;
-  }
-
-  .shop-item p, .inventory-item p, .sell-item p {
-    font-size: 9px;
-  }
-
-  button {
-    padding: 6px 10px;
-    font-size: 10px;
-  }
-
-  #exchange-amount {
-    width: 120px;
-  }
-
-  .achievement {
-    width: 200px;
-  }
-
-  #notification {
-    font-size: 12px;
-    min-width: 150px;
-  }
 }
