@@ -413,6 +413,14 @@ function renderInventory() {
   });
 }
 
+// Buy seed
+let seedItem = inventory.find(item => item === 'Seed x1');
+if (seedItem) {
+  inventory[inventory.indexOf(seedItem)] = `Seed x${parseInt(seedItem.split('x')[1]) + 1}`;
+} else {
+  inventory.push('Seed x1');
+}
+
 // Render sell section
 function renderSellSection() {
   const sellContent = document.getElementById('sell-content');
@@ -550,6 +558,7 @@ document.getElementById('claim-reward-btn').addEventListener('click', () => {
 
 claimModalBtn.addEventListener('click', () => {
   farmCoins += 100;
+  water += 50;
   localStorage.setItem('farmCoins', farmCoins);
   localStorage.setItem('lastClaim', Date.now());
   document.getElementById('claim-reward-btn').disabled = true;
