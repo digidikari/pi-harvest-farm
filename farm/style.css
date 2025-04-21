@@ -181,10 +181,10 @@ h1 {
 }
 
 .plant-img {
-  width: 160px; /* Naik dari 140px */
+  width: 140px; /* Pastikan seukuran lebar plot */
   height: auto;
-  max-height: 80px; /* Naik dari 60px */
-  object-fit: contain;
+  max-height: 60px; /* Tambah max-height biar proporsional dan kelihatan lebih besar */
+  object-fit: contain; /* Pastikan gambar gak terdistorsi */
 }
 
 .countdown-bar {
@@ -242,8 +242,8 @@ h1 {
   }
 
   .plant-img {
-    width: 140px; /* Naik dari 120px */
-    max-height: 70px; /* Naik dari 50px */
+    width: 120px;
+    max-height: 50px;
     object-fit: contain;
   }
 
@@ -281,10 +281,8 @@ h1 {
   }
 
   .plant-img {
-    width: 100px; /* Naik dari 30px */
-    height: auto;
-    max-height: 60px; /* Naik dari 30px */
-    object-fit: contain;
+    width: 30px;
+    height: 30px;
   }
 
   .countdown-bar {
