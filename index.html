@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pi Harvest Farm</title>
-  <link rel="stylesheet" href="farm/style.css?v=40">
+  <link rel="stylesheet" href="farm/style.css?v=41">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -40,54 +40,52 @@
       <div id="xp-bar"><div id="xp-fill"></div></div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" data-tab="farm">Farm</button>
-      <button class="tab-btn" data-tab="shop">Shop</button>
-      <button class="tab-btn" data-tab="upgrades">Upgrades</button>
-      <button class="tab-btn" data-tab="inventory">Inventory</button>
-      <button class="tab-btn" data-tab="exchange">Exchange</button>
-      <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-      <button class="tab-btn" data-tab="achievements">Achievements</button>
+      <button class="tab-btn active" data-tab="farm-content">Farm</button>
+      <button class="tab-btn" data-tab="shop-content">Shop</button>
+      <button class="tab-btn" data-tab="upgrades-content">Upgrades</button>
+      <button class="tab-btn" data-tab="inventory-content">Inventory</button>
+      <button class="tab-btn" data-tab="exchange-content">Exchange</button>
+      <button class="tab-btn" data-tab="leaderboard-content">Leaderboard</button>
+      <button class="tab-btn" data-tab="achievements-content">Achievements</button>
     </div>
-    <div class="tab-content-wrapper">
-      <div id="farm-content" class="tab-content active">
-        <div id="farm-area"></div>
-        <button id="claim-reward-btn">Claim Daily Reward</button>
+    <div id="farm-content" class="tab-content active">
+      <div id="farm-area"></div>
+      <button id="claim-reward-btn">Claim Daily Reward</button>
+    </div>
+    <div id="shop-content" class="tab-content">
+      <h2>Shop</h2>
+      <div id="sell-section">
+        <h3 id="sell-section-title">Sell Items</h3>
+        <div id="sell-content"></div>
       </div>
-      <div id="shop-content" class="tab-content">
-        <h2>Shop</h2>
-        <div id="sell-section">
-          <h3 id="sell-section-title">Sell Items</h3>
-          <div id="sell-content"></div>
-        </div>
-      </div>
-      <div id="upgrades-content" class="tab-content">
-        <h2 id="upgrades-title">Upgrades</h2>
-        Coming soon...
-      </div>
-      <div id="inventory-content" class="tab-content">
-        <h2>Inventory</h2>
-      </div>
-      <div id="exchange-content" class="tab-content">
-        <h2 id="exchange-title">Exchange</h2>
-        <p id="exchange-rate">1 PI = 1,000,000 Farm Coins</p>
-        <input type="number" id="exchange-amount" placeholder="Enter PI amount" step="0.00001">
-        <p><span id="exchange-result-label">Farm Coins:</span> <span id="exchange-result">0</span></p>
-        <button id="exchange-btn">Exchange</button>
-      </div>
-      <div id="leaderboard-content" class="tab-content">
-        <h2 id="leaderboard-title">Leaderboard</h2>
-        Coming soon...
-      </div>
-      <div id="achievements-content" class="tab-content">
-        <h2>Achievements</h2>
-      </div>
+    </div>
+    <div id="upgrades-content" class="tab-content">
+      <h2 id="upgrades-title">Upgrades</h2>
+      Coming soon...
+    </div>
+    <div id="inventory-content" class="tab-content">
+      <h2>Inventory</h2>
+    </div>
+    <div id="exchange-content" class="tab-content">
+      <h2 id="exchange-title">Exchange</h2>
+      <p id="exchange-rate">1 PI = 1,000,000 Farm Coins</p>
+      <input type="number" id="exchange-amount" placeholder="Enter PI amount" step="0.00001">
+      <p><span id="exchange-result-label">Farm Coins:</span> <span id="exchange-result">0</span></p>
+      <button id="exchange-btn">Exchange</button>
+    </div>
+    <div id="leaderboard-content" class="tab-content">
+      <h2 id="leaderboard-title">Leaderboard</h2>
+      Coming soon...
+    </div>
+    <div id="achievements-content" class="tab-content">
+      <h2>Achievements</h2>
     </div>
   </div>
 
   <!-- Reward Modal -->
   <div id="reward-modal" class="modal">
     <div class="modal-content">
-      <span id="reward-modal-close" class="close">&times;</span>
+      <span id="reward-modal-close" class="close">×</span>
       <h2>Daily Reward</h2>
       <p>You got 100 coins!</p>
       <button id="claim-modal-btn">Claim</button>
@@ -97,7 +95,7 @@
   <!-- Settings Modal -->
   <div id="settings-modal" class="modal">
     <div class="modal-content">
-      <span id="close-settings" class="close">&times;</span>
+      <span id="close-settings" class="close">×</span>
       <h2 id="settings-title">Settings</h2>
       <label id="music-volume-label" for="music-volume">Music Volume:</label>
       <input type="range" id="music-volume" min="0" max="100" value="50">
@@ -118,6 +116,6 @@
   <audio id="buying-sound" src="assets/sfx/voice/buying-bgv.mp3"></audio>
   <audio id="coin-sound" src="assets/sfx/voice/coin-bgv.mp3"></audio>
 
-  <script src="farm/main.js?v=40"></script>
+  <script src="farm/main.js?v=41"></script>
 </body>
 </html>
