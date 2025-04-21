@@ -141,10 +141,10 @@ h1 {
   justify-content: center;
   align-content: space-between;
   background: #8b4513;
-  padding: 20px 60px; /* Jarak sisi 60px */
+  padding: 20px;
   border-radius: 10px;
   width: 90%;
-  max-width: 460px; /* Muat 60+140+60+140+60 */
+  max-width: 400px;
   height: 200px;
   margin: 0 auto;
 }
@@ -175,15 +175,15 @@ h1 {
 }
 
 .plant-img {
-  width: 140px;
-  height: auto;
-  max-height: 140px;
-  object-fit: contain;
-  z-index: 1;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 140px; /* Sama kayak lebar plot */
+  height: auto; /* Proporsional */
+  max-height: 140px; /* Batasi tinggi */
+  object-fit: contain; /* Gak distorsi */
+  z-index: 1; /* Di bawah countdown-bar */
+  position: absolute; /* Posisi relatif ke plot */
+  bottom: 0; /* Bagian bawah nyentuh dasar plot */
+  left: 50%; /* Center horizontal */
+  transform: translateX(-50%); /* Offset biar pas tengah */
 }
 
 .countdown-bar {
@@ -222,9 +222,8 @@ h1 {
     grid-template-rows: repeat(2, 12px);
     row-gap: 60px;
     column-gap: 50px;
-    padding: 20px 50px;
     width: 90%;
-    max-width: 400px; /* 50+120+50+120+50 */
+    max-width: 340px;
     height: 164px;
   }
 
@@ -262,11 +261,9 @@ h1 {
   #farm-area {
     grid-template-columns: repeat(2, 100px);
     grid-template-rows: repeat(2, 10px);
-    row-gap: 50px;
-    column-gap: 40px;
-    padding: 20px 40px;
+    gap: 50px;
     width: 90%;
-    max-width: 340px; /* 40+100+40+100+40 */
+    max-width: 300px;
     height: 140px;
   }
 
@@ -304,11 +301,9 @@ h1 {
   #farm-area {
     grid-template-columns: repeat(2, 80px);
     grid-template-rows: repeat(2, 8px);
-    row-gap: 30px;
-    column-gap: 30px;
-    padding: 20px 30px;
+    gap: 30px;
     width: 90%;
-    max-width: 280px; /* 30+80+30+80+30 */
+    max-width: 240px;
     height: 116px;
   }
 
@@ -484,6 +479,7 @@ button:hover {
 }
 
 .modal-content {
+	post: 1;
   background: #333;
   margin: 15% auto;
   padding: 20px;
