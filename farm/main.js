@@ -173,8 +173,8 @@ function handlePlotClick(index) {
   const countdownFill = plotElement.querySelector('.countdown-fill');
 
   if (!plot.planted) {
-    const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
-    if (seedIndex !== -1) {
+    const seedItem = inventory.find(item => item.type === 'seed');
+    if (seedItem && seedItem.quantity > 0) {
       const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
       plot.planted = true;
       plot.vegetable = randomVegetable;
@@ -183,14 +183,18 @@ function handlePlotClick(index) {
       plot.currentFrame = 1;
       plot.countdown = randomVegetable.growthTime;
       plot.totalCountdown = randomVegetable.growthTime;
-      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img planted" onerror="this.src='assets/img/ui/placeholder.png';">`;
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
       countdownFill.style.width = '0%'; // Reset bar saat tanam
 
-      inventory.splice(seedIndex, 1);
+      seedItem.quantity--;
+      if (seedItem.quantity === 0) {
+        inventory.splice(inventory.indexOf(seedItem), 1);
+      }
       localStorage.setItem('inventory', JSON.stringify(inventory));
       showNotification(langData[currentLang].planted);
       playBuyingSound();
+      renderInventory();
       console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
     } else {
       showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
@@ -305,7 +309,7 @@ function renderShop() {
   const waterItem = document.createElement('div');
   waterItem.classList.add('shop-item');
   waterItem.innerHTML = `
-    <img src="assets/img/ui/water.png" alt="${langData[currentLang].waterLabel || 'Water'}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+    <img src="assets/img/ui/water_icon.png" alt="${langData[currentLang].waterLabel || 'Water'}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
     <h3>${langData[currentLang].waterLabel || 'Water'}</h3>
     <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: 50 ${langData[currentLang].coinLabel}</p>
     <p>${langData[currentLang].piPriceLabel || 'PI Price'}: 0.00005 PI</p>
@@ -364,22 +368,34 @@ function buyVegetable(id, currency) {
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
       farmCoins -= veg.farmPrice;
-      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      let seedItem = inventory.find(item => item.type === 'seed');
+      if (seedItem) {
+        seedItem.quantity++;
+      } else {
+        inventory.push({ type: 'seed', quantity: 1 });
+      }
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
       playBuyingSound();
+      renderInventory();
     } else {
       showNotification(langData[currentLang].notEnoughCoins);
     }
   } else {
     if (pi >= veg.piPrice) {
       pi -= veg.piPrice;
-      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      let seedItem = inventory.find(item => item.type === 'seed');
+      if (seedItem) {
+        seedItem.quantity++;
+      } else {
+        inventory.push({ type: 'seed', quantity: 1 });
+      }
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${id}"]`));
       playBuyingSound();
+      renderInventory();
     } else {
       showNotification(langData[currentLang].notEnoughPi);
     }
@@ -391,13 +407,13 @@ function renderInventory() {
   const inventoryContent = document.getElementById('inventory-content');
   inventoryContent.innerHTML = '';
   inventory.forEach((item, index) => {
-    if (typeof item === 'string' && item.includes('Seed')) {
+    if (item.type === 'seed') {
       const invItem = document.createElement('div');
       invItem.classList.add('inventory-item');
       invItem.innerHTML = `
         <img src="assets/img/ui/seed.png" alt="Seed" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
-        <h3>${item}</h3>
-        <p>${langData[currentLang].quantityLabel || 'Quantity'}: 1</p>
+        <h3>${langData[currentLang].seedLabel || 'Seed'}</h3>
+        <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
       `;
       inventoryContent.appendChild(invItem);
     } else if (item && item.vegetable) {
@@ -411,14 +427,6 @@ function renderInventory() {
       inventoryContent.appendChild(invItem);
     }
   });
-}
-
-// Buy seed
-let seedItem = inventory.find(item => item === 'Seed x1');
-if (seedItem) {
-  inventory[inventory.indexOf(seedItem)] = `Seed x${parseInt(seedItem.split('x')[1]) + 1}`;
-} else {
-  inventory.push('Seed x1');
 }
 
 // Render sell section
@@ -558,12 +566,16 @@ document.getElementById('claim-reward-btn').addEventListener('click', () => {
 
 claimModalBtn.addEventListener('click', () => {
   farmCoins += 100;
-  water += 50;
+  water += 5;
   localStorage.setItem('farmCoins', farmCoins);
+  localStorage.setItem('water', water);
   localStorage.setItem('lastClaim', Date.now());
   document.getElementById('claim-reward-btn').disabled = true;
   updateWallet();
-  showTransactionAnimation('+100', true, claimModalBtn);
+  showTransactionAnimation(`+100 ${langData[currentLang].coinLabel}`, true, claimModalBtn);
+  setTimeout(() => {
+    showTransactionAnimation(`+5 ${langData[currentLang].waterLabel}`, true, claimModalBtn);
+  }, 500);
   playCoinSound();
   rewardModal.style.display = 'none';
 });
@@ -783,6 +795,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loading-screen');
     const startScreen = document.getElementById('start-screen');
     if (loadingScreen && startScreen) {
+      // Toggle spinner
+      const loadingAnim = loadingScreen.querySelector('.loading-animation');
+      if (loadingAnim) {
+        loadingAnim.textContent = '';
+        loadingAnim.classList.add('spinner');
+      }
       setTimeout(() => {
         loadingScreen.style.opacity = '0';
         setTimeout(() => {
