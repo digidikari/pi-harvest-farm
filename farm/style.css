@@ -241,6 +241,111 @@ h1 {
   color: #fff;
 }
 
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.close {
+  color: #fff;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #ffeb3b;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+  font-size: 14px;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+#notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  display: none;
+  font-size: 14px;
+  min-width: 200px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.transaction-animation {
+  position: absolute;
+  font-size: 14px;
+  font-weight: bold;
+  animation: floatUp 1s ease-out forwards;
+}
+
+.transaction-animation.positive {
+  color: #4caf50;
+}
+
+.transaction-animation.negative {
+  color: #f44336;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-50px); }
+}
+
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+#loading-screen h1 {
+  font-size: 36px;
+  color: #ffeb3b;
+  text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336;
+  margin-bottom: 20px;
+}
+
+.loading-animation {
+  font-size: 24px;
+  color: #fff;
+  animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+  0% { content: 'Loading'; }
+  33% { content: 'Loading.'; }
+  66% { content: 'Loading..'; }
+  100% { content: 'Loading...'; }
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   #farm-area {
@@ -290,6 +395,14 @@ h1 {
 
   .modal-content {
     margin: 25% auto;
+  }
+
+  #loading-screen h1 {
+    font-size: 24px;
+  }
+
+  .loading-animation {
+    font-size: 18px;
   }
 }
 
@@ -342,6 +455,14 @@ h1 {
   .modal-content {
     margin: 30% auto;
   }
+
+  #loading-screen h1 {
+    font-size: 20px;
+  }
+
+  .loading-animation {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -392,6 +513,14 @@ h1 {
 
   .modal-content {
     margin: 35% auto;
+  }
+
+  #loading-screen h1 {
+    font-size: 18px;
+  }
+
+  .loading-animation {
+    font-size: 14px;
   }
 }
 
@@ -482,75 +611,6 @@ button:hover {
 .achievement.completed {
   border-color: #4caf50;
   background: #4caf50;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.close {
-  color: #fff;
-  float: right;
-  font-size: 28px;
-  cursor: pointer;
-}
-
-.close:hover {
-  color: #ffeb3b;
-}
-
-label {
-  display: block;
-  margin: 10px 0 5px;
-  font-size: 14px;
-}
-
-input[type="range"] {
-  width: 100%;
-}
-
-#notification {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 10px 20px;
-  border: 2px solid #fff;
-  border-radius: 8px;
-  display: none;
-  font-size: 14px;
-  min-width: 200px;
-  text-align: center;
-  z-index: 1000;
-}
-
-.transaction-animation {
-  position: absolute;
-  font-size: 14px;
-  font-weight: bold;
-  animation: floatUp 1s ease-out forwards;
-}
-
-.transaction-animation.positive {
-  color: #4caf50;
-}
-
-.transaction-animation.negative {
-  color: #f44336;
-}
-
-@keyframes floatUp {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-50px); }
 }
 
 /* Responsive adjustments untuk body */
