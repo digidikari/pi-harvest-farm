@@ -25,7 +25,8 @@ h1 {
   color: #ffeb3b;
   text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336;
   cursor: pointer;
-  animation: blink 1s infinite  transition: transform 0.1s;
+  animation: blink 1s infinite;
+  transition: transform 0.1s;
 }
 
 .start-text:active {
@@ -133,17 +134,17 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(2, 130px);
+  grid-template-columns: repeat(2, 140px);
   grid-template-rows: repeat(2, 14px);
   row-gap: 80px;
   column-gap: 60px;
   justify-content: center;
   align-content: space-between;
   background: #8b4513;
-  padding: 20px 60px; /* Padding kiri-kanan 60px biar jarak sisi sama dengan gap */
+  padding: 20px 60px; /* Jarak sisi 60px */
   border-radius: 10px;
   width: 90%;
-  max-width: 440px; /* Sesuaikan biar muat 60+130+60+130+60 */
+  max-width: 460px; /* Muat 60+140+60+140+60 */
   height: 200px;
   margin: 0 auto;
 }
@@ -159,7 +160,7 @@ h1 {
   cursor: pointer;
   transition: transform 0.1s;
   position: relative;
-  width: 130px; /* Kurangin dari 140px biar muat */
+  width: 140px;
   height: 14px;
 }
 
@@ -174,9 +175,9 @@ h1 {
 }
 
 .plant-img {
-  width: 130px; /* Sesuaikan dengan plot */
+  width: 140px;
   height: auto;
-  max-height: 130px;
+  max-height: 140px;
   object-fit: contain;
   z-index: 1;
   position: absolute;
@@ -217,18 +218,18 @@ h1 {
 /* Responsive adjustments */
 @media (max-width: 600px) {
   #farm-area {
-    grid-template-columns: repeat(2, 110px);
+    grid-template-columns: repeat(2, 120px);
     grid-template-rows: repeat(2, 12px);
     row-gap: 60px;
     column-gap: 50px;
     padding: 20px 50px;
     width: 90%;
-    max-width: 380px; /* 50+110+50+110+50 */
+    max-width: 400px; /* 50+120+50+120+50 */
     height: 164px;
   }
 
   .plot {
-    width: 110px;
+    width: 120px;
     height: 12px;
   }
 
@@ -238,8 +239,8 @@ h1 {
   }
 
   .plant-img {
-    width: 110px;
-    max-height: 110px;
+    width: 120px;
+    max-height: 120px;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -259,18 +260,18 @@ h1 {
 
 @media (max-width: 600px) {
   #farm-area {
-    grid-template-columns: repeat(2, 90px);
+    grid-template-columns: repeat(2, 100px);
     grid-template-rows: repeat(2, 10px);
     row-gap: 50px;
     column-gap: 40px;
     padding: 20px 40px;
     width: 90%;
-    max-width: 310px; /* 40+90+40+90+40 */
+    max-width: 340px; /* 40+100+40+100+40 */
     height: 140px;
   }
 
   .plot {
-    width: 90px;
+    width: 100px;
     height: 10px;
   }
 
@@ -280,8 +281,8 @@ h1 {
   }
 
   .plant-img {
-    width: 90px;
-    max-height: 90px;
+    width: 100px;
+    max-height: 100px;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -301,18 +302,18 @@ h1 {
 
 @media (max-width: 600px) {
   #farm-area {
-    grid-template-columns: repeat(2, 70px);
+    grid-template-columns: repeat(2, 80px);
     grid-template-rows: repeat(2, 8px);
     row-gap: 30px;
     column-gap: 30px;
     padding: 20px 30px;
     width: 90%;
-    max-width: 240px; /* 30+70+30+70+30 */
+    max-width: 280px; /* 30+80+30+80+30 */
     height: 116px;
   }
 
   .plot {
-    width: 70px;
+    width: 80px;
     height: 8px;
   }
 
@@ -322,8 +323,8 @@ h1 {
   }
 
   .plant-img {
-    width: 70px;
-    max-height: 70px;
+    width: 80px;
+    max-height: 80px;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -331,7 +332,7 @@ h1 {
 
   .countdown-bar {
     top: 8px;
-    width: 50px; /* Sesuaikan biar muat */
+    width: 60px;
     height: 5px;
   }
 
