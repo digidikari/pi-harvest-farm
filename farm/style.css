@@ -178,22 +178,70 @@ h1 {
   height: 40px;
 }
 
+.countdown-bar {
+  position: absolute;
+  top: 10px; /* Posisikan di bawah tanaman */
+  width: 80px;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.countdown-fill {
+  width: 0%;
+  height: 100%;
+  background: #0ff; /* Cyan neon */
+  box-shadow: 0 0 10px #0ff;
+  transition: width 0.1s linear;
+}
+
 .plot-status {
   font-size: 8px;
   color: #ffeb3b;
   position: absolute;
-  bottom: -10px; /* Posisikan status di bawah plot */
+  top: 20px; /* Posisikan di bawah countdown bar */
   text-align: center;
   line-height: 1.2;
   width: 100%;
 }
 
-/* Sesuaikan canvas timer biar sesuai ukuran plot */
-.plot-timer {
-  position: absolute;
-  top: -36px;
-  width: 100px;
-  height: 40px;
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  #farm-area {
+    grid-template-columns: repeat(2, 80px);
+    grid-template-rows: repeat(2, 8px);
+    gap: 30px;
+    width: 90%;
+    max-width: 240px;
+    height: 116px;
+  }
+
+  .plot {
+    width: 80px;
+    height: 8px;
+  }
+
+  .plot-content {
+    height: 30px;
+    top: -26px;
+  }
+
+  .plant-img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .countdown-bar {
+    top: 8px;
+    width: 60px;
+    height: 5px;
+  }
+
+  .plot-status {
+    font-size: 6px;
+    top: 16px;
+  }
 }
 
 #bag {
