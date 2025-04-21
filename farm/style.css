@@ -134,14 +134,14 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(2, 140px); /* Kecilkan plot */
-  grid-template-rows: repeat(2, 14px);
+  grid-template-columns: repeat(2, 160px); /* Match plot width */
+  grid-template-rows: repeat(2, 16px);
   row-gap: 60px;
-  column-gap: 140px; /* Renggangin +20px */
+  column-gap: 60px; /* Kecilkan gap */
   justify-content: center;
   align-content: space-around;
   background: #8b4513;
-  padding: 100px 100px 30px 30px;
+  padding: 100px 30px 30px 30px; /* Simetris kiri-kanan */
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
@@ -152,7 +152,7 @@ h1 {
 .plot {
   background: #654321;
   border: 2px solid #fff;
-  border-radius: 140% / 140%;
+  border-radius: 140% / 140%; /* Tetep bulat */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -160,7 +160,7 @@ h1 {
   cursor: pointer;
   transition: transform 0.1s;
   position: relative;
-  width: 160px; /* Sesuaikan */
+  width: 160px;
   height: 16px;
 }
 
@@ -175,9 +175,9 @@ h1 {
 }
 
 .plant-img {
-  width: 160px; /* Sesuaikan */
+  width: 160px;
   height: auto;
-  max-height: 140px;
+  max-height: 160px; /* Sesuaikan */
   object-fit: contain;
   z-index: 1;
   position: absolute;
@@ -188,8 +188,8 @@ h1 {
 
 .countdown-bar {
   position: absolute;
-  top: 40px;
-  width: 100px; /* Sesuaikan */
+  top: 12px; /* Fix biar kelihatan */
+  width: 100px;
   height: 8px;
   background: #333;
   border-radius: 3px;
@@ -271,11 +271,11 @@ h1 {
 /* Responsive adjustments */
 @media (max-width: 600px) {
   #farm-area {
-    grid-template-columns: repeat(2, 110px);
+    grid-template-columns: repeat(2, 120px);
     grid-template-rows: repeat(2, 12px);
     row-gap: 50px;
     column-gap: 50px;
-    padding: 90px 15px 25px 45px;
+    padding: 90px 25px 25px 25px; /* Simetris */
     width: 90%;
     max-width: 400px;
     height: 260px;
@@ -283,7 +283,7 @@ h1 {
   }
 
   .plot {
-    width: 110px;
+    width: 120px;
     height: 12px;
   }
 
@@ -293,8 +293,8 @@ h1 {
   }
 
   .plant-img {
-    width: 110px;
-    max-height: 110px;
+    width: 120px;
+    max-height: 120px;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -302,7 +302,7 @@ h1 {
 
   .countdown-bar {
     top: 10px;
-    width: 70px;
+    width: 80px;
     height: 6px;
   }
 
@@ -324,13 +324,13 @@ h1 {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   #farm-area {
-    grid-template-columns: repeat(2, 90px);
+    grid-template-columns: repeat(2, 100px);
     grid-template-rows: repeat(2, 10px);
     row-gap: 40px;
     column-gap: 40px;
-    padding: 80px 10px 20px 40px;
+    padding: 80px 20px 20px 20px;
     width: 90%;
     max-width: 340px;
     height: 240px;
@@ -338,7 +338,7 @@ h1 {
   }
 
   .plot {
-    width: 90px;
+    width: 100px;
     height: 10px;
   }
 
@@ -348,8 +348,8 @@ h1 {
   }
 
   .plant-img {
-    width: 90px;
-    max-height: 90px;
+    width: 100px;
+    max-height: 100px;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -379,13 +379,13 @@ h1 {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 360px) {
   #farm-area {
-    grid-template-columns: repeat(2, 70px);
+    grid-template-columns: repeat(2, 80px);
     grid-template-rows: repeat(2, 8px);
     row-gap: 30px;
     column-gap: 30px;
-    padding: 70px 5px 15px 35px;
+    padding: 70px 15px 15px 15px;
     width: 90%;
     max-width: 280px;
     height: 220px;
@@ -393,7 +393,7 @@ h1 {
   }
 
   .plot {
-    width: 70px;
+    width: 80px;
     height: 8px;
   }
 
@@ -403,8 +403,8 @@ h1 {
   }
 
   .plant-img {
-    width: 70px;
-    max-height: 70px;
+    width: 80px;
+    max-height: 80px;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -630,7 +630,7 @@ input[type="range"] {
     height: 30px;
   }
 
-  .bag-items {
+  #bag-items {
     font-size: 12px;
     padding: 4px 8px;
   }
