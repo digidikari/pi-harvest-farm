@@ -141,7 +141,7 @@ h1 {
   justify-content: center;
   align-content: space-around;
   background: #8b4513;
-  padding: 100px 20px 30px 50px;
+  padding: 100px 20px 30px 20px;
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
@@ -188,7 +188,7 @@ h1 {
 
 .countdown-bar {
   position: absolute;
-  top: 10px;
+  top: 14px;
   width: 100px; /* Sesuaikan */
   height: 8px;
   background: #333;
