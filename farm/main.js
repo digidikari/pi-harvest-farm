@@ -283,6 +283,7 @@ function renderShop() {
   const shopContent = document.getElementById('shop-content');
   if (!shopContent) {
     console.error('Shop content element not found');
+    showNotification(langData[currentLang].error || 'Shop failed to load!');
     return;
   }
 
@@ -367,7 +368,11 @@ function buyVegetable(id, currency) {
   }
 
   const veg = vegetables.find(v => v.id === id);
-  if (!veg) return;
+  if (!veg) {
+    console.error(`Vegetable with id ${id} not found`);
+    showNotification(langData[currentLang].error || 'Error purchasing item!');
+    return;
+  }
 
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
@@ -407,6 +412,10 @@ function buyVegetable(id, currency) {
 // Render inventory
 function renderInventory() {
   const inventoryContent = document.getElementById('inventory-content');
+  if (!inventoryContent) {
+    console.error('Inventory content element not found');
+    return;
+  }
   inventoryContent.innerHTML = '';
   inventory.forEach((item, index) => {
     if (item.type === 'seed') {
@@ -434,6 +443,10 @@ function renderInventory() {
 // Render sell section
 function renderSellSection() {
   const sellContent = document.getElementById('sell-content');
+  if (!sellContent) {
+    console.error('Sell content element not found');
+    return;
+  }
   sellContent.innerHTML = '';
   inventory.forEach((item, index) => {
     if (item && item.vegetable) {
@@ -462,7 +475,10 @@ function renderSellSection() {
 // Sell item
 function sellItem(index) {
   const item = inventory[index];
-  if (!item || !item.vegetable) return;
+  if (!item || !item.vegetable) {
+    console.error(`Invalid item at index ${index}`);
+    return;
+  }
 
   const sellPrice = Math.floor(item.vegetable.farmPrice * 0.5);
   farmCoins += sellPrice * item.quantity;
@@ -495,6 +511,7 @@ function switchTab(tab) {
   try {
     document.querySelectorAll('.tab-content').forEach(content => {
       content.classList.remove('active');
+      content.style.display = 'none'; // Fallback kalau CSS gagal
     });
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.classList.remove('active');
@@ -507,6 +524,7 @@ function switchTab(tab) {
     }
 
     tabContent.classList.add('active');
+    tabContent.style.display = 'block'; // Fallback
     tabBtn.classList.add('active');
     console.log(`Switched to ${tab} tab successfully`);
 
@@ -629,6 +647,10 @@ function checkCoinAchievement() {
 // Render achievements
 function renderAchievements() {
   const achievementsContent = document.getElementById('achievements-content');
+  if (!achievementsContent) {
+    console.error('Achievements content element not found');
+    return;
+  }
   achievementsContent.innerHTML = `
     <div class="achievement ${harvestCount >= 10 ? 'completed' : ''}" data-id="harvest">
       <h3>${langData[currentLang].achievementHarvest}</h3>
@@ -896,10 +918,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadData().catch(err => {
       console.error('Load data failed:', err);
-      alert('Failed to load game data. Please check the required JSON files and try again.');
+      showNotification(langData[currentLang].error || 'Failed to load game data!');
     });
   } catch (e) {
     console.error('Initialization failed:', e.message);
-    alert('Failed to initialize game. Check console for errors.');
+    showNotification(langData[currentLang].error || 'Failed to initialize game!');
   }
 });
