@@ -47,7 +47,11 @@ h1 {
   z-index: 1000;
 }
 
-#lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn {
+#lang-toggle,
+#settings-btn,
+#game-lang-toggle,
+#game-settings-btn,
+#exit-game-btn {
   background: #333;
   color: #fff;
   border: 2px solid #fff;
@@ -58,7 +62,11 @@ h1 {
   transition: all 0.3s;
 }
 
-#lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover {
+#lang-toggle:hover,
+#settings-btn:hover,
+#game-lang-toggle:hover,
+#game-settings-btn:hover,
+#exit-game-btn:hover {
   background: #555;
   border-color: #ffeb3b;
 }
@@ -124,18 +132,24 @@ h1 {
 }
 
 .tab-content {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
   padding: 10px;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .tab-content.active {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  height: auto;
 }
 
 #farm-area {
   display: grid;
   grid-template-columns: repeat(2, 160px);
-  grid-template-rows: repeat(2, 16px);
+  grid-template-rows: repeat(2, 160px);
   row-gap: 60px;
   column-gap: 60px;
   justify-content: center;
@@ -145,7 +159,6 @@ h1 {
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
-  height: 300px;
   margin: 0 auto;
 }
 
@@ -161,7 +174,7 @@ h1 {
   transition: transform 0.1s;
   position: relative;
   width: 160px;
-  height: 16px;
+  height: 160px;
 }
 
 .plot-content {
@@ -169,9 +182,9 @@ h1 {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 50px;
+  height: 100%;
   position: absolute;
-  top: -46px;
+  top: 0;
 }
 
 .plant-img {
@@ -184,6 +197,15 @@ h1 {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.plant-img.planted {
+  animation: plantPop 0.3s ease;
+}
+
+@keyframes plantPop {
+  0% { transform: translateX(-50%) scale(0); }
+  100% { transform: translateX(-50%) scale(1); }
 }
 
 .countdown-bar {
@@ -333,7 +355,16 @@ input[type="range"] {
   margin-bottom: 20px;
 }
 
-.loading-animation::after {
+.loading-animation {
+  font-size: 24px;
+  color: #fff;
+}
+
+.loading-animation.spinner {
+  font-size: 0;
+}
+
+.loading-animation.spinner::after {
   content: '';
   width: 24px;
   height: 24px;
@@ -341,7 +372,10 @@ input[type="range"] {
   border-top: 4px solid #ffeb3b;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  display: block;
+  margin: 10px auto;
 }
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -349,34 +383,59 @@ input[type="range"] {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .start-text {
+    font-size: 20px;
+  }
+
+  #wallet {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  #level {
+    font-size: 10px;
+  }
+
+  #xp-bar {
+    width: 120px;
+    height: 6px;
+  }
+
+  .tabs {
+    gap: 5px;
+  }
+
+  .tab-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+
   #farm-area {
     grid-template-columns: repeat(2, 120px);
-    grid-template-rows: repeat(2, 12px);
+    grid-template-rows: repeat(2, 120px);
     row-gap: 50px;
     column-gap: 50px;
     padding: 90px 25px 25px 25px;
-    width: 90%;
     max-width: 400px;
-    height: 260px;
-    margin: 0 auto;
   }
 
   .plot {
     width: 120px;
-    height: 12px;
+    height: 120px;
   }
 
   .plot-content {
-    height: 40px;
-    top: -36px;
+    height: 100%;
+    top: 0;
   }
 
   .plant-img {
     width: 120px;
     max-height: 120px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -405,37 +464,73 @@ input[type="range"] {
   .loading-animation {
     font-size: 18px;
   }
+
+  .shop-item,
+  .inventory-item,
+  .sell-item {
+    width: 100px;
+    padding: 8px;
+  }
+
+  .shop-item-img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .shop-item h3,
+  .inventory-item h3,
+  .sell-item h3 {
+    font-size: 10px;
+  }
+
+  .shop-item p,
+  .inventory-item p,
+  .sell-item p {
+    font-size: 9px;
+  }
+
+  button {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  #exchange-amount {
+    width: 120px;
+  }
+
+  .achievement {
+    width: 200px;
+  }
+
+  #notification {
+    font-size: 12px;
+    min-width: 150px;
+  }
 }
 
 @media (max-width: 480px) {
   #farm-area {
     grid-template-columns: repeat(2, 100px);
-    grid-template-rows: repeat(2, 10px);
+    grid-template-rows: repeat(2, 100px);
     row-gap: 40px;
     column-gap: 40px;
     padding: 80px 20px 20px 20px;
-    width: 90%;
     max-width: 340px;
-    height: 240px;
-    margin: 0 auto;
   }
 
   .plot {
     width: 100px;
-    height: 10px;
+    height: 100px;
   }
 
   .plot-content {
-    height: 30px;
-    top: -26px;
+    height: 100%;
+    top: 0;
   }
 
   .plant-img {
     width: 100px;
     max-height: 100px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -469,32 +564,26 @@ input[type="range"] {
 @media (max-width: 360px) {
   #farm-area {
     grid-template-columns: repeat(2, 80px);
-    grid-template-rows: repeat(2, 8px);
+    grid-template-rows: repeat(2, 80px);
     row-gap: 30px;
     column-gap: 30px;
     padding: 70px 15px 15px 15px;
-    width: 90%;
     max-width: 280px;
-    height: 220px;
-    margin: 0 auto;
   }
 
   .plot {
     width: 80px;
-    height: 8px;
+    height: 80px;
   }
 
   .plot-content {
-    height: 30px;
-    top: -26px;
+    height: 100%;
+    top: 0;
   }
 
   .plant-img {
     width: 80px;
     max-height: 80px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -525,16 +614,9 @@ input[type="range"] {
   }
 }
 
-.plant-img {
-  animation: plantPop 0.3s ease;
-}
-@keyframes plantPop {
-  0% { transform: translateX(-50%) scale(0); }
-  100% { transform: translateX(-50%) scale(1); }
-}
-
-/* Sisanya sama */
-#shop-content, #inventory-content, #sell-content {
+#shop-content,
+#inventory-content,
+#sell-content {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -542,7 +624,9 @@ input[type="range"] {
   padding: 15px;
 }
 
-.shop-item, .inventory-item, .sell-item {
+.shop-item,
+.inventory-item,
+.sell-item {
   background: #333;
   border: 2px solid #fff;
   border-radius: 10px;
@@ -557,12 +641,16 @@ input[type="range"] {
   object-fit: contain;
 }
 
-.shop-item h3, .inventory-item h3, .sell-item h3 {
+.shop-item h3,
+.inventory-item h3,
+.sell-item h3 {
   font-size: 12px;
   margin: 8px 0;
 }
 
-.shop-item p, .inventory-item p, .sell-item p {
+.shop-item p,
+.inventory-item p,
+.sell-item p {
   font-size: 10px;
   margin: 5px 0;
 }
@@ -620,74 +708,4 @@ button:hover {
 .achievement.completed {
   border-color: #4caf50;
   background: #4caf50;
-}
-
-/* Responsive adjustments untuk body */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 24px;
-  }
-
-  .start-text {
-    font-size: 20px;
-  }
-
-  #wallet {
-    font-size: 12px;
-    padding: 8px;
-  }
-
-  #level {
-    font-size: 10px;
-  }
-
-  #xp-bar {
-    width: 120px;
-    height: 6px;
-  }
-
-  .tabs {
-    gap: 5px;
-  }
-
-  .tab-btn {
-    padding: 6px 12px;
-    font-size: 10px;
-  }
-
-  .shop-item, .inventory-item, .sell-item {
-    width: 100px;
-    padding: 8px;
-  }
-
-  .shop-item-img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .shop-item h3, .inventory-item h3, .sell-item h3 {
-    font-size: 10px;
-  }
-
-  .shop-item p, .inventory-item p, .sell-item p {
-    font-size: 9px;
-  }
-
-  button {
-    padding: 6px 10px;
-    font-size: 10px;
-  }
-
-  #exchange-amount {
-    width: 120px;
-  }
-
-  .achievement {
-    width: 200px;
-  }
-
-  #notification {
-    font-size: 12px;
-    min-width: 150px;
-  }
 }
