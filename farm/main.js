@@ -544,32 +544,6 @@ function updateExchangeResult() {
   document.getElementById('exchange-result').textContent = farmCoinsResult;
 }
 
-// Claim daily reward
-function claimDailyReward() {
-  const lastClaim = localStorage.getItem('lastClaim');
-  const now = Date.now();
-  const oneDay = 24 * 60 * 60 * 1000;
-
-  if (lastClaim && now - lastClaim < oneDay) {
-    const timeLeft = oneDay - (now - lastClaim);
-    const hoursLeft = Math.floor(timeLeft / (60 * 60 * 1000));
-    const minutesLeft = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
-    showNotification(`${langData[currentLang].waitLabel || 'Wait'} ${hoursLeft}h ${minutesLeft}m ${langData[currentLang].toClaimAgain || 'to claim again!'}`);
-    return;
-  }
-
-  farmCoins += 100;
-  water += 50;
-  bag.push(`${langData[currentLang].beetSeedLabel || 'Beet Seed'} x1`);
-  updateWallet();
-  renderBag();
-  localStorage.setItem('lastClaim', now);
-  document.getElementById('claim-reward-btn').disabled = true;
-  showNotification(langData[currentLang].dailyReward);
-  playCoinSound();
-  console.log('Daily reward claimed, bag:', bag);
-}
-
 // Check harvest achievement
 function checkHarvestAchievement() {
   if (harvestCount >= 10) {
@@ -738,23 +712,52 @@ function initializeSettings() {
   });
 }
 
-// Check daily reward availability
-function checkDailyReward() {
-  const lastClaim = localStorage.getItem('lastClaim');
-  const now = Date.now();
-  const oneDay = 24 * 60 * 60 * 1000;
-  if (lastClaim && now - lastClaim < oneDay) {
-    document.getElementById('claim-reward-btn').disabled = true;
-  }
-}
-
 // Initialize game
 function initializeGame() {
-  loadPlayerData();
-  initializeSettings();
-  updateVolumes();
-  checkDailyReward();
-  console.log('Game initialized');
+  console.log('Initializing game...');
+  loadAssets(() => {
+    console.log('Assets loaded, starting game...');
+    initializePlots();
+    renderInventory();
+    renderSellSection();
+    updateWallet();
+    renderShop();
+    renderUpgrades();
+    renderLeaderboard();
+    renderAchievements();
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('game-container').style.display = 'block';
+    document.getElementById('title-screen').style.display = 'block';
+    backgroundMusic.play().catch(error => {
+      console.log('Autoplay blocked, user interaction required:', error);
+    });
+
+    // Cek dan tampilkan daily reward pop-up
+    const lastClaim = localStorage.getItem('lastDailyClaim');
+    const now = new Date().toISOString().split('T')[0];
+    if (lastClaim !== now) {
+      const dailyRewardModal = document.getElementById('daily-reward-modal');
+      dailyRewardModal.style.display = 'flex';
+
+      document.getElementById('claim-reward-btn').addEventListener('click', () => {
+        coins += 100;
+        water += 10;
+        localStorage.setItem('lastDailyClaim', now);
+        localStorage.setItem('coins', coins);
+        localStorage.setItem('water', water);
+        updateWallet();
+        showNotification('Daily Reward Claimed! +100 Coins, +10 Water');
+        playUpgradeSound();
+        dailyRewardModal.style.display = 'none';
+      });
+
+      document.getElementById('close-reward-btn').addEventListener('click', () => {
+        dailyRewardModal.style.display = 'none';
+      });
+    }
+
+    console.log('Game initialized');
+  });
 }
 
 // DOM Content Loaded
