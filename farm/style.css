@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Press Start 2P', Arial, sans-serif;
   background: #f0f0f0;
   color: #fff;
   display: flex;
@@ -23,6 +23,7 @@ body {
   height: 100%;
   background: #000;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
@@ -34,6 +35,11 @@ body {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+}
+
+#loading-screen h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
 }
 
 .loading-animation {
@@ -58,7 +64,7 @@ body {
 }
 
 #start-screen {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   gap: 20px;
@@ -69,19 +75,21 @@ body {
 }
 
 #start-screen.screen-active {
+  display: flex;
   opacity: 1;
   visibility: visible;
   transform: scale(1);
 }
 
 #start-screen.screen-hidden {
+  display: none;
   opacity: 0;
   visibility: hidden;
   transform: scale(0.95);
 }
 
 #game-screen {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   width: 100%;
@@ -94,12 +102,14 @@ body {
 }
 
 #game-screen.screen-active {
+  display: flex;
   opacity: 1;
   visibility: visible;
   transform: scale(1);
 }
 
 #game-screen.screen-hidden {
+  display: none;
   opacity: 0;
   visibility: hidden;
   transform: scale(0.95);
@@ -110,22 +120,33 @@ body {
   margin-bottom: 20px;
 }
 
-#start-text, #lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn, #claim-reward-btn {
+.start-text, #lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn, #claim-reward-btn {
   padding: 10px 20px;
   background: #333;
   border: 2px solid #fff;
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
+  color: #fff;
+  text-align: center;
 }
 
-#start-text:hover, #lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover, #claim-reward-btn:hover {
+.start-text:hover, #lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover, #claim-reward-btn:hover {
   background: #555;
   transform: scale(1.05);
 }
 
+.corner-buttons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+}
+
 #wallet {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
   max-width: 460px;
@@ -154,7 +175,7 @@ body {
   transition: width 0.5s;
 }
 
-#tabs {
+.tabs {
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -169,6 +190,7 @@ body {
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
+  color: #fff;
 }
 
 .tab-btn:hover {
@@ -374,6 +396,7 @@ body {
   margin-top: 5px;
   width: 100%;
   transition: background 0.2s, transform 0.2s;
+  color: #fff;
 }
 
 .buy-btn:hover, .buy-pi-btn:hover, .sell-btn:hover {
@@ -400,6 +423,7 @@ body {
   padding: 5px;
   margin: 10px 0;
   width: 100px;
+  color: #000;
 }
 
 #exchange-btn {
@@ -409,6 +433,7 @@ body {
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
+  color: #fff;
 }
 
 #exchange-btn:hover {
@@ -487,7 +512,7 @@ body {
   100% { opacity: 0; transform: translateY(-50px); }
 }
 
-#reward-modal, #settings-modal {
+.modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -504,13 +529,17 @@ body {
   z-index: 100;
 }
 
-#reward-modal.modal-active, #settings-modal.modal-active {
+.modal.modal-active {
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, -50%) scale(1);
 }
 
-#reward-modal-close, #close-settings {
+.modal-content {
+  position: relative;
+}
+
+.close {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -523,9 +552,10 @@ body {
   text-align: center;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
+  color: #fff;
 }
 
-#reward-modal-close:hover, #close-settings:hover {
+.close:hover {
   background: #777;
   transform: scale(1.05);
 }
@@ -538,6 +568,7 @@ body {
   cursor: pointer;
   margin-top: 10px;
   transition: background 0.2s, transform 0.2s;
+  color: #fff;
 }
 
 #claim-modal-btn:hover {
@@ -548,6 +579,7 @@ body {
 #settings-modal input {
   width: 100%;
   margin: 10px 0;
+  color: #000;
 }
 
 @media (max-width: 600px) {
