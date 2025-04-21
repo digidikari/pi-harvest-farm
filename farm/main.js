@@ -72,7 +72,55 @@ async function loadData() {
     console.log('Language data loaded:', langData);
   } catch (e) {
     console.error('Lang JSON load failed:', e.message);
-    langData = { en: { title: 'Pi Harvest Farm', error: 'Error', startBtn: 'Start', coinLabel: 'Coins', waterLabel: 'Water' }, id: {} };
+    langData = {
+      en: {
+        title: 'Pi Harvest Farm',
+        error: 'Error',
+        startBtn: 'Start Game',
+        coinLabel: 'Farm Coins',
+        waterLabel: 'Water',
+        switchLangLabel: 'Switch Language (EN/ID)',
+        claimRewardBtn: 'Claim Daily Reward',
+        farmTab: 'Farm',
+        shopTab: 'Shop',
+        upgradesTab: 'Upgrades',
+        inventoryTab: 'Inventory',
+        exchangeTab: 'Exchange',
+        leaderboardTab: 'Leaderboard',
+        achievementsTab: 'Achievements',
+        sellItemsLabel: 'Sell Items',
+        settingsLabel: 'Settings',
+        musicVolumeLabel: 'Music Volume:',
+        voiceVolumeLabel: 'Voice/SFX Volume:',
+        planted: 'Planted!',
+        watered: 'Watered!',
+        harvested: 'Harvested!',
+        noSeeds: 'No Seeds in inventory!',
+        notEnoughWater: 'Not enough water!',
+        notEnoughCoins: 'Not enough coins!',
+        notEnoughPi: 'Not enough PI!',
+        exchanged: 'Exchanged!',
+        levelUp: 'Level Up!',
+        achievementUnlocked: 'Achievement Unlocked!',
+        achievementHarvest: 'Harvest Master',
+        achievementHarvestDesc: 'Harvest 10 crops',
+        achievementCoins: 'Coin Collector',
+        achievementCoinsDesc: 'Earn 1000 coins',
+        waitLabel: 'Wait',
+        toClaimAgain: 'to claim again!',
+        noItems: 'No items available in shop.',
+        farmPriceLabel: 'Farm Price',
+        piPriceLabel: 'PI Price',
+        buyLabel: 'Buy',
+        sellLabel: 'Sell',
+        quantityLabel: 'Quantity',
+        seedLabel: 'Seed',
+        exchangeRateLabel: `1 PI = ${piToFarmRate} Farm Coins`,
+        enterPiAmount: 'Enter PI amount',
+        exchangeBtn: 'Exchange to Farm Coins',
+      },
+      id: {},
+    };
     showNotification('Failed to load lang.json, using fallback');
   }
 
@@ -85,7 +133,18 @@ async function loadData() {
   } catch (e) {
     console.error('Vegetables JSON load failed:', e.message);
     vegetables = [
-      { id: 'carrot', name: { en: 'Carrot', id: 'Wortel' }, shopImage: 'assets/img/vegetables/carrot.png', baseImage: 'assets/img/vegetables/carrot', frames: 3, growthTime: 60, farmPrice: 100, piPrice: 0.0001, yield: 2, waterNeeded: 1 }
+      {
+        id: 'carrot',
+        name: { en: 'Carrot', id: 'Wortel' },
+        shopImage: 'assets/img/vegetables/carrot.png',
+        baseImage: 'assets/img/vegetables/carrot',
+        frames: 3,
+        growthTime: 60,
+        farmPrice: 100,
+        piPrice: 0.0001,
+        yield: 2,
+        waterNeeded: 1,
+      },
     ];
     showNotification('Failed to load vegetables.json, using fallback');
   }
@@ -128,7 +187,7 @@ function updateWallet() {
   const waterEl = document.getElementById('water');
   const levelEl = document.getElementById('level');
   const xpFillEl = document.getElementById('xp-fill');
-  if (farmCoinsEl) farmCoinsEl.textContent = `${farmCoins} ${langData[currentLang].coinLabel || 'Coins'}`;
+  if (farmCoinsEl) farmCoinsEl.textContent = `${farmCoins} ${langData[currentLang].coinLabel || 'Farm Coins'}`;
   if (piCoinsEl) piCoinsEl.textContent = `${pi.toFixed(2)} PI`;
   if (waterEl) waterEl.textContent = `${water} ${langData[currentLang].waterLabel || 'Water'}`;
   if (levelEl) levelEl.textContent = `Level: ${level} | XP: ${xp}`;
@@ -721,7 +780,7 @@ function showTransactionAnimation(amount, isPositive, element, offsetY = 0) {
 // Update UI text based on langData
 function updateUIText() {
   const elements = {
-    'title': langData[currentLang].title,
+    title: langData[currentLang].title,
     'start-text': langData[currentLang].startBtn,
     'lang-toggle': langData[currentLang].switchLangLabel || 'Switch Language (EN/ID)',
     'game-lang-toggle': langData[currentLang].switchLangLabel || 'Switch Language (EN/ID)',
@@ -732,9 +791,9 @@ function updateUIText() {
     'leaderboard-title': langData[currentLang].leaderboardTab,
     'leaderboard-content': langData[currentLang].comingSoon || 'Coming soon...',
     'exchange-title': langData[currentLang].exchangeTab,
-    'exchange-rate': langData[currentLang].exchangeRateLabel || `1 PI = ${piToFarmRate} ${langData[currentLang].coinLabel}`,
+    'exchange-rate': langData[currentLang].exchangeRateLabel || `1 PI = ${piToFarmRate} Farm Coins`,
     'exchange-amount': { placeholder: langData[currentLang].enterPiAmount || 'Enter PI amount' },
-    'exchange-result-label': `${langData[currentLang].coinLabel || 'Coins'}: `,
+    'exchange-result-label': `${langData[currentLang].coinLabel || 'Farm Coins'}: `,
     'exchange-btn': langData[currentLang].exchangeBtn,
     'sell-section-title': langData[currentLang].sellItemsLabel || 'Sell Items',
     'settings-title': langData[currentLang].settingsLabel || 'Settings',
@@ -754,13 +813,13 @@ function updateUIText() {
   });
 
   const tabButtons = {
-    'farm': langData[currentLang].farmTab,
-    'shop': langData[currentLang].shopTab,
-    'upgrades': langData[currentLang].upgradesTab,
-    'inventory': langData[currentLang].inventoryTab,
-    'exchange': langData[currentLang].exchangeTab,
-    'leaderboard': langData[currentLang].leaderboardTab,
-    'achievements': langData[currentLang].achievementsTab,
+    farm: langData[currentLang].farmTab,
+    shop: langData[currentLang].shopTab,
+    upgrades: langData[currentLang].upgradesTab,
+    inventory: langData[currentLang].inventoryTab,
+    exchange: langData[currentLang].exchangeTab,
+    leaderboard: langData[currentLang].leaderboardTab,
+    achievements: langData[currentLang].achievementsTab,
   };
 
   Object.keys(tabButtons).forEach(tab => {
@@ -776,7 +835,9 @@ function startGame() {
   const gameScreen = document.getElementById('game-screen');
   if (startScreen && gameScreen) {
     startScreen.classList.add('screen-hidden');
+    startScreen.classList.remove('screen-active');
     gameScreen.classList.add('screen-active');
+    gameScreen.classList.remove('screen-hidden');
   }
   playBgMusic();
   playBgVoice();
@@ -796,7 +857,9 @@ function exitGame() {
   const gameScreen = document.getElementById('game-screen');
   const startScreen = document.getElementById('start-screen');
   if (gameScreen && startScreen) {
+    gameScreen.classList.add('screen-hidden');
     gameScreen.classList.remove('screen-active');
+    startScreen.classList.add('screen-active');
     startScreen.classList.remove('screen-hidden');
   }
   if (bgMusic) bgMusic.pause();
@@ -893,9 +956,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingAnimation = loadingScreen.querySelector('.loading-animation');
     if (loadingAnimation) {
       loadingAnimation.classList.add('spinner');
+      loadingAnimation.textContent = ''; // Hapus "Loading..." text
     }
 
-    // Force hide loading screen after 3s if data fails
+    // Force hide loading screen after 3s
     setTimeout(() => {
       if (loadingScreen && startScreen) {
         console.log('Hiding loading screen...');
@@ -904,7 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, 3000);
 
-    const startText = document.getElementById('start-text');
+    const startText = document.querySelector('.start-text');
     const langToggle = document.getElementById('lang-toggle');
     const settingsBtn = document.getElementById('settings-btn');
     const claimRewardBtn = document.getElementById('claim-reward-btn');
