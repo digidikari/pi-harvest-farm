@@ -169,19 +169,21 @@ h1 {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 50px; /* Sesuaikan dengan tinggi bibit yang lebih besar */
+  height: 140px; /* Naikkan biar muat gambar besar */
   position: absolute;
-  top: -46px; /* Posisikan tanaman lebih atas karena plot lebih besar */
+  top: -126px; /* Geser ke atas biar gambar centered relatif ke plot */
 }
 
 .plant-img {
-  width: 50px;
-  height: 50px;
+  width: 140px; /* Sama kayak lebar plot */
+  height: auto; /* Biar proporsional */
+  max-height: 140px; /* Batasi tinggi biar gak kegedean */
+  object-fit: contain; /* Pastiin gambar gak terdistorsi */
 }
 
 .countdown-bar {
   position: absolute;
-  top: 12px; /* Posisikan di bawah tanaman, sesuaikan dengan ukuran plot */
+  top: 20px; /* Geser ke bawah biar gak ketumpuk sama gambar */
   width: 100px;
   height: 8px;
   background: #333;
@@ -189,19 +191,11 @@ h1 {
   overflow: hidden;
 }
 
-.countdown-fill {
-  width: 0%;
-  height: 100%;
-  background: #0ff; /* Cyan neon */
-  box-shadow: 0 0 10px #0ff;
-  transition: width 0.1s linear;
-}
-
 .plot-status {
   font-size: 10px;
   color: #ffeb3b;
   position: absolute;
-  top: 24px; /* Posisikan di bawah countdown bar, sesuaikan dengan ukuran */
+  top: 32px; /* Geser lebih bawah lagi biar gak tabrakan */
   text-align: center;
   line-height: 1.2;
   width: 100%;
@@ -216,7 +210,7 @@ h1 {
     column-gap: 50px;
     width: 90%;
     max-width: 340px;
-    height: 164px; /* 2 * 12px (plot) + 60px (row-gap) + 40px (padding) */
+    height: 164px;
   }
 
   .plot {
@@ -225,24 +219,24 @@ h1 {
   }
 
   .plot-content {
-    height: 40px;
-    top: -36px;
+    height: 120px;
+    top: -108px; /* Sesuaikan posisi */
   }
 
   .plant-img {
-    width: 40px;
-    height: 40px;
+    width: 120px;
+    max-height: 120px;
   }
 
   .countdown-bar {
-    top: 10px;
+    top: 18px;
     width: 80px;
     height: 6px;
   }
 
   .plot-status {
     font-size: 8px;
-    top: 20px;
+    top: 28px;
   }
 }
 
@@ -263,24 +257,24 @@ h1 {
   }
 
   .plot-content {
-    height: 30px;
-    top: -26px;
+    height: 100px;
+    top: -90px;
   }
 
   .plant-img {
-    width: 30px;
-    height: 30px;
+    width: 100px;
+    max-height: 100px;
   }
 
   .countdown-bar {
-    top: 8px;
+    top: 16px;
     width: 60px;
     height: 5px;
   }
 
   .plot-status {
     font-size: 6px;
-    top: 16px;
+    top: 24px;
   }
 }
 
@@ -301,24 +295,24 @@ h1 {
   }
 
   .plot-content {
-    height: 30px;
-    top: -26px;
+    height: 80px;
+    top: -72px;
   }
 
   .plant-img {
-    width: 30px;
-    height: 30px;
+    width: 80px;
+    max-height: 80px;
   }
 
   .countdown-bar {
-    top: 8px;
+    top: 14px;
     width: 60px;
     height: 5px;
   }
 
   .plot-status {
     font-size: 6px;
-    top: 16px;
+    top: 22px;
   }
 }
 
