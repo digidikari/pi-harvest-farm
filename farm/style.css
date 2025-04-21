@@ -160,7 +160,7 @@ h1 {
   cursor: pointer;
   transition: transform 0.1s;
   position: relative;
-  width: 130px; /* Sesuaikan */
+  width: 160px; /* Sesuaikan */
   height: 14px;
 }
 
@@ -175,7 +175,7 @@ h1 {
 }
 
 .plant-img {
-  width: 130px; /* Sesuaikan */
+  width: 160px; /* Sesuaikan */
   height: auto;
   max-height: 130px;
   object-fit: contain;
