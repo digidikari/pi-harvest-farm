@@ -20,9 +20,7 @@ const harvestSound = document.getElementById('harvest-sound');
 const wateringSound = document.getElementById('watering-sound');
 const menuSound = document.getElementById('menu-sound');
 const buyingSound = document.getElementById('buying-sound');
-const coinS
-  
-ound = document.getElementById('coin-sound');
+const coinSound = document.getElementById('coin-sound');
 
 function playBgMusic() {
   if (bgMusic) bgMusic.play().catch(e => console.error('BG Music play failed:', e));
@@ -91,7 +89,8 @@ async function loadData() {
   try {
     const invRes = await fetch('./data/inventory.json');
     if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
-    inventory = await invRes.json();
+    const initialInventory = await invRes.json();
+    inventory = JSON.parse(localStorage.getItem('inventory')) || initialInventory;
     console.log('Inventory data loaded:', inventory);
   } catch (e) {
     console.error('Inventory JSON load failed:', e.message);
@@ -121,7 +120,7 @@ function loadPlayerData() {
 function updateWallet() {
   document.getElementById('farm-coins').textContent = `${farmCoins} ${langData[currentLang].coinLabel}`;
   document.getElementById('pi-coins').textContent = `${pi.toFixed(2)} PI`;
-  document.getElementById('water').textContent = `${water} ${langData[currentLang].waterLabel || 'Water'}`; // Fallback 'Water' diganti di lang.json
+  document.getElementById('water').textContent = `${water} ${langData[currentLang].waterLabel || 'Water'}`;
   document.getElementById('level').textContent = `Level: ${level} | XP: ${xp}`;
   const xpPercentage = (xp / (level * 100)) * 100;
   document.getElementById('xp-fill').style.width = `${xpPercentage}%`;
@@ -130,6 +129,7 @@ function updateWallet() {
   localStorage.setItem('water', water);
   localStorage.setItem('level', level);
   localStorage.setItem('xp', xp);
+  localStorage.setItem('inventory', JSON.stringify(inventory));
 }
 
 // Initialize farm plots
@@ -173,7 +173,7 @@ function handlePlotClick(index) {
   const countdownFill = plotElement.querySelector('.countdown-fill');
 
   if (!plot.planted) {
-    const seedIndex = bag.findIndex(item => item.includes('Seed'));
+    const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
     if (seedIndex !== -1) {
       const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
       plot.planted = true;
@@ -184,16 +184,16 @@ function handlePlotClick(index) {
       plot.countdown = randomVegetable.growthTime;
       plot.totalCountdown = randomVegetable.growthTime;
       plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
-      plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water'; // Ambil dari lang.json
+      plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
       countdownFill.style.width = '0%'; // Reset bar saat tanam
 
-      bag.splice(seedIndex, 1);
-      renderBag();
+      inventory.splice(seedIndex, 1);
+      localStorage.setItem('inventory', JSON.stringify(inventory));
       showNotification(langData[currentLang].planted);
       playBuyingSound();
       console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
     } else {
-      showNotification(langData[currentLang].noSeeds || 'No Seeds in bag!'); // Ambil dari lang.json
+      showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
     }
   } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
@@ -335,21 +335,21 @@ function renderShop() {
 function buyVegetable(id, currency) {
   if (id === 'water') {
     if (currency === 'farm') {
-      if (farmCoins >= 100) {
-        farmCoins -= 100;
+      if (farmCoins >= 50) {
+        farmCoins -= 50;
         water += 10;
         updateWallet();
-        showTransactionAnimation(`-100`, false, document.querySelector(`.buy-btn[data-id="water"]`));
+        showTransactionAnimation(`-50`, false, document.querySelector(`.buy-btn[data-id="water"]`));
         playBuyingSound();
       } else {
         showNotification(langData[currentLang].notEnoughCoins);
       }
     } else {
-      if (pi >= 0.00001) {
-        pi -= 0.00001;
+      if (pi >= 0.00005) {
+        pi -= 0.00005;
         water += 10;
         updateWallet();
-        showTransactionAnimation(`-0.00001 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
+        showTransactionAnimation(`-0.00005 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
         playBuyingSound();
       } else {
         showNotification(langData[currentLang].notEnoughPi);
@@ -364,6 +364,8 @@ function buyVegetable(id, currency) {
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
       farmCoins -= veg.farmPrice;
+      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
       playBuyingSound();
@@ -373,8 +375,8 @@ function buyVegetable(id, currency) {
   } else {
     if (pi >= veg.piPrice) {
       pi -= veg.piPrice;
-      bag.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
-      renderBag();
+      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${id}"]`));
       playBuyingSound();
@@ -389,14 +391,25 @@ function renderInventory() {
   const inventoryContent = document.getElementById('inventory-content');
   inventoryContent.innerHTML = '';
   inventory.forEach((item, index) => {
-    const invItem = document.createElement('div');
-    invItem.classList.add('inventory-item');
-    invItem.innerHTML = `
-      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
-      <h3>${item.vegetable.name[currentLang]}</h3>
-      <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
-    `;
-    inventoryContent.appendChild(invItem);
+    if (typeof item === 'string' && item.includes('Seed')) {
+      const invItem = document.createElement('div');
+      invItem.classList.add('inventory-item');
+      invItem.innerHTML = `
+        <img src="assets/img/ui/seed.png" alt="Seed" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+        <h3>${item}</h3>
+        <p>${langData[currentLang].quantityLabel || 'Quantity'}: 1</p>
+      `;
+      inventoryContent.appendChild(invItem);
+    } else if (item && item.vegetable) {
+      const invItem = document.createElement('div');
+      invItem.classList.add('inventory-item');
+      invItem.innerHTML = `
+        <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+        <h3>${item.vegetable.name[currentLang]}</h3>
+        <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
+      `;
+      inventoryContent.appendChild(invItem);
+    }
   });
 }
 
@@ -405,17 +418,19 @@ function renderSellSection() {
   const sellContent = document.getElementById('sell-content');
   sellContent.innerHTML = '';
   inventory.forEach((item, index) => {
-    const sellItem = document.createElement('div');
-    sellItem.classList.add('sell-item');
-    const sellPrice = Math.floor(item.vegetable.farmPrice * 0.5);
-    sellItem.innerHTML = `
-      <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
-      <h3>${item.vegetable.name[currentLang]}</h3>
-      <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
-      <p>${langData[currentLang].sellPriceLabel || 'Sell Price'}: ${sellPrice} ${langData[currentLang].coinLabel}</p>
-      <button class="sell-btn" data-index="${index}">${langData[currentLang].sellLabel || 'Sell'}</button>
-    `;
-    sellContent.appendChild(sellItem);
+    if (item && item.vegetable) {
+      const sellItem = document.createElement('div');
+      sellItem.classList.add('sell-item');
+      const sellPrice = Math.floor(item.vegetable.farmPrice * 0.5);
+      sellItem.innerHTML = `
+        <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+        <h3>${item.vegetable.name[currentLang]}</h3>
+        <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
+        <p>${langData[currentLang].sellPriceLabel || 'Sell Price'}: ${sellPrice} ${langData[currentLang].coinLabel}</p>
+        <button class="sell-btn" data-index="${index}">${langData[currentLang].sellLabel || 'Sell'}</button>
+      `;
+      sellContent.appendChild(sellItem);
+    }
   });
 
   document.querySelectorAll('.sell-btn').forEach(btn => {
@@ -429,7 +444,7 @@ function renderSellSection() {
 // Sell item
 function sellItem(index) {
   const item = inventory[index];
-  if (!item) return;
+  if (!item || !item.vegetable) return;
 
   const sellPrice = Math.floor(item.vegetable.farmPrice * 0.5);
   farmCoins += sellPrice * item.quantity;
@@ -526,20 +541,27 @@ function updateExchangeResult() {
 // Modal untuk daily reward
 const rewardModal = document.getElementById('reward-modal');
 const claimModalBtn = document.getElementById('claim-modal-btn');
-const closeModal = rewardModal.querySelector('.close');
+const closeModal = document.getElementById('reward-modal-close');
 
 document.getElementById('claim-reward-btn').addEventListener('click', () => {
   rewardModal.style.display = 'block';
+  playMenuSound();
 });
 
 claimModalBtn.addEventListener('click', () => {
-  // Logika claim (misal tambah koin)
-  console.log('Reward claimed!');
+  farmCoins += 100;
+  localStorage.setItem('farmCoins', farmCoins);
+  localStorage.setItem('lastClaim', Date.now());
+  document.getElementById('claim-reward-btn').disabled = true;
+  updateWallet();
+  showTransactionAnimation('+100', true, claimModalBtn);
+  playCoinSound();
   rewardModal.style.display = 'none';
 });
 
 closeModal.addEventListener('click', () => {
   rewardModal.style.display = 'none';
+  playMenuSound();
 });
 
 // Claim daily reward
@@ -555,6 +577,9 @@ function claimDailyReward() {
     showNotification(`${langData[currentLang].waitLabel || 'Wait'} ${hoursLeft}h ${minutesLeft}m ${langData[currentLang].toClaimAgain || 'to claim again!'}`);
     return;
   }
+
+  rewardModal.style.display = 'block';
+}
 
 // Check harvest achievement
 function checkHarvestAchievement() {
@@ -745,6 +770,22 @@ function initializeGame() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
   try {
+    // Handle loading screen
+    const loadingScreen = document.getElementById('loading-screen');
+    const startScreen = document.getElementById('start-screen');
+    if (loadingScreen && startScreen) {
+      setTimeout(() => {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          startScreen.style.display = 'block';
+        }, 500); // Tunggu fade-out selesai
+      }, 3000); // 3 detik
+    } else {
+      console.warn('Loading or start screen element not found');
+      if (startScreen) startScreen.style.display = 'block';
+    }
+
     const startText = document.getElementById('start-text');
     const langToggle = document.getElementById('lang-toggle');
     const settingsBtn = document.getElementById('settings-btn');
@@ -754,7 +795,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const exitGameBtn = document.getElementById('exit-game-btn');
     const exchangeBtn = document.getElementById('exchange-btn');
     const exchangeAmount = document.getElementById('exchange-amount');
-    const bagIcon = document.getElementById('bag-icon');
 
     console.log('Start Text Element:', startText);
     console.log('Lang Toggle Element:', langToggle);
