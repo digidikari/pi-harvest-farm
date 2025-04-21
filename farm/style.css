@@ -137,7 +137,7 @@ h1 {
   grid-template-columns: repeat(2, 140px);
   grid-template-rows: repeat(2, 14px);
   row-gap: 80px;
-  column-gap: 60px;
+  column-gap: 10px; /* Dikecilin biar plot atas rapat */
   justify-content: center;
   align-content: space-between;
   background: #8b4513;
@@ -175,15 +175,15 @@ h1 {
 }
 
 .plant-img {
-  width: 140px; /* Sama kayak lebar plot */
-  height: auto; /* Proporsional */
-  max-height: 140px; /* Batasi tinggi */
-  object-fit: contain; /* Gak distorsi */
-  z-index: 1; /* Di bawah countdown-bar */
-  position: absolute; /* Posisi relatif ke plot */
-  bottom: 0; /* Bagian bawah nyentuh dasar plot */
-  left: 50%; /* Center horizontal */
-  transform: translateX(-50%); /* Offset biar pas tengah */
+  width: 140px;
+  height: auto;
+  max-height: 140px;
+  object-fit: contain;
+  z-index: 1;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .countdown-bar {
@@ -221,7 +221,7 @@ h1 {
     grid-template-columns: repeat(2, 120px);
     grid-template-rows: repeat(2, 12px);
     row-gap: 60px;
-    column-gap: 50px;
+    column-gap: 10px; /* Tetep rapat */
     width: 90%;
     max-width: 340px;
     height: 164px;
@@ -261,7 +261,8 @@ h1 {
   #farm-area {
     grid-template-columns: repeat(2, 100px);
     grid-template-rows: repeat(2, 10px);
-    gap: 50px;
+    row-gap: 50px;
+    column-gap: 10px; /* Tetep rapat */
     width: 90%;
     max-width: 300px;
     height: 140px;
@@ -301,7 +302,8 @@ h1 {
   #farm-area {
     grid-template-columns: repeat(2, 80px);
     grid-template-rows: repeat(2, 8px);
-    gap: 30px;
+    row-gap: 30px;
+    column-gap: 10px; /* Tetep rapat */
     width: 90%;
     max-width: 240px;
     height: 116px;
@@ -479,7 +481,6 @@ button:hover {
 }
 
 .modal-content {
-	post: 1;
   background: #333;
   margin: 15% auto;
   padding: 20px;
