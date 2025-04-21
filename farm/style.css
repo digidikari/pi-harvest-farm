@@ -141,7 +141,7 @@ h1 {
   justify-content: center;
   align-content: space-around;
   background: #8b4513;
-  padding: 100px 60px 30px 30px;
+  padding: 100px 100px 30px 30px;
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
@@ -161,7 +161,7 @@ h1 {
   transition: transform 0.1s;
   position: relative;
   width: 160px; /* Sesuaikan */
-  height: 14px;
+  height: 16px;
 }
 
 .plot-content {
@@ -188,13 +188,13 @@ h1 {
 
 .countdown-bar {
   position: absolute;
-  top: 20px;
+  top: 40px;
   width: 100px; /* Sesuaikan */
   height: 8px;
   background: #333;
   border-radius: 3px;
   overflow: hidden;
-  z-index: 2;
+  z-index: 4;
 }
 
 .countdown-fill {
