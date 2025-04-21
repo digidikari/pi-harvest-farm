@@ -333,17 +333,18 @@ input[type="range"] {
   margin-bottom: 20px;
 }
 
-.loading-animation {
-  font-size: 24px;
-  color: #fff;
-  animation: dots 1.5s infinite;
+.loading-animation::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border: 4px solid #fff;
+  border-top: 4px solid #ffeb3b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
-
-@keyframes dots {
-  0% { content: 'Loading'; }
-  33% { content: 'Loading.'; }
-  66% { content: 'Loading..'; }
-  100% { content: 'Loading...'; }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Responsive adjustments */
