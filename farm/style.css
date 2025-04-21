@@ -126,10 +126,13 @@ h1 {
 .tab-content {
   display: none;
   padding: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .tab-content.active {
   display: block;
+  opacity: 1;
 }
 
 #farm-area {
@@ -164,6 +167,10 @@ h1 {
   height: 16px;
 }
 
+.plot:hover {
+  transform: scale(1.05);
+}
+
 .plot-content {
   display: flex;
   justify-content: center;
@@ -184,6 +191,40 @@ h1 {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.plant-img.planted {
+  animation: plantPop 0.3s ease;
+}
+
+.plant-img.harvested {
+  animation: harvestPop 0.5s ease forwards;
+}
+
+.water-img {
+  width: 60px;
+  height: auto;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  animation: waterPop 0.5s ease forwards;
+}
+
+@keyframes plantPop {
+  0% { transform: translateX(-50%) translateY(50px); opacity: 0; }
+  100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+@keyframes harvestPop {
+  0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-50px); opacity: 0; }
+}
+
+@keyframes waterPop {
+  0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-50px); opacity: 0; }
 }
 
 .countdown-bar {
@@ -215,6 +256,15 @@ h1 {
   width: 100%;
 }
 
+.plot.ready .plot-content::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 255, 0, 0.3), transparent);
+  z-index: 0;
+}
+
 #claim-reward-btn {
   background: #4caf50;
   color: #fff;
@@ -231,16 +281,6 @@ h1 {
   cursor: not-allowed;
 }
 
-.modal-content {
-  background: #333;
-  margin: 20% auto;
-  padding: 20px;
-  border: 2px solid #fff;
-  border-radius: 10px;
-  width: 300px;
-  color: #fff;
-}
-
 .modal {
   display: none;
   position: fixed;
@@ -250,6 +290,16 @@ h1 {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: #333;
+  margin: 20% auto;
+  padding: 20px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  width: 300px;
+  color: #fff;
 }
 
 .close {
@@ -336,195 +386,24 @@ input[type="range"] {
 .loading-animation {
   font-size: 24px;
   color: #fff;
-  animation: dots 1.5s infinite;
 }
 
-@keyframes dots {
-  0% { content: 'Loading'; }
-  33% { content: 'Loading.'; }
-  66% { content: 'Loading..'; }
-  100% { content: 'Loading...'; }
+.loading-animation.spinner::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border: 5px solid #fff;
+  border-top: 5px solid #ffeb3b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: block;
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  #farm-area {
-    grid-template-columns: repeat(2, 120px);
-    grid-template-rows: repeat(2, 12px);
-    row-gap: 50px;
-    column-gap: 50px;
-    padding: 90px 25px 25px 25px;
-    width: 90%;
-    max-width: 400px;
-    height: 260px;
-    margin: 0 auto;
-  }
-
-  .plot {
-    width: 120px;
-    height: 12px;
-  }
-
-  .plot-content {
-    height: 40px;
-    top: -36px;
-  }
-
-  .plant-img {
-    width: 120px;
-    max-height: 120px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .countdown-bar {
-    top: 10px;
-    width: 80px;
-    height: 6px;
-  }
-
-  .plot-status {
-    font-size: 8px;
-    top: 20px;
-  }
-
-  #claim-reward-btn {
-    margin-top: 15px;
-  }
-
-  .modal-content {
-    margin: 25% auto;
-  }
-
-  #loading-screen h1 {
-    font-size: 24px;
-  }
-
-  .loading-animation {
-    font-size: 18px;
-  }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 480px) {
-  #farm-area {
-    grid-template-columns: repeat(2, 100px);
-    grid-template-rows: repeat(2, 10px);
-    row-gap: 40px;
-    column-gap: 40px;
-    padding: 80px 20px 20px 20px;
-    width: 90%;
-    max-width: 340px;
-    height: 240px;
-    margin: 0 auto;
-  }
-
-  .plot {
-    width: 100px;
-    height: 10px;
-  }
-
-  .plot-content {
-    height: 30px;
-    top: -26px;
-  }
-
-  .plant-img {
-    width: 100px;
-    max-height: 100px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .countdown-bar {
-    top: 8px;
-    width: 60px;
-    height: 5px;
-  }
-
-  .plot-status {
-    font-size: 6px;
-    top: 16px;
-  }
-
-  #claim-reward-btn {
-    margin-top: 10px;
-  }
-
-  .modal-content {
-    margin: 30% auto;
-  }
-
-  #loading-screen h1 {
-    font-size: 20px;
-  }
-
-  .loading-animation {
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 360px) {
-  #farm-area {
-    grid-template-columns: repeat(2, 80px);
-    grid-template-rows: repeat(2, 8px);
-    row-gap: 30px;
-    column-gap: 30px;
-    padding: 70px 15px 15px 15px;
-    width: 90%;
-    max-width: 280px;
-    height: 220px;
-    margin: 0 auto;
-  }
-
-  .plot {
-    width: 80px;
-    height: 8px;
-  }
-
-  .plot-content {
-    height: 30px;
-    top: -26px;
-  }
-
-  .plant-img {
-    width: 80px;
-    max-height: 80px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .countdown-bar {
-    top: 8px;
-    width: 50px;
-    height: 5px;
-  }
-
-  .plot-status {
-    font-size: 6px;
-    top: 16px;
-  }
-
-  #claim-reward-btn {
-    margin-top: 10px;
-  }
-
-  .modal-content {
-    margin: 35% auto;
-  }
-
-  #loading-screen h1 {
-    font-size: 18px;
-  }
-
-  .loading-animation {
-    font-size: 14px;
-  }
-}
-
-/* Sisanya sama */
 #shop-content, #inventory-content, #sell-content {
   display: flex;
   flex-wrap: wrap;
@@ -539,6 +418,7 @@ input[type="range"] {
   border-radius: 10px;
   padding: 10px;
   width: 120px;
+  flex: 0 0 calc(50% - 7.5px); /* 2 kolom */
   text-align: center;
 }
 
@@ -613,72 +493,212 @@ button:hover {
   background: #4caf50;
 }
 
-/* Responsive adjustments untuk body */
+/* Responsive adjustments */
 @media (max-width: 600px) {
   h1 {
     font-size: 24px;
   }
-
   .start-text {
     font-size: 20px;
   }
-
   #wallet {
     font-size: 12px;
     padding: 8px;
   }
-
   #level {
     font-size: 10px;
   }
-
   #xp-bar {
     width: 120px;
     height: 6px;
   }
-
   .tabs {
     gap: 5px;
   }
-
   .tab-btn {
     padding: 6px 12px;
     font-size: 10px;
   }
-
   .shop-item, .inventory-item, .sell-item {
     width: 100px;
     padding: 8px;
+    flex: 0 0 calc(50% - 7.5px);
   }
-
   .shop-item-img {
     width: 50px;
     height: 50px;
   }
-
   .shop-item h3, .inventory-item h3, .sell-item h3 {
     font-size: 10px;
   }
-
   .shop-item p, .inventory-item p, .sell-item p {
     font-size: 9px;
   }
-
   button {
     padding: 6px 10px;
     font-size: 10px;
   }
-
   #exchange-amount {
     width: 120px;
   }
-
   .achievement {
     width: 200px;
   }
-
   #notification {
     font-size: 12px;
     min-width: 150px;
+  }
+  #farm-area {
+    grid-template-columns: repeat(2, 120px);
+    grid-template-rows: repeat(2, 12px);
+    row-gap: 50px;
+    column-gap: 50px;
+    padding: 90px 25px 25px 25px;
+    width: 90%;
+    max-width: 400px;
+    height: 260px;
+  }
+  .plot {
+    width: 120px;
+    height: 12px;
+  }
+  .plot-content {
+    height: 40px;
+    top: -36px;
+  }
+  .plant-img {
+    width: 120px;
+    max-height: 120px;
+  }
+  .water-img {
+    width: 50px;
+  }
+  .countdown-bar {
+    top: 10px;
+    width: 80px;
+    height: 6px;
+  }
+  .plot-status {
+    font-size: 8px;
+    top: 20px;
+  }
+  #claim-reward-btn {
+    margin-top: 15px;
+  }
+  .modal-content {
+    margin: 25% auto;
+  }
+  #loading-screen h1 {
+    font-size: 24px;
+  }
+  .loading-animation.spinner::after {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #fff;
+    border-top: 4px solid #ffeb3b;
+  }
+}
+
+@media (max-width: 480px) {
+  #farm-area {
+    grid-template-columns: repeat(2, 100px);
+    grid-template-rows: repeat(2, 10px);
+    row-gap: 40px;
+    column-gap: 40px;
+    padding: 80px 20px 20px 20px;
+    width: 90%;
+    max-width: 340px;
+    height: 240px;
+  }
+  .plot {
+    width: 100px;
+    height: 10px;
+  }
+  .plot-content {
+    height: 30px;
+    top: -26px;
+  }
+  .plant-img {
+    width: 100px;
+    max-height: 100px;
+  }
+  .water-img {
+    width: 40px;
+  }
+  .countdown-bar {
+    top: 8px;
+    width: 60px;
+    height: 5px;
+  }
+  .plot-status {
+    font-size: 6px;
+    top: 16px;
+  }
+  #claim-reward-btn {
+    margin-top: 10px;
+  }
+  .modal-content {
+    margin: 30% auto;
+  }
+  #loading-screen h1 {
+    font-size: 20px;
+  }
+  .loading-animation.spinner::after {
+    width: 25px;
+    height: 25px;
+    border: 3px solid #fff;
+    border-top: 3px solid #ffeb3b;
+  }
+}
+
+@media (max-width: 360px) {
+  #farm-area {
+    grid-template-columns: repeat(2, 80px);
+    grid-template-rows: repeat(2, 8px);
+    row-gap: 30px;
+    column-gap: 30px;
+    padding: 70px 15px 15px 15px;
+    width: 90%;
+    max-width: 280px;
+    height: 220px;
+  }
+  .plot {
+    width: 80px;
+    height: 8px;
+  }
+  .plot-content {
+    height: 30px;
+    top: -26px;
+  }
+  .plant-img {
+    width: 80px;
+    max-height: 80px;
+  }
+  .water-img {
+    width: 30px;
+  }
+  .countdown-bar {
+    top: 8px;
+    width: 50px;
+    height: 5px;
+  }
+  .plot-status {
+    font-size: 6px;
+    top: 16px;
+  }
+  #claim-reward-btn {
+    margin-top: 10px;
+  }
+  .modal-content {
+    margin: 35% auto;
+  }
+  #loading-screen h1 {
+    font-size: 18px;
+  }
+  .loading-animation.spinner::after {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-top: 3px solid #ffeb3b;
   }
 }
