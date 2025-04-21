@@ -523,6 +523,25 @@ function updateExchangeResult() {
   document.getElementById('exchange-result').textContent = farmCoinsResult;
 }
 
+// Modal untuk daily reward
+const rewardModal = document.getElementById('reward-modal');
+const claimModalBtn = document.getElementById('claim-modal-btn');
+const closeModal = rewardModal.querySelector('.close');
+
+document.getElementById('claim-reward-btn').addEventListener('click', () => {
+  rewardModal.style.display = 'block';
+});
+
+claimModalBtn.addEventListener('click', () => {
+  // Logika claim (misal tambah koin)
+  console.log('Reward claimed!');
+  rewardModal.style.display = 'none';
+});
+
+closeModal.addEventListener('click', () => {
+  rewardModal.style.display = 'none';
+});
+
 // Claim daily reward
 function claimDailyReward() {
   const lastClaim = localStorage.getItem('lastClaim');
@@ -536,17 +555,6 @@ function claimDailyReward() {
     showNotification(`${langData[currentLang].waitLabel || 'Wait'} ${hoursLeft}h ${minutesLeft}m ${langData[currentLang].toClaimAgain || 'to claim again!'}`);
     return;
   }
-
-  farmCoins += 100;
-  water += 50;
-  updateWallet();
-  renderBag();
-  localStorage.setItem('lastClaim', now);
-  document.getElementById('claim-reward-btn').disabled = true;
-  showNotification(langData[currentLang].dailyReward);
-  playCoinSound();
-  console.log('Daily reward claimed, bag:', bag);
-}
 
 // Check harvest achievement
 function checkHarvestAchievement() {
