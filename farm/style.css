@@ -137,7 +137,7 @@ h1 {
   grid-template-columns: repeat(2, 140px);
   grid-template-rows: repeat(2, 14px);
   row-gap: 80px;
-  column-gap: 10px; /* Dikecilin biar plot atas rapat */
+  column-gap: 60px; /* Balik ke asli */
   justify-content: center;
   align-content: space-between;
   background: #8b4513;
@@ -162,6 +162,12 @@ h1 {
   position: relative;
   width: 140px;
   height: 14px;
+}
+
+/* Center plot 1 & 2 di baris atas */
+.plot:nth-child(-n+2) {
+  margin-left: 25px; /* Geser ke kanan */
+  margin-right: 25px; /* Geser ke kiri */
 }
 
 .plot-content {
@@ -221,7 +227,7 @@ h1 {
     grid-template-columns: repeat(2, 120px);
     grid-template-rows: repeat(2, 12px);
     row-gap: 60px;
-    column-gap: 10px; /* Tetep rapat */
+    column-gap: 50px;
     width: 90%;
     max-width: 340px;
     height: 164px;
@@ -230,6 +236,11 @@ h1 {
   .plot {
     width: 120px;
     height: 12px;
+  }
+
+  .plot:nth-child(-n+2) {
+    margin-left: 20px;
+    margin-right: 20px;
   }
 
   .plot-content {
@@ -262,7 +273,7 @@ h1 {
     grid-template-columns: repeat(2, 100px);
     grid-template-rows: repeat(2, 10px);
     row-gap: 50px;
-    column-gap: 10px; /* Tetep rapat */
+    column-gap: 50px;
     width: 90%;
     max-width: 300px;
     height: 140px;
@@ -271,6 +282,11 @@ h1 {
   .plot {
     width: 100px;
     height: 10px;
+  }
+
+  .plot:nth-child(-n+2) {
+    margin-left: 15px;
+    margin-right: 15px;
   }
 
   .plot-content {
@@ -303,7 +319,7 @@ h1 {
     grid-template-columns: repeat(2, 80px);
     grid-template-rows: repeat(2, 8px);
     row-gap: 30px;
-    column-gap: 10px; /* Tetep rapat */
+    column-gap: 30px;
     width: 90%;
     max-width: 240px;
     height: 116px;
@@ -312,6 +328,11 @@ h1 {
   .plot {
     width: 80px;
     height: 8px;
+  }
+
+  .plot:nth-child(-n+2) {
+    margin-left: 10px;
+    margin-right: 10px;
   }
 
   .plot-content {
@@ -581,7 +602,7 @@ input[type="range"] {
     font-size: 10px;
   }
 
-  #bag-icon {
+  .bag-icon {
     width: 30px;
     height: 30px;
   }
