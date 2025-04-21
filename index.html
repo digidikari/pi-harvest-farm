@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pi Harvest Farm</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="farm/style.css?v=41">
+  <link rel="stylesheet" href="style.css?v=46">
 </head>
 <body>
   <div id="loading-screen">
     <h1>Pi Harvest Farm</h1>
-    <div class="loading-animation">Loading...</div>
+    <div class="loading-animation"></div>
   </div>
 
-  <div id="start-screen" style="display: none;">
+  <div id="start-screen">
     <h1 id="title">Pi Harvest Farm</h1>
     <div id="start-text" class="start-text">Start Game</div>
     <div class="corner-buttons">
@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <div id="game-screen" style="display: none;">
+  <div id="game-screen">
     <div class="corner-buttons">
       <button id="game-lang-toggle" aria-label="Switch Language">Switch Language (EN/ID)</button>
       <button id="game-settings-btn" aria-label="Open Settings">⚙️</button>
@@ -84,7 +84,7 @@
     <div class="modal-content">
       <span id="reward-modal-close" class="close">×</span>
       <h2>Daily Reward</h2>
-      <p>You got 100 coins!</p>
+      <p>100 Coins + 5 Water</p>
       <button id="claim-modal-btn" aria-label="Claim Reward">Claim</button>
     </div>
   </div>
@@ -108,6 +108,6 @@
   <audio id="buying-sound" src="assets/sfx/voice/buying-bgv.mp3"></audio>
   <audio id="coin-sound" src="assets/sfx/voice/coin-bgv.mp3"></audio>
 
-  <script src="farm/main.js?v=41"></script>
+  <script src="main.js?v=46"></script>
 </body>
 </html>
