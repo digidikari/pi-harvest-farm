@@ -147,7 +147,9 @@ function initializePlots() {
     plot.classList.add('plot');
     plot.innerHTML = `
       <div class="plot-content"></div>
-      <canvas class="plot-timer" width="50" height="50"></canvas>
+      <div class="countdown-bar">
+        <div class="countdown-fill"></div>
+      </div>
       <div class="plot-status"></div>
     `;
     plot.addEventListener('click', () => handlePlotClick(i));
@@ -160,38 +162,6 @@ function initializePlots() {
   updateUIText();
 }
 
-// Draw timer arc with neon effect
-function drawTimerArc(index) {
-  const plot = farmPlots[index];
-  if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) return;
-
-  const canvas = document.querySelectorAll('.plot-timer')[index];
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const radius = 18; // Sesuaikan dengan ukuran plot
-  const startAngle = -Math.PI / 2;
-  const progress = plot.countdown / plot.totalCountdown;
-  const endAngle = startAngle + (2 * Math.PI * progress);
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = '#333';
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = '#0ff'; // Cyan neon
-  ctx.shadowBlur = 8;
-  ctx.shadowColor = '#0ff';
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-}
-
 // Handle plot click with manual growth
 function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
@@ -199,6 +169,7 @@ function handlePlotClick(index) {
   const plotElement = document.querySelectorAll('.plot')[index];
   const plotContent = plotElement.querySelector('.plot-content');
   const plotStatus = plotElement.querySelector('.plot-status');
+  const countdownFill = plotElement.querySelector('.countdown-fill');
 
   if (!plot.planted) {
     const seedIndex = bag.findIndex(item => item.includes('Seed'));
@@ -213,6 +184,7 @@ function handlePlotClick(index) {
       plot.totalCountdown = randomVegetable.growthTime;
       plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water'; // Ambil dari lang.json
+      countdownFill.style.width = '0%'; // Reset bar saat tanam
 
       bag.splice(seedIndex, 1);
       renderBag();
@@ -234,6 +206,7 @@ function handlePlotClick(index) {
     plot.totalCountdown = 0;
     plotContent.innerHTML = '';
     plotStatus.innerHTML = '';
+    countdownFill.style.width = '0%'; // Reset bar saat panen
     plotElement.classList.remove('ready');
     harvestCount++;
     localStorage.setItem('harvestCount', harvestCount);
@@ -242,7 +215,6 @@ function handlePlotClick(index) {
     playHarvestSound();
     renderInventory();
     renderSellSection();
-    drawTimerArc(index);
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
   } else if (plot.planted && !plot.watered) {
     const waterNeeded = plot.vegetable.waterNeeded || 1;
@@ -257,12 +229,13 @@ function handlePlotClick(index) {
       const countdownInterval = setInterval(() => {
         if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
           clearInterval(countdownInterval);
-          drawTimerArc(index);
+          countdownFill.style.width = '0%'; // Reset bar kalau tanaman dihapus atau selesai
           return;
         }
         if (plot.watered) {
           plot.countdown--;
-          drawTimerArc(index);
+          const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
+          countdownFill.style.width = `${progress}%`; // Update lebar bar
           if (plot.countdown <= 0) {
             plot.currentFrame++;
             plot.watered = false;
@@ -273,9 +246,10 @@ function handlePlotClick(index) {
               plotElement.classList.add('ready');
               plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
               clearInterval(countdownInterval);
-              drawTimerArc(index);
+              countdownFill.style.width = '100%'; // Bar penuh saat siap panen
             } else {
               plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+              countdownFill.style.width = '0%'; // Reset bar untuk siklus berikutnya
             }
           } else {
             plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
@@ -283,7 +257,7 @@ function handlePlotClick(index) {
         } else {
           plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
           clearInterval(countdownInterval);
-          drawTimerArc(index);
+          countdownFill.style.width = '0%'; // Reset bar kalau gak disiram
         }
       }, 1000);
 

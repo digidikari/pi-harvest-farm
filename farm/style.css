@@ -1,211 +1,135 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
-}
-
 body {
-  background: linear-gradient(to bottom, #87ceeb, #228b22);
+  background: url('../assets/img/ui/farm_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Press Start 2P', cursive;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  padding: 10px;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  background-attachment: fixed;
-  background-size: cover;
-}
-
-#game-container {
-  width: 100%;
-  max-width: 600px;
-  height: 100vh;
-  max-height: 800px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-#loading-screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 36px;
+  color: #ffeb3b;
+  text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336;
+  margin: 10px 0;
+}
+
+.start-text {
+  font-size: 32px;
+  color: #ffeb3b;
+  text-shadow: 0 0 10px #ffeb3b, 0 0 20px #f44336, 0 0 30px #f44336;
+  cursor: pointer;
+  animation: blink 1s infinite;
+  transition: transform 0.1s;
+}
+
+.start-text:active {
+  transform: scale(0.95);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.corner-buttons {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
   z-index: 1000;
 }
 
-.loader {
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #ffeb3b;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-#loading-text {
+#lang-toggle, #settings-btn, #game-lang-toggle, #game-settings-btn, #exit-game-btn {
+  background: #333;
   color: #fff;
-  margin-top: 20px;
-  font-size: 16px;
-}
-
-#language-switcher {
-  position: absolute;
-  top: 10px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  z-index: 10;
-}
-
-#lang-btn, #settings-btn, #exit-btn {
-  padding: 5px 10px;
-  background: #888;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
+  border: 2px solid #fff;
+  padding: 8px 12px;
   cursor: pointer;
   font-size: 14px;
+  border-radius: 8px;
+  transition: all 0.3s;
 }
 
-#lang-btn:hover, #settings-btn:hover, #exit-btn:hover {
-  background: #999;
-}
-
-#title-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  text-align: center;
-}
-
-#game-title {
-  font-size: 48px;
-  color: #ffeb3b;
-  text-shadow: 2px 2px 4px #000;
-  margin-bottom: 20px;
-}
-
-#start-btn {
-  padding: 10px 20px;
-  font-size: 18px;
-  background: #ffeb3b;
-  color: #000;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-#start-btn:hover {
-  background: #ffd700;
-}
-
-#main-game {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding-top: 60px;
+#lang-toggle:hover, #settings-btn:hover, #game-lang-toggle:hover, #game-settings-btn:hover, #exit-game-btn:hover {
+  background: #555;
+  border-color: #ffeb3b;
 }
 
 #wallet {
-  background: #444;
-  color: #fff;
-  padding: 10px;
-  text-align: center;
-  border-radius: 5px;
-  margin: 10px;
+  margin: 10px auto;
   font-size: 14px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 8px;
+  width: fit-content;
 }
 
-#level-display {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex: 1;
-  justify-content: center;
+#level {
+  margin-top: 5px;
+  font-size: 12px;
 }
 
 #xp-bar {
-  width: 100px;
-  height: 10px;
+  width: 150px;
+  height: 8px;
   background: #333;
+  border: 2px solid #fff;
   border-radius: 5px;
+  margin: 5px auto;
   overflow: hidden;
 }
 
 #xp-fill {
   width: 0%;
   height: 100%;
-  background: #0f0;
-  transition: width 0.5s;
+  background: #4caf50;
+  transition: width 0.3s;
 }
 
-#tabs {
+.tabs {
   display: flex;
-  justify-content: center;
-  gap: 5px;
-  margin: 10px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 0 10px;
 }
 
-.tab {
-  padding: 10px 15px;
-  background: #888;
+.tab-btn {
+  background: #333;
   color: #fff;
-  border: none;
-  border-radius: 5px;
+  border: 2px solid #fff;
+  padding: 8px 16px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  border-radius: 8px;
+  transition: all 0.3s;
 }
 
-.tab:hover {
-  background: #999;
+.tab-btn:hover {
+  background: #555;
 }
 
-.tab.active {
-  background: #ffeb3b;
-  color: #000;
+.tab-btn.active {
+  background: #4caf50;
+  border-color: #ffeb3b;
 }
 
-.section {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
+.tab-content {
   display: none;
+  padding: 10px;
 }
 
-.section.active {
+.tab-content.active {
   display: block;
-}
-
-#farm-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
 }
 
 #farm-area {
@@ -215,20 +139,14 @@ body {
   row-gap: 80px; /* Jarak vertikal lebih besar */
   column-gap: 60px; /* Jarak horizontal tetap */
   justify-content: center;
-  align-content: space-between; /* Plot bawah tetap di bawah */
+  align-content: space-between; /* Plot atas lebih ke atas, plot bawah lebih ke bawah */
   background: #8b4513;
-  padding: 20px 20px 20px 20px;
+  padding: 20px;
   border-radius: 10px;
   width: 90%;
-  max-width: 420px;
-  height: 200px;
+  max-width: 400px; /* Lebar maksimal lebih besar lagi */
+  height: 200px; /* 2 * 14px (plot) + 80px (row-gap) + 40px (padding) */
   margin: 0 auto;
-  position: relative;
-}
-
-/* Atur posisi baris pertama (plot atas) ke tengah dengan margin */
-#farm-area > .plot:nth-child(-n+2) {
-  margin-top: 20px; /* Naikkan margin biar plot atas lebih ke tengah */
 }
 
 .plot {
@@ -246,35 +164,24 @@ body {
   height: 14px;
 }
 
-.plot:hover {
-  transform: scale(1.05);
-}
-
-.plot.ready {
-  border-color: #0ff;
-  box-shadow: 0 0 10px #0ff;
-}
-
 .plot-content {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 50px;
+  height: 50px; /* Sesuaikan dengan tinggi bibit yang lebih besar */
   position: absolute;
-  top: -46px;
+  top: -46px; /* Posisikan tanaman lebih atas karena plot lebih besar */
 }
 
 .plant-img {
-  width: 140px; /* Pastikan seukuran lebar plot */
-  height: auto;
-  max-height: 60px; /* Tambah max-height biar proporsional dan kelihatan lebih besar */
-  object-fit: contain; /* Pastikan gambar gak terdistorsi */
+  width: 50px;
+  height: 50px;
 }
 
 .countdown-bar {
   position: absolute;
-  top: 12px;
+  top: 12px; /* Posisikan di bawah tanaman, sesuaikan dengan ukuran plot */
   width: 100px;
   height: 8px;
   background: #333;
@@ -285,7 +192,7 @@ body {
 .countdown-fill {
   width: 0%;
   height: 100%;
-  background: #0ff;
+  background: #0ff; /* Cyan neon */
   box-shadow: 0 0 10px #0ff;
   transition: width 0.1s linear;
 }
@@ -294,203 +201,22 @@ body {
   font-size: 10px;
   color: #ffeb3b;
   position: absolute;
-  top: 24px;
+  top: 24px; /* Posisikan di bawah countdown bar, sesuaikan dengan ukuran */
   text-align: center;
   line-height: 1.2;
   width: 100%;
 }
 
-#shop-section, #upgrades-section, #inventory-section, #exchange-section, #leaderboard-section, #achievements-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.shop-item, .upgrade-item, .inventory-item, .sell-item, .leaderboard-entry, .achievement {
-  background: #555;
-  color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  width: 90%;
-  max-width: 300px;
-  text-align: center;
-}
-
-.shop-item button, .upgrade-item button, .sell-item button {
-  padding: 5px 10px;
-  background: #ffeb3b;
-  color: #000;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 5px;
-}
-
-.shop-item button:hover, .upgrade-item button:hover, .sell-item button:hover {
-  background: #ffd700;
-}
-
-#notification {
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  display: none;
-  z-index: 100;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #333;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  color: #fff;
-  max-width: 300px;
-  width: 90%;
-}
-
-.modal-content h2 {
-  margin-bottom: 10px;
-}
-
-.modal-content label {
-  display: block;
-  margin: 10px 0 5px;
-}
-
-.modal-content input {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.modal-content button {
-  padding: 10px 20px;
-  background: #888;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.modal-content button:hover {
-  background: #999;
-}
-
-/* Daily Reward Modal */
-#daily-reward-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-#daily-reward-modal .modal-content {
-  background: #333;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  color: #fff;
-  max-width: 300px;
-  width: 90%;
-}
-
-#daily-reward-modal h2 {
-  margin: 0 0 10px;
-  font-size: 20px;
-}
-
-#daily-reward-modal p {
-  margin: 0 0 20px;
-  font-size: 14px;
-}
-
-#daily-reward-modal button {
-  padding: 10px 20px;
-  margin: 5px;
-  background: #888;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-#daily-reward-modal button:hover {
-  background: #999;
-}
-
 /* Responsive adjustments */
 @media (max-width: 600px) {
-  #game-container {
-    max-height: 100vh;
-  }
-
-  #game-title {
-    font-size: 36px;
-  }
-
-  #start-btn {
-    font-size: 16px;
-    padding: 8px 16px;
-  }
-
-  #wallet {
-    font-size: 12px;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  #level-display {
-    flex-direction: row;
-    gap: 5px;
-  }
-
-  #xp-bar {
-    width: 80px;
-    height: 8px;
-  }
-
-  .tab {
-    font-size: 12px;
-    padding: 8px 12px;
-  }
-
   #farm-area {
     grid-template-columns: repeat(2, 120px);
     grid-template-rows: repeat(2, 12px);
     row-gap: 60px;
     column-gap: 50px;
     width: 90%;
-    max-width: 360px;
-    height: 164px;
-  }
-
-  #farm-area > .plot:nth-child(-n+2) {
-    margin-top: 16px; /* Sesuaikan untuk versi responsive */
+    max-width: 340px;
+    height: 164px; /* 2 * 12px (plot) + 60px (row-gap) + 40px (padding) */
   }
 
   .plot {
@@ -504,9 +230,8 @@ body {
   }
 
   .plant-img {
-    width: 120px;
-    max-height: 50px;
-    object-fit: contain;
+    width: 40px;
+    height: 40px;
   }
 
   .countdown-bar {
@@ -519,30 +244,406 @@ body {
     font-size: 8px;
     top: 20px;
   }
+}
 
-  .shop-item, .upgrade-item, .inventory-item, .sell-item, .leaderboard-entry, .achievement {
-    width: 100%;
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  #farm-area {
+    grid-template-columns: repeat(2, 100px);
+    grid-template-rows: repeat(2, 10px);
+    gap: 50px;
+    width: 90%;
+    max-width: 300px;
+    height: 140px;
+  }
+
+  .plot {
+    width: 100px;
+    height: 10px;
+  }
+
+  .plot-content {
+    height: 30px;
+    top: -26px;
+  }
+
+  .plant-img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .countdown-bar {
+    top: 8px;
+    width: 60px;
+    height: 5px;
+  }
+
+  .plot-status {
+    font-size: 6px;
+    top: 16px;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  #farm-area {
+    grid-template-columns: repeat(2, 80px);
+    grid-template-rows: repeat(2, 8px);
+    gap: 30px;
+    width: 90%;
+    max-width: 240px;
+    height: 116px;
+  }
+
+  .plot {
+    width: 80px;
+    height: 8px;
+  }
+
+  .plot-content {
+    height: 30px;
+    top: -26px;
+  }
+
+  .plant-img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .countdown-bar {
+    top: 8px;
+    width: 60px;
+    height: 5px;
+  }
+
+  .plot-status {
+    font-size: 6px;
+    top: 16px;
+  }
+}
+
+#bag {
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+#bag-icon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+#bag-items {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+#bag-items.hidden {
+  display: none;
+}
+
+#claim-reward-btn {
+  background: #4caf50;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+#claim-reward-btn:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+#shop-content, #inventory-content, #sell-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px;
+}
+
+.shop-item, .inventory-item, .sell-item {
+  background: #333;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 120px;
+  text-align: center;
+}
+
+.shop-item-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.shop-item h3, .inventory-item h3, .sell-item h3 {
+  font-size: 12px;
+  margin: 8px 0;
+}
+
+.shop-item p, .inventory-item p, .sell-item p {
+  font-size: 10px;
+  margin: 5px 0;
+}
+
+button {
+  background: #4caf50;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background: #66bb6a;
+}
+
+#sell-section {
+  margin-top: 15px;
+  padding: 15px;
+  background: #444;
+  border-radius: 10px;
+}
+
+#exchange-amount {
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: 2px solid #fff;
+  margin: 5px 0;
+  width: 150px;
+}
+
+#exchange-result {
+  font-size: 14px;
+  color: #ffeb3b;
+}
+
+#achievements-content {
+  padding: 15px;
+}
+
+.achievement {
+  background: #333;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px auto;
+  width: 250px;
+  text-align: left;
+}
+
+.achievement.completed {
+  border-color: #4caf50;
+  background: #4caf50;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: #333;
+  margin: 15% auto;
+  padding: 20px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  width: 300px;
+  color: #fff;
+}
+
+.close {
+  color: #fff;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #ffeb3b;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+  font-size: 14px;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+#notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  display: none;
+  font-size: 14px;
+  min-width: 200px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.transaction-animation {
+  position: absolute;
+  font-size: 14px;
+  font-weight: bold;
+  animation: floatUp 1s ease-out forwards;
+}
+
+.transaction-animation.positive {
+  color: #4caf50;
+}
+
+.transaction-animation.negative {
+  color: #f44336;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-50px); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .start-text {
+    font-size: 20px;
+  }
+
+  #wallet {
     font-size: 12px;
+    padding: 8px;
   }
 
-  .modal-content {
-    padding: 15px;
+  #level {
+    font-size: 10px;
   }
 
-  #daily-reward-modal .modal-content {
-    padding: 15px;
+  #xp-bar {
+    width: 120px;
+    height: 6px;
   }
 
-  #daily-reward-modal h2 {
-    font-size: 18px;
+  .tabs {
+    gap: 5px;
   }
 
-  #daily-reward-modal p {
+  .tab-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+
+  /* Responsive adjustments */
+@media (max-width: 600px) {
+  #farm-area {
+    grid-template-columns: repeat(2, 80px);
+    grid-template-rows: repeat(2, 8px);
+    gap: 30px;
+    width: 90%;
+    max-width: 240px;
+    height: 116px;
+  }
+
+  .plot {
+    width: 80px;
+    height: 8px;
+  }
+
+  .plot-content {
+    height: 30px;
+    top: -26px;
+  }
+
+  .plant-img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .plot-status {
+    font-size: 6px;
+    bottom: -8px;
+  }
+
+  .plot-timer {
+    top: -26px;
+    width: 80px;
+    height: 30px;
+  }
+
+  #bag-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  #bag-items {
     font-size: 12px;
+    padding: 4px 8px;
   }
 
-  #daily-reward-modal button {
+  .shop-item, .inventory-item, .sell-item {
+    width: 100px;
+    padding: 8px;
+  }
+
+  .shop-item-img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .shop-item h3, .inventory-item h3, .sell-item h3 {
+    font-size: 10px;
+  }
+
+  .shop-item p, .inventory-item p, .sell-item p {
+    font-size: 9px;
+  }
+
+  button {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  #exchange-amount {
+    width: 120px;
+  }
+
+  .achievement {
+    width: 200px;
+  }
+
+  #notification {
     font-size: 12px;
-    padding: 8px 16px;
+    min-width: 150px;
   }
 }
