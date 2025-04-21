@@ -10,8 +10,8 @@ let langData = {};
 let currentLang = 'en';
 let farmPlots = [];
 let harvestCount = 0;
-const plotCount = 4; // 2x2 grid
-const piToFarmRate = 1000000; // 1 PI = 1,000,000 Farm Coins
+const plotCount = 4;
+const piToFarmRate = 1000000;
 
 // Audio elements
 const bgMusic = document.getElementById('bg-music');
@@ -158,12 +158,9 @@ function initializePlots() {
     farmPlots.push({ planted: false, vegetable: null, progress: 0, watered: false, currentFrame: 1, countdown: 0, totalCountdown: 0 });
   }
   console.log('Plots initialized:', farmPlots);
-
-  // Update teks UI setelah plots diinisialisasi
-  updateUIText();
 }
 
-// Handle plot click with manual growth
+// Handle plot click
 function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
   const plot = farmPlots[index];
@@ -185,7 +182,7 @@ function handlePlotClick(index) {
       plot.totalCountdown = randomVegetable.growthTime;
       plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img planted" onerror="this.src='assets/img/ui/placeholder.png';">`;
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-      countdownFill.style.width = '0%'; // Reset bar saat tanam
+      countdownFill.style.width = '0%';
 
       seedItem.quantity--;
       if (seedItem.quantity === 0) {
@@ -211,7 +208,7 @@ function handlePlotClick(index) {
     plot.totalCountdown = 0;
     plotContent.innerHTML = '';
     plotStatus.innerHTML = '';
-    countdownFill.style.width = '0%'; // Reset bar saat panen
+    countdownFill.style.width = '0%';
     plotElement.classList.remove('ready');
     harvestCount++;
     localStorage.setItem('harvestCount', harvestCount);
@@ -223,7 +220,6 @@ function handlePlotClick(index) {
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
   } else if (plot.planted && !plot.watered) {
     const waterNeeded = plot.vegetable.waterNeeded || 1;
-
     if (water >= waterNeeded) {
       water -= waterNeeded;
       plot.watered = true;
@@ -234,13 +230,13 @@ function handlePlotClick(index) {
       const countdownInterval = setInterval(() => {
         if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
           clearInterval(countdownInterval);
-          countdownFill.style.width = '0%'; // Reset bar kalau tanaman dihapus atau selesai
+          countdownFill.style.width = '0%';
           return;
         }
         if (plot.watered) {
           plot.countdown--;
           const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
-          countdownFill.style.width = `${progress}%`; // Update lebar bar
+          countdownFill.style.width = `${progress}%`;
           if (plot.countdown <= 0) {
             plot.currentFrame++;
             plot.watered = false;
@@ -251,10 +247,10 @@ function handlePlotClick(index) {
               plotElement.classList.add('ready');
               plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
               clearInterval(countdownInterval);
-              countdownFill.style.width = '100%'; // Bar penuh saat siap panen
+              countdownFill.style.width = '100%';
             } else {
               plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-              countdownFill.style.width = '0%'; // Reset bar untuk siklus berikutnya
+              countdownFill.style.width = '0%';
             }
           } else {
             plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
@@ -262,7 +258,7 @@ function handlePlotClick(index) {
         } else {
           plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
           clearInterval(countdownInterval);
-          countdownFill.style.width = '0%'; // Reset bar kalau gak disiram
+          countdownFill.style.width = '0%';
         }
       }, 1000);
 
@@ -273,7 +269,7 @@ function handlePlotClick(index) {
   }
 }
 
-// Render shop with Water item
+// Render shop
 function renderShop() {
   console.log('Rendering shop with vegetables:', vegetables);
   const shopContent = document.getElementById('shop-content');
@@ -289,7 +285,6 @@ function renderShop() {
     return;
   }
 
-  // Render sayuran
   vegetables.forEach(veg => {
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
@@ -305,7 +300,6 @@ function renderShop() {
     shopContent.appendChild(vegItem);
   });
 
-  // Tambah item Water
   const waterItem = document.createElement('div');
   waterItem.classList.add('shop-item');
   waterItem.innerHTML = `
@@ -405,7 +399,7 @@ function buyVegetable(id, currency) {
 // Render inventory
 function renderInventory() {
   const inventoryContent = document.getElementById('inventory-content');
-  inventoryContent.innerHTML = '';
+  inventoryContent.innerHTML = '<h2>Inventory</h2>';
   inventory.forEach((item, index) => {
     if (item.type === 'seed') {
       const invItem = document.createElement('div');
@@ -508,14 +502,14 @@ function switchTab(tab) {
       throw new Error(`Tab content or button for ${tab} not found`);
     }
 
-    if (tab === 'shop') {
+    if (tab === 'shop-content') {
       renderShop();
       renderSellSection();
-    } else if (tab === 'inventory') {
+    } else if (tab === 'inventory-content') {
       renderInventory();
-    } else if (tab === 'achievements') {
+    } else if (tab === 'achievements-content') {
       renderAchievements();
-    } else if (tab === 'exchange') {
+    } else if (tab === 'exchange-content') {
       updateExchangeResult();
     }
 
@@ -676,13 +670,13 @@ function updateUIText() {
   document.getElementById('lang-toggle').textContent = langData[currentLang].switchLangLabel || 'Switch Language (EN/ID)';
   document.getElementById('game-lang-toggle').textContent = langData[currentLang].switchLangLabel || 'Switch Language (EN/ID)';
   document.getElementById('game-title').textContent = langData[currentLang].title;
-  document.querySelector('.tab-btn[data-tab="farm"]').textContent = langData[currentLang].farmTab;
-  document.querySelector('.tab-btn[data-tab="shop"]').textContent = langData[currentLang].shopTab;
-  document.querySelector('.tab-btn[data-tab="upgrades"]').textContent = langData[currentLang].upgradesTab;
-  document.querySelector('.tab-btn[data-tab="inventory"]').textContent = langData[currentLang].inventoryTab;
-  document.querySelector('.tab-btn[data-tab="exchange"]').textContent = langData[currentLang].exchangeTab;
-  document.querySelector('.tab-btn[data-tab="leaderboard"]').textContent = langData[currentLang].leaderboardTab;
-  document.querySelector('.tab-btn[data-tab="achievements"]').textContent = langData[currentLang].achievementsTab;
+  document.querySelector('.tab-btn[data-tab="farm-content"]').textContent = langData[currentLang].farmTab;
+  document.querySelector('.tab-btn[data-tab="shop-content"]').textContent = langData[currentLang].shopTab;
+  document.querySelector('.tab-btn[data-tab="upgrades-content"]').textContent = langData[currentLang].upgradesTab;
+  document.querySelector('.tab-btn[data-tab="inventory-content"]').textContent = langData[currentLang].inventoryTab;
+  document.querySelector('.tab-btn[data-tab="exchange-content"]').textContent = langData[currentLang].exchangeTab;
+  document.querySelector('.tab-btn[data-tab="leaderboard-content"]').textContent = langData[currentLang].leaderboardTab;
+  document.querySelector('.tab-btn[data-tab="achievements-content"]').textContent = langData[currentLang].achievementsTab;
   document.getElementById('claim-reward-btn').textContent = langData[currentLang].claimRewardBtn;
   document.getElementById('upgrades-title').textContent = langData[currentLang].upgradesTab;
   document.getElementById('upgrades-content').textContent = langData[currentLang].comingSoon || 'Coming soon...';
@@ -711,7 +705,7 @@ function startGame() {
   renderInventory();
   renderSellSection();
   renderAchievements();
-  switchTab('farm');
+  switchTab('farm-content');
   checkDailyReward();
 }
 
@@ -791,11 +785,9 @@ function initializeGame() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, initializing game...');
   try {
-    // Handle loading screen
     const loadingScreen = document.getElementById('loading-screen');
     const startScreen = document.getElementById('start-screen');
     if (loadingScreen && startScreen) {
-      // Toggle spinner
       const loadingAnim = loadingScreen.querySelector('.loading-animation');
       if (loadingAnim) {
         loadingAnim.textContent = '';
@@ -806,8 +798,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
           loadingScreen.style.display = 'none';
           startScreen.style.display = 'block';
-        }, 500); // Tunggu fade-out selesai
-      }, 3000); // 3 detik
+        }, 500);
+      }, 3000);
     } else {
       console.warn('Loading or start screen element not found');
       if (startScreen) startScreen.style.display = 'block';
@@ -822,11 +814,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const exitGameBtn = document.getElementById('exit-game-btn');
     const exchangeBtn = document.getElementById('exchange-btn');
     const exchangeAmount = document.getElementById('exchange-amount');
-
-    console.log('Start Text Element:', startText);
-    console.log('Lang Toggle Element:', langToggle);
-    console.log('Settings Button Element:', settingsBtn);
-    console.log('Game Lang Toggle Element:', gameLangToggle);
 
     if (startText) {
       startText.addEventListener('click', startGame);
