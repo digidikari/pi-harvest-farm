@@ -11,7 +11,7 @@ let currentLang = 'en';
 let farmPlots = [];
 let harvestCount = 0;
 const plotCount = 4; // 2x2 grid
-const piToFarmRate = 1000000; // 1 PI = 1,000,000 Farm Coins
+const piToFarmRate = 10000; // 1 PI = 10,000 Farm Coins
 
 // Audio elements
 const bgMusic = document.getElementById('bg-music');
@@ -173,9 +173,14 @@ function handlePlotClick(index) {
   const countdownFill = plotElement.querySelector('.countdown-fill');
 
   if (!plot.planted) {
-    const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
-    if (seedIndex !== -1) {
+    const seedItem = inventory.find(item => item.type === 'seed' && item.quantity > 0);
+    if (seedItem) {
       const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
+      if (!randomVegetable || !randomVegetable.frames) {
+        console.error(`Invalid vegetable data for plot ${index}`);
+        showNotification(langData[currentLang].error || 'Error planting vegetable!');
+        return;
+      }
       plot.planted = true;
       plot.vegetable = randomVegetable;
       plot.progress = 0;
@@ -183,11 +188,14 @@ function handlePlotClick(index) {
       plot.currentFrame = 1;
       plot.countdown = randomVegetable.growthTime;
       plot.totalCountdown = randomVegetable.growthTime;
-      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img planted" onerror="this.src='assets/img/ui/placeholder.png';">`;
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
       countdownFill.style.width = '0%'; // Reset bar saat tanam
 
-      inventory.splice(seedIndex, 1);
+      seedItem.quantity--;
+      if (seedItem.quantity === 0) {
+        inventory.splice(inventory.indexOf(seedItem), 1);
+      }
       localStorage.setItem('inventory', JSON.stringify(inventory));
       showNotification(langData[currentLang].planted);
       playBuyingSound();
@@ -364,7 +372,12 @@ function buyVegetable(id, currency) {
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
       farmCoins -= veg.farmPrice;
-      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      const seedItem = inventory.find(item => item.type === 'seed');
+      if (seedItem) {
+        seedItem.quantity++;
+      } else {
+        inventory.push({ type: 'seed', quantity: 1 });
+      }
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
@@ -375,7 +388,12 @@ function buyVegetable(id, currency) {
   } else {
     if (pi >= veg.piPrice) {
       pi -= veg.piPrice;
-      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      const seedItem = inventory.find(item => item.type === 'seed');
+      if (seedItem) {
+        seedItem.quantity++;
+      } else {
+        inventory.push({ type: 'seed', quantity: 1 });
+      }
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${id}"]`));
@@ -391,13 +409,13 @@ function renderInventory() {
   const inventoryContent = document.getElementById('inventory-content');
   inventoryContent.innerHTML = '';
   inventory.forEach((item, index) => {
-    if (typeof item === 'string' && item.includes('Seed')) {
+    if (item.type === 'seed') {
       const invItem = document.createElement('div');
       invItem.classList.add('inventory-item');
       invItem.innerHTML = `
         <img src="assets/img/ui/seed.png" alt="Seed" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
-        <h3>${item}</h3>
-        <p>${langData[currentLang].quantityLabel || 'Quantity'}: 1</p>
+        <h3>${langData[currentLang].seedLabel || 'Seed'}</h3>
+        <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
       `;
       inventoryContent.appendChild(invItem);
     } else if (item && item.vegetable) {
@@ -411,14 +429,6 @@ function renderInventory() {
       inventoryContent.appendChild(invItem);
     }
   });
-}
-
-// Buy seed
-let seedItem = inventory.find(item => item === 'Seed x1');
-if (seedItem) {
-  inventory[inventory.indexOf(seedItem)] = `Seed x${parseInt(seedItem.split('x')[1]) + 1}`;
-} else {
-  inventory.push('Seed x1');
 }
 
 // Render sell section
@@ -492,13 +502,13 @@ function switchTab(tab) {
 
     const tabContent = document.getElementById(tab);
     const tabBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-    if (tabContent && tabBtn) {
-      tabContent.classList.add('active');
-      tabBtn.classList.add('active');
-      console.log(`Switched to ${tab} tab successfully`);
-    } else {
+    if (!tabContent || !tabBtn) {
       throw new Error(`Tab content or button for ${tab} not found`);
     }
+
+    tabContent.classList.add('active');
+    tabBtn.classList.add('active');
+    console.log(`Switched to ${tab} tab successfully`);
 
     if (tab === 'shop') {
       renderShop();
@@ -514,7 +524,7 @@ function switchTab(tab) {
     playMenuSound();
   } catch (e) {
     console.error('Switch tab failed:', e.message);
-    alert('Failed to switch tab. Check console for details.');
+    showNotification(langData[currentLang].error || 'Failed to switch tab!');
   }
 }
 
@@ -558,12 +568,14 @@ document.getElementById('claim-reward-btn').addEventListener('click', () => {
 
 claimModalBtn.addEventListener('click', () => {
   farmCoins += 100;
-  water += 50;
+  water += 5;
   localStorage.setItem('farmCoins', farmCoins);
+  localStorage.setItem('water', water);
   localStorage.setItem('lastClaim', Date.now());
   document.getElementById('claim-reward-btn').disabled = true;
   updateWallet();
   showTransactionAnimation('+100', true, claimModalBtn);
+  showTransactionAnimation('+5 Water', true, claimModalBtn, -40); // Offset water animation
   playCoinSound();
   rewardModal.style.display = 'none';
 });
@@ -645,14 +657,14 @@ function showNotification(message) {
 }
 
 // Show transaction animation
-function showTransactionAnimation(amount, isPositive, element) {
+function showTransactionAnimation(amount, isPositive, element, offsetY = 0) {
   const anim = document.createElement('div');
   anim.classList.add('transaction-animation');
   anim.classList.add(isPositive ? 'positive' : 'negative');
   anim.textContent = amount;
   const rect = element.getBoundingClientRect();
   anim.style.left = `${rect.left + rect.width / 2}px`;
-  anim.style.top = `${rect.top - 20}px`;
+  anim.style.top = `${rect.top - 20 + offsetY}px`;
   document.body.appendChild(anim);
   setTimeout(() => anim.remove(), 1000);
 }
@@ -783,6 +795,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loading-screen');
     const startScreen = document.getElementById('start-screen');
     if (loadingScreen && startScreen) {
+      const loadingAnimation = loadingScreen.querySelector('.loading-animation');
+      if (loadingAnimation) {
+        loadingAnimation.classList.add('spinner');
+      }
       setTimeout(() => {
         loadingScreen.style.opacity = '0';
         setTimeout(() => {
