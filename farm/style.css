@@ -179,7 +179,11 @@ h1 {
   height: auto; /* Proporsional */
   max-height: 140px; /* Batasi tinggi */
   object-fit: contain; /* Gak distorsi */
-  z-index: 1; /* Di depan countdown bar */
+  z-index: 1; /* Di bawah countdown-bar */
+  position: absolute; /* Posisi relatif ke plot */
+  bottom: 0; /* Bagian bawah nyentuh dasar plot */
+  left: 50%; /* Center horizontal */
+  transform: translateX(-50%); /* Offset biar pas tengah */
 }
 
 .countdown-bar {
@@ -190,7 +194,7 @@ h1 {
   background: #333;
   border-radius: 3px;
   overflow: hidden;
-  z-index: 2; /* Pastiin di atas plant-img */
+  z-index: 2;
 }
 
 .countdown-fill {
@@ -236,6 +240,9 @@ h1 {
   .plant-img {
     width: 120px;
     max-height: 120px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -273,6 +280,9 @@ h1 {
   .plant-img {
     width: 100px;
     max-height: 100px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -310,6 +320,9 @@ h1 {
   .plant-img {
     width: 80px;
     max-height: 80px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .countdown-bar {
@@ -466,6 +479,7 @@ button:hover {
 }
 
 .modal-content {
+	post: 1;
   background: #333;
   margin: 15% auto;
   padding: 20px;
