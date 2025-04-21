@@ -137,11 +137,11 @@ h1 {
   grid-template-columns: repeat(2, 140px);
   grid-template-rows: repeat(2, 14px);
   row-gap: 80px;
-  column-gap: 60px; /* Balik ke asli */
+  column-gap: 60px;
   justify-content: center;
   align-content: space-between;
   background: #8b4513;
-  padding: 20px;
+  padding: 20px 50px 20px 50px; /* Tambah padding kiri-kanan buat center */
   border-radius: 10px;
   width: 90%;
   max-width: 400px;
@@ -164,10 +164,9 @@ h1 {
   height: 14px;
 }
 
-/* Center plot 1 & 2 di baris atas */
+/* Fine-tune plot 1 & 2 ke tengah */
 .plot:nth-child(-n+2) {
-  margin-left: 25px; /* Geser ke kanan */
-  margin-right: 25px; /* Geser ke kiri */
+  transform: translateX(10px); /* Geser sedikit buat presisi */
 }
 
 .plot-content {
@@ -228,6 +227,7 @@ h1 {
     grid-template-rows: repeat(2, 12px);
     row-gap: 60px;
     column-gap: 50px;
+    padding: 20px 40px 20px 40px; /* Sesuaikan padding */
     width: 90%;
     max-width: 340px;
     height: 164px;
@@ -239,8 +239,7 @@ h1 {
   }
 
   .plot:nth-child(-n+2) {
-    margin-left: 20px;
-    margin-right: 20px;
+    transform: translateX(8px);
   }
 
   .plot-content {
@@ -274,6 +273,7 @@ h1 {
     grid-template-rows: repeat(2, 10px);
     row-gap: 50px;
     column-gap: 50px;
+    padding: 20px 30px 20px 30px; /* Sesuaikan padding */
     width: 90%;
     max-width: 300px;
     height: 140px;
@@ -285,8 +285,7 @@ h1 {
   }
 
   .plot:nth-child(-n+2) {
-    margin-left: 15px;
-    margin-right: 15px;
+    transform: translateX(6px);
   }
 
   .plot-content {
@@ -320,6 +319,7 @@ h1 {
     grid-template-rows: repeat(2, 8px);
     row-gap: 30px;
     column-gap: 30px;
+    padding: 20px 20px 20px 20px; /* Sesuaikan padding */
     width: 90%;
     max-width: 240px;
     height: 116px;
@@ -331,8 +331,7 @@ h1 {
   }
 
   .plot:nth-child(-n+2) {
-    margin-left: 10px;
-    margin-right: 10px;
+    transform: translateX(4px);
   }
 
   .plot-content {
@@ -602,7 +601,7 @@ input[type="range"] {
     font-size: 10px;
   }
 
-  .bag-icon {
+  #bag-icon {
     width: 30px;
     height: 30px;
   }
