@@ -134,14 +134,14 @@ h1 {
 
 #farm-area {
   display: grid;
-  grid-template-columns: repeat(2, 160px); /* Match plot width */
+  grid-template-columns: repeat(2, 160px);
   grid-template-rows: repeat(2, 16px);
   row-gap: 60px;
-  column-gap: 60px; /* Kecilkan gap */
+  column-gap: 60px;
   justify-content: center;
   align-content: space-around;
   background: #8b4513;
-  padding: 100px 30px 30px 30px; /* Simetris kiri-kanan */
+  padding: 100px 30px 30px 30px;
   border-radius: 10px;
   width: 90%;
   max-width: 460px;
@@ -152,7 +152,7 @@ h1 {
 .plot {
   background: #654321;
   border: 2px solid #fff;
-  border-radius: 140% / 140%; /* Tetep bulat */
+  border-radius: 140% / 140%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -177,7 +177,7 @@ h1 {
 .plant-img {
   width: 160px;
   height: auto;
-  max-height: 160px; /* Sesuaikan */
+  max-height: 160px;
   object-fit: contain;
   z-index: 1;
   position: absolute;
@@ -188,7 +188,7 @@ h1 {
 
 .countdown-bar {
   position: absolute;
-  top: 12px; /* Fix biar kelihatan */
+  top: 12px;
   width: 100px;
   height: 8px;
   background: #333;
@@ -213,33 +213,6 @@ h1 {
   text-align: center;
   line-height: 1.2;
   width: 100%;
-}
-
-#bag {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
-#bag-icon {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-}
-
-#bag-items {
-  display: flex;
-  gap: 10px;
-  font-size: 14px;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 5px 10px;
-  border-radius: 8px;
-}
-
-#bag-items.hidden {
-  display: none;
 }
 
 #claim-reward-btn {
@@ -275,7 +248,7 @@ h1 {
     grid-template-rows: repeat(2, 12px);
     row-gap: 50px;
     column-gap: 50px;
-    padding: 90px 25px 25px 25px; /* Simetris */
+    padding: 90px 25px 25px 25px;
     width: 90%;
     max-width: 400px;
     height: 260px;
@@ -309,10 +282,6 @@ h1 {
   .plot-status {
     font-size: 8px;
     top: 20px;
-  }
-
-  #bag {
-    margin: 15px 0;
   }
 
   #claim-reward-btn {
@@ -366,10 +335,6 @@ h1 {
     top: 16px;
   }
 
-  #bag {
-    margin: 10px 0;
-  }
-
   #claim-reward-btn {
     margin-top: 10px;
   }
@@ -419,10 +384,6 @@ h1 {
   .plot-status {
     font-size: 6px;
     top: 16px;
-  }
-
-  #bag {
-    margin: 10px 0;
   }
 
   #claim-reward-btn {
@@ -623,16 +584,6 @@ input[type="range"] {
   .tab-btn {
     padding: 6px 12px;
     font-size: 10px;
-  }
-
-  #bag-icon {
-    width: 30px;
-    height: 30px;
-  }
-
-  #bag-items {
-    font-size: 12px;
-    padding: 4px 8px;
   }
 
   .shop-item, .inventory-item, .sell-item {
