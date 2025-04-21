@@ -137,7 +137,7 @@ h1 {
   grid-template-columns: repeat(2, 130px); /* Kecilkan plot */
   grid-template-rows: repeat(2, 14px);
   row-gap: 60px;
-  column-gap: 60px; /* Renggangin +20px */
+  column-gap: 100px; /* Renggangin +20px */
   justify-content: center;
   align-content: space-around;
   background: #8b4513;
