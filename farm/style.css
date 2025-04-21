@@ -525,6 +525,14 @@ input[type="range"] {
   }
 }
 
+.plant-img {
+  animation: plantPop 0.3s ease;
+}
+@keyframes plantPop {
+  0% { transform: translateX(-50%) scale(0); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
 /* Sisanya sama */
 #shop-content, #inventory-content, #sell-content {
   display: flex;
