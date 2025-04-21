@@ -5,7 +5,6 @@ let water = 0;
 let level = 1;
 let xp = 0;
 let inventory = [];
-let bag = [];
 let vegetables = [];
 let langData = {};
 let currentLang = 'en';
@@ -21,7 +20,9 @@ const harvestSound = document.getElementById('harvest-sound');
 const wateringSound = document.getElementById('watering-sound');
 const menuSound = document.getElementById('menu-sound');
 const buyingSound = document.getElementById('buying-sound');
-const coinSound = document.getElementById('coin-sound');
+const coinS
+  
+ound = document.getElementById('coin-sound');
 
 function playBgMusic() {
   if (bgMusic) bgMusic.play().catch(e => console.error('BG Music play failed:', e));
@@ -268,26 +269,6 @@ function handlePlotClick(index) {
   }
 }
 
-// Render bag items
-function renderBag() {
-  const bagItems = document.getElementById('bag-items');
-  if (bagItems) {
-    bagItems.innerHTML = bag.map(item => `<span>${item}</span>`).join('');
-    console.log('Bag rendered:', bag);
-  } else {
-    console.error('Bag items element not found');
-  }
-}
-
-// Toggle bag visibility
-function toggleBag() {
-  const bagItems = document.getElementById('bag-items');
-  if (bagItems) {
-    bagItems.classList.toggle('hidden');
-    console.log('Bag visibility toggled');
-  }
-}
-
 // Render shop with Water item
 function renderShop() {
   console.log('Rendering shop with vegetables:', vegetables);
@@ -383,8 +364,6 @@ function buyVegetable(id, currency) {
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
       farmCoins -= veg.farmPrice;
-      bag.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
-      renderBag();
       updateWallet();
       showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
       playBuyingSound();
@@ -560,7 +539,6 @@ function claimDailyReward() {
 
   farmCoins += 100;
   water += 50;
-  bag.push(`${langData[currentLang].beetSeedLabel || 'Beet Seed'} x1`);
   updateWallet();
   renderBag();
   localStorage.setItem('lastClaim', now);
@@ -675,7 +653,6 @@ function startGame() {
   playBgVoice();
   initializePlots();
   updateWallet();
-  renderBag();
   renderShop();
   renderInventory();
   renderSellSection();
@@ -697,7 +674,6 @@ function toggleLanguage() {
   currentLang = currentLang === 'en' ? 'id' : 'en';
   updateUIText();
   updateWallet();
-  renderBag();
   renderShop();
   renderInventory();
   renderSellSection();
@@ -836,13 +812,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (exchangeAmount) {
       exchangeAmount.addEventListener('input', updateExchangeResult);
       console.log('Exchange Amount listener attached');
-    }
-
-    if (bagIcon) {
-      bagIcon.addEventListener('click', toggleBag);
-      console.log('Bag Icon listener attached');
-    } else {
-      console.warn('Bag Icon element not found');
     }
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
