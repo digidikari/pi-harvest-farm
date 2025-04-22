@@ -68,43 +68,42 @@ async function loadData() {
   try {
     const langRes = await fetch('./data/lang.json');
     console.log('Lang JSON fetched:', langRes.status);
-    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
+    if (!langRes.ok) {
+      console.error('Lang JSON failed:', langRes.status);
+      alert('Failed to load lang.json. Check file path or format.');
+      return;
+    }
     langData = await langRes.json();
-    console.log('Language data loaded:', langData);
-  } catch (e) {
-    console.error('Lang JSON load failed:', e.message);
-    alert('Failed to load lang.json. Check console for details.');
-    throw e;
-  }
+    console.log('Lang data loaded:', Object.keys(langData));
 
-  try {
     const vegRes = await fetch('./data/vegetables.json');
     console.log('Vegetables JSON fetched:', vegRes.status);
-    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
+    if (!vegRes.ok) {
+      console.error('Vegetables JSON failed:', vegRes.status);
+      alert('Failed to load vegetables.json. Check file path or format.');
+      return;
+    }
     const vegData = await vegRes.json();
     vegetables = vegData.vegetables || vegData;
-    console.log('Vegetables data loaded:', vegetables);
-  } catch (e) {
-    console.error('Vegetables JSON load failed:', e.message);
-    alert('Failed to load vegetables.json. Check console for details.');
-    throw e;
-  }
+    console.log('Vegetables loaded:', vegetables.length);
 
-  try {
     const invRes = await fetch('./data/inventory.json');
     console.log('Inventory JSON fetched:', invRes.status);
-    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
+    if (!invRes.ok) {
+      console.error('Inventory JSON failed:', invRes.status);
+      alert('Failed to load inventory.json. Check file path or format.');
+      return;
+    }
     const initialInventory = await invRes.json();
     inventory = JSON.parse(localStorage.getItem('inventory')) || initialInventory;
-    console.log('Inventory data loaded:', inventory);
-  } catch (e) {
-    console.error('Inventory JSON load failed:', e.message);
-    alert('Failed to load inventory.json. Check console for details.');
-    throw e;
-  }
+    console.log('Inventory loaded:', inventory);
 
-  console.log('loadData completed, initializing game...');
-  initializeGame();
+    console.log('loadData done, initializing game...');
+    initializeGame();
+  } catch (e) {
+    console.error('loadData error:', e.message);
+    alert('Error loading game data. Check console for details.');
+  }
 }
 
 // Load player data
@@ -845,24 +844,23 @@ function initializeGame() {
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, initializing game...');
+  console.log('DOM loaded, handling loading screen...');
   const loadingScreen = document.getElementById('loading-screen');
   const startScreen = document.getElementById('start-screen');
 
-  // Coba sembunyikan loading screen
   if (loadingScreen && startScreen) {
+    console.log('Found loading and start screen, hiding in 1s...');
     setTimeout(() => {
-      console.log('Hiding loading screen...');
       loadingScreen.style.opacity = '0';
       setTimeout(() => {
         loadingScreen.style.display = 'none';
         startScreen.style.display = 'block';
         console.log('Start screen shown');
       }, 500);
-    }, 1000);
+    }, 1000); // 1 detik biar cepet
   } else {
-    console.error('Loading or start screen missing:', { loadingScreen, startScreen });
-    if (startScreen) startScreen.style.display = 'block';
+    console.error('Missing elements:', { loadingScreen, startScreen });
+    alert('Loading or start screen not found. Check HTML.');
   }
 
   // Inisialisasi event listener
