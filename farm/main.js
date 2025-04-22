@@ -235,14 +235,30 @@ function handlePlotClick(index) {
     renderSellSection();
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
   } else if (plot.planted && !plot.watered) {
-    const waterNeeded = plot.vegetable.waterNeeded || 1;
+  const waterNeeded = plot.vegetable.waterNeeded || 1;
 
-    if (water >= waterNeeded) {
-      water -= waterNeeded;
-      plot.watered = true;
-      updateWallet();
-      showNotification(langData[currentLang].watered);
-      playWateringSound();
+  if (water >= waterNeeded) {
+    water -= waterNeeded;
+    plot.watered = true;
+
+    // Tambah animasi air
+    const waterImage = document.createElement('img');
+    waterImage.src = 'assets/img/ui/water_icon.png';
+    waterImage.classList.add('water-fly');
+    waterImage.style.width = '40px'; // Ukuran ikon air
+    waterImage.style.bottom = '0';
+    waterImage.style.left = '50%';
+    waterImage.style.transform = 'translateX(-50%)';
+    plotContent.appendChild(waterImage);
+
+    // Hapus gambar air setelah animasi selesai
+    setTimeout(() => {
+      waterImage.remove();
+    }, 800); // Sesuai durasi animasi (0.8s)
+
+    updateWallet();
+    showNotification(langData[currentLang].watered);
+    playWateringSound();
 
       const countdownInterval = setInterval(() => {
         if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
