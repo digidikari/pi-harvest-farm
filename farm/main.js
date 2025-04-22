@@ -608,14 +608,20 @@ document.getElementById('claim-reward-btn').addEventListener('click', () => {
   playMenuSound();
 });
 
+document.getElementById('claim-reward-btn').addEventListener('click', () => {
+  rewardModal.style.display = 'block';
+  playMenuSound();
+});
+
 claimModalBtn.addEventListener('click', () => {
   farmCoins += 100;
   water += 50;
   localStorage.setItem('farmCoins', farmCoins);
+  localStorage.setItem('water', water);
   localStorage.setItem('lastClaim', Date.now());
   document.getElementById('claim-reward-btn').disabled = true;
   updateWallet();
-  showTransactionAnimation('+100', true, claimModalBtn);
+  showTransactionAnimation('+100 Coins, +50 Water', true, claimModalBtn);
   playCoinSound();
   rewardModal.style.display = 'none';
 });
