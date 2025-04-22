@@ -699,3 +699,10 @@ button:hover {
     opacity: 0;
   }
 }
+
+/* Animasi air terbang saat disiram */
+.water-fly {
+  position: absolute;
+  animation: fly-up 0.8s ease-out forwards;
+  z-index: 10;
+}
