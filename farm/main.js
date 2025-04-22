@@ -174,29 +174,34 @@ function handlePlotClick(index) {
   if (!plot.planted) {
     const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
     if (seedIndex !== -1) {
-      const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
+      const seed = inventory[seedIndex];
+      const vegId = seed.split(' ')[0].toLowerCase(); // Ambil ID sayuran dari nama benih (misalnya, "Beet" jadi "beet")
+      const vegetable = vegetables.find(v => v.id === vegId) || vegetables[Math.floor(Math.random() * vegetables.length)];
       plot.planted = true;
-      plot.vegetable = randomVegetable;
+      plot.vegetable = vegetable;
       plot.progress = 0;
       plot.watered = false;
       plot.currentFrame = 1;
-      plot.countdown = randomVegetable.growthTime;
-      plot.totalCountdown = randomVegetable.growthTime;
+      plot.countdown = vegetable.growthTime;
+      plot.totalCountdown = vegetable.growthTime;
 
-      // Tambah animasi terbang
+      // Animasi tanaman terbang ke atas + teks -1
       const flyImage = document.createElement('img');
-      flyImage.src = randomVegetable.shopImage;
+      flyImage.src = vegetable.shopImage;
       flyImage.classList.add('plant-fly');
       flyImage.style.width = '60px';
-      flyImage.style.bottom = '0';
-      flyImage.style.left = '60%';
-      flyImage.style.transform = 'translateX(-50%)';
       plotContent.appendChild(flyImage);
+
+      const amountText = document.createElement('div');
+      amountText.textContent = '-1';
+      amountText.classList.add('amount-text', 'negative');
+      plotContent.appendChild(amountText);
 
       // Setelah animasi selesai, render sprite tanaman
       setTimeout(() => {
         flyImage.remove();
-        plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+        amountText.remove();
+        plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
       }, 800);
 
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
@@ -206,7 +211,7 @@ function handlePlotClick(index) {
       localStorage.setItem('inventory', JSON.stringify(inventory));
       showNotification(langData[currentLang].planted);
       playBuyingSound();
-      console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
+      console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
     } else {
       showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
     }
@@ -217,19 +222,22 @@ function handlePlotClick(index) {
       water -= waterNeeded;
       plot.watered = true;
 
-      // Tambah animasi air
+      // Animasi air turun ke bawah + teks -jumlah air
       const waterImage = document.createElement('img');
       waterImage.src = 'assets/img/ui/water_icon.png';
       waterImage.classList.add('water-fly');
       waterImage.style.width = '40px';
-      waterImage.style.bottom = '0';
-      waterImage.style.left = '60%';
-      waterImage.style.transform = 'translateX(-50%)';
       plotContent.appendChild(waterImage);
 
-      // Hapus gambar air setelah animasi selesai
+      const amountText = document.createElement('div');
+      amountText.textContent = `-${waterNeeded}`;
+      amountText.classList.add('amount-text', 'negative');
+      plotContent.appendChild(amountText);
+
+      // Hapus gambar air dan teks setelah animasi selesai
       setTimeout(() => {
         waterImage.remove();
+        amountText.remove();
       }, 800);
 
       updateWallet();
@@ -251,7 +259,7 @@ function handlePlotClick(index) {
             plot.watered = false;
             plot.countdown = plot.vegetable.growthTime;
             plot.totalCountdown = plot.vegetable.growthTime;
-            plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+            plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
             if (plot.currentFrame >= plot.vegetable.frames) {
               plotElement.classList.add('ready');
               plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
@@ -276,22 +284,26 @@ function handlePlotClick(index) {
       showNotification(langData[currentLang].notEnoughWater);
     }
   } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
-    inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
+    const yieldAmount = plot.vegetable.yield;
+    inventory.push({ vegetable: plot.vegetable, quantity: yieldAmount });
     localStorage.setItem('inventory', JSON.stringify(inventory));
 
-    // Tambah animasi panen
+    // Animasi panen terbang ke atas + teks +jumlah yield
     const flyImage = document.createElement('img');
     flyImage.src = plot.vegetable.shopImage;
     flyImage.classList.add('plant-fly');
     flyImage.style.width = '60px';
-    flyImage.style.bottom = '0';
-    flyImage.style.left = '60%';
-    flyImage.style.transform = 'translateX(-50%)';
     plotContent.appendChild(flyImage);
+
+    const amountText = document.createElement('div');
+    amountText.textContent = `+${yieldAmount}`;
+    amountText.classList.add('amount-text', 'positive');
+    plotContent.appendChild(amountText);
 
     // Setelah animasi selesai, kosongkan plot
     setTimeout(() => {
       flyImage.remove();
+      amountText.remove();
       plotContent.innerHTML = '';
       plotStatus.innerHTML = '';
       countdownFill.style.width = '0%';
