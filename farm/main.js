@@ -173,28 +173,45 @@ function handlePlotClick(index) {
   const countdownFill = plotElement.querySelector('.countdown-fill');
 
   if (!plot.planted) {
-    const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
-    if (seedIndex !== -1) {
-      const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
-      plot.planted = true;
-      plot.vegetable = randomVegetable;
-      plot.progress = 0;
-      plot.watered = false;
-      plot.currentFrame = 1;
-      plot.countdown = randomVegetable.growthTime;
-      plot.totalCountdown = randomVegetable.growthTime;
-      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
-      plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-      countdownFill.style.width = '0%'; // Reset bar saat tanam
+  const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
+  if (seedIndex !== -1) {
+    const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
+    plot.planted = true;
+    plot.vegetable = randomVegetable;
+    plot.progress = 0;
+    plot.watered = false;
+    plot.currentFrame = 1;
+    plot.countdown = randomVegetable.growthTime;
+    plot.totalCountdown = randomVegetable.growthTime;
 
-      inventory.splice(seedIndex, 1);
-      localStorage.setItem('inventory', JSON.stringify(inventory));
-      showNotification(langData[currentLang].planted);
-      playBuyingSound();
-      console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
-    } else {
-      showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
-    }
+    // Tambah animasi terbang
+    const flyImage = document.createElement('img');
+    flyImage.src = randomVegetable.shopImage;
+    flyImage.classList.add('plant-fly');
+    flyImage.style.width = '60px'; // Ukuran sama kayak di toko
+    flyImage.style.bottom = '0';
+    flyImage.style.left = '50%';
+    flyImage.style.transform = 'translateX(-50%)';
+    plotContent.appendChild(flyImage);
+
+    // Setelah animasi selesai, render sprite tanaman
+    setTimeout(() => {
+      flyImage.remove(); // Hapus gambar terbang
+      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+    }, 800); // Sesuai durasi animasi (0.8s)
+
+    plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+    countdownFill.style.width = '0%'; // Reset bar saat tanam
+
+    inventory.splice(seedIndex, 1);
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+    showNotification(langData[currentLang].planted);
+    playBuyingSound();
+    console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
+  } else {
+    showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
+  }
+}
   } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
     inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
     localStorage.setItem('inventory', JSON.stringify(inventory));
