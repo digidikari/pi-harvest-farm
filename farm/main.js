@@ -424,7 +424,7 @@ function buyVegetable(id, currency) {
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
       farmCoins -= veg.farmPrice;
-      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      inventory.push(`${veg.name[currentLang]} ${langData[currentLang].seedLabel || 'Seed'}`);
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
@@ -435,7 +435,7 @@ function buyVegetable(id, currency) {
   } else {
     if (pi >= veg.piPrice) {
       pi -= veg.piPrice;
-      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
+      inventory.push(`${veg.name[currentLang]} ${langData[currentLang].seedLabel || 'Seed'}`);
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${id}"]`));
