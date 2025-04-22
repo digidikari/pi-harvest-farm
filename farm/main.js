@@ -189,7 +189,7 @@ function handlePlotClick(index) {
       flyImage.classList.add('plant-fly');
       flyImage.style.width = '60px';
       flyImage.style.bottom = '0';
-      flyImage.style.left = '50%';
+      flyImage.style.left = '60%';
       flyImage.style.transform = 'translateX(-50%)';
       plotContent.appendChild(flyImage);
 
@@ -223,7 +223,7 @@ function handlePlotClick(index) {
       waterImage.classList.add('water-fly');
       waterImage.style.width = '40px';
       waterImage.style.bottom = '0';
-      waterImage.style.left = '50%';
+      waterImage.style.left = '60%';
       waterImage.style.transform = 'translateX(-50%)';
       plotContent.appendChild(waterImage);
 
@@ -285,7 +285,7 @@ function handlePlotClick(index) {
     flyImage.classList.add('plant-fly');
     flyImage.style.width = '60px';
     flyImage.style.bottom = '0';
-    flyImage.style.left = '50%';
+    flyImage.style.left = '60%';
     flyImage.style.transform = 'translateX(-50%)';
     plotContent.appendChild(flyImage);
 
@@ -598,6 +598,7 @@ document.getElementById('claim-reward-btn').addEventListener('click', () => {
 
 claimModalBtn.addEventListener('click', () => {
   farmCoins += 100;
+  water += 50;
   localStorage.setItem('farmCoins', farmCoins);
   localStorage.setItem('lastClaim', Date.now());
   document.getElementById('claim-reward-btn').disabled = true;
