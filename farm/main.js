@@ -212,28 +212,46 @@ function handlePlotClick(index) {
     showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
   }
 }
-  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
-    inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-    plot.planted = false;
-    plot.vegetable = null;
-    plot.progress = 0;
-    plot.watered = false;
-    plot.currentFrame = 1;
-    plot.countdown = 0;
-    plot.totalCountdown = 0;
+} else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
+  inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
+  localStorage.setItem('inventory', JSON.stringify(inventory));
+
+  // Tambah animasi panen
+  const flyImage = document.createElement('img');
+  flyImage.src = plot.vegetable.shopImage;
+  flyImage.classList.add('plant-fly');
+  flyImage.style.width = '60px';
+  flyImage.style.bottom = '0';
+  flyImage.style.left = '50%';
+  flyImage.style.transform = 'translateX(-50%)';
+  plotContent.appendChild(flyImage);
+
+  // Setelah animasi selesai, kosongkan plot
+  setTimeout(() => {
+    flyImage.remove();
     plotContent.innerHTML = '';
     plotStatus.innerHTML = '';
     countdownFill.style.width = '0%'; // Reset bar saat panen
     plotElement.classList.remove('ready');
-    harvestCount++;
-    localStorage.setItem('harvestCount', harvestCount);
-    checkHarvestAchievement();
-    showNotification(langData[currentLang].harvested);
-    playHarvestSound();
-    renderInventory();
-    renderSellSection();
-    console.log(`Harvested plot ${index}, added to inventory:`, inventory);
+  }, 800); // Sesuai durasi animasi (0.8s)
+
+  plot.planted = false;
+  plot.vegetable = null;
+  plot.progress = 0;
+  plot.watered = false;
+  plot.currentFrame = 1;
+  plot.countdown = 0;
+  plot.totalCountdown = 0;
+
+  harvestCount++;
+  localStorage.setItem('harvestCount', harvestCount);
+  checkHarvestAchievement();
+  showNotification(langData[currentLang].harvested);
+  playHarvestSound();
+  renderInventory();
+  renderSellSection();
+  console.log(`Harvested plot ${index}, added to inventory:`, inventory);
+}
   } else if (plot.planted && !plot.watered) {
   const waterNeeded = plot.vegetable.waterNeeded || 1;
 
