@@ -699,7 +699,7 @@ button:hover {
   animation: fly-down 0.8s ease-out forwards;
   z-index: 10;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-80%);
   top: 0;
 }
 
@@ -734,11 +734,11 @@ button:hover {
 
 @keyframes fly-down {
   0% {
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-150%) translateY(0);
     opacity: 1;
   }
   100% {
-    transform: translateX(-50%) translateY(50px);
+    transform: translateX(-150%) translateY(50px);
     opacity: 0;
   }
 }
