@@ -163,7 +163,6 @@ function initializePlots() {
   updateUIText();
 }
 
-// Handle plot click with manual growth
 function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
   const plot = farmPlots[index];
@@ -173,121 +172,80 @@ function handlePlotClick(index) {
   const countdownFill = plotElement.querySelector('.countdown-fill');
 
   if (!plot.planted) {
-  const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
-  if (seedIndex !== -1) {
-    const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
-    plot.planted = true;
-    plot.vegetable = randomVegetable;
-    plot.progress = 0;
-    plot.watered = false;
-    plot.currentFrame = 1;
-    plot.countdown = randomVegetable.growthTime;
-    plot.totalCountdown = randomVegetable.growthTime;
+    const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
+    if (seedIndex !== -1) {
+      const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
+      plot.planted = true;
+      plot.vegetable = randomVegetable;
+      plot.progress = 0;
+      plot.watered = false;
+      plot.currentFrame = 1;
+      plot.countdown = randomVegetable.growthTime;
+      plot.totalCountdown = randomVegetable.growthTime;
 
-    // Tambah animasi terbang
-    const flyImage = document.createElement('img');
-    flyImage.src = randomVegetable.shopImage;
-    flyImage.classList.add('plant-fly');
-    flyImage.style.width = '60px'; // Ukuran sama kayak di toko
-    flyImage.style.bottom = '0';
-    flyImage.style.left = '50%';
-    flyImage.style.transform = 'translateX(-50%)';
-    plotContent.appendChild(flyImage);
+      // Tambah animasi terbang
+      const flyImage = document.createElement('img');
+      flyImage.src = randomVegetable.shopImage;
+      flyImage.classList.add('plant-fly');
+      flyImage.style.width = '60px';
+      flyImage.style.bottom = '0';
+      flyImage.style.left = '50%';
+      flyImage.style.transform = 'translateX(-50%)';
+      plotContent.appendChild(flyImage);
 
-    // Setelah animasi selesai, render sprite tanaman
-    setTimeout(() => {
-      flyImage.remove(); // Hapus gambar terbang
-      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
-    }, 800); // Sesuai durasi animasi (0.8s)
+      // Setelah animasi selesai, render sprite tanaman
+      setTimeout(() => {
+        flyImage.remove();
+        plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+      }, 800);
 
-    plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-    countdownFill.style.width = '0%'; // Reset bar saat tanam
+      plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+      countdownFill.style.width = '0%';
 
-    inventory.splice(seedIndex, 1);
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-    showNotification(langData[currentLang].planted);
-    playBuyingSound();
-    console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
-  } else {
-    showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
-  }
-}
-} else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
-  inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
-  localStorage.setItem('inventory', JSON.stringify(inventory));
-
-  // Tambah animasi panen
-  const flyImage = document.createElement('img');
-  flyImage.src = plot.vegetable.shopImage;
-  flyImage.classList.add('plant-fly');
-  flyImage.style.width = '60px';
-  flyImage.style.bottom = '0';
-  flyImage.style.left = '50%';
-  flyImage.style.transform = 'translateX(-50%)';
-  plotContent.appendChild(flyImage);
-
-  // Setelah animasi selesai, kosongkan plot
-  setTimeout(() => {
-    flyImage.remove();
-    plotContent.innerHTML = '';
-    plotStatus.innerHTML = '';
-    countdownFill.style.width = '0%'; // Reset bar saat panen
-    plotElement.classList.remove('ready');
-  }, 800); // Sesuai durasi animasi (0.8s)
-
-  plot.planted = false;
-  plot.vegetable = null;
-  plot.progress = 0;
-  plot.watered = false;
-  plot.currentFrame = 1;
-  plot.countdown = 0;
-  plot.totalCountdown = 0;
-
-  harvestCount++;
-  localStorage.setItem('harvestCount', harvestCount);
-  checkHarvestAchievement();
-  showNotification(langData[currentLang].harvested);
-  playHarvestSound();
-  renderInventory();
-  renderSellSection();
-  console.log(`Harvested plot ${index}, added to inventory:`, inventory);
-}
+      inventory.splice(seedIndex, 1);
+      localStorage.setItem('inventory', JSON.stringify(inventory));
+      showNotification(langData[currentLang].planted);
+      playBuyingSound();
+      console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
+    } else {
+      showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
+    }
   } else if (plot.planted && !plot.watered) {
-  const waterNeeded = plot.vegetable.waterNeeded || 1;
+    const waterNeeded = plot.vegetable.waterNeeded || 1;
 
-  if (water >= waterNeeded) {
-    water -= waterNeeded;
-    plot.watered = true;
+    if (water >= waterNeeded) {
+      water -= waterNeeded;
+      plot.watered = true;
 
-    // Tambah animasi air
-    const waterImage = document.createElement('img');
-    waterImage.src = 'assets/img/ui/water_icon.png';
-    waterImage.classList.add('water-fly');
-    waterImage.style.width = '40px'; // Ukuran ikon air
-    waterImage.style.bottom = '0';
-    waterImage.style.left = '50%';
-    waterImage.style.transform = 'translateX(-50%)';
-    plotContent.appendChild(waterImage);
+      // Tambah animasi air
+      const waterImage = document.createElement('img');
+      waterImage.src = 'assets/img/ui/water_icon.png';
+      waterImage.classList.add('water-fly');
+      waterImage.style.width = '40px';
+      waterImage.style.bottom = '0';
+      waterImage.style.left = '50%';
+      waterImage.style.transform = 'translateX(-50%)';
+      plotContent.appendChild(waterImage);
 
-    // Hapus gambar air setelah animasi selesai
-    setTimeout(() => {
-      waterImage.remove();
-    }, 800); // Sesuai durasi animasi (0.8s)
+      // Hapus gambar air setelah animasi selesai
+      setTimeout(() => {
+        waterImage.remove();
+      }, 800);
 
-    updateWallet();
-    showNotification(langData[currentLang].watered);
-    playWateringSound();
+      updateWallet();
+      showNotification(langData[currentLang].watered);
+      playWateringSound();
 
       const countdownInterval = setInterval(() => {
         if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
           clearInterval(countdownInterval);
-          countdownFill.style.width = '0%'; // Reset bar kalau tanaman dihapus atau selesai
+          countdownFill.style.width = '0%';
           return;
         }
         if (plot.watered) {
           plot.countdown--;
           const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
-          countdownFill.style.width = `${progress}%`; // Update lebar bar
+          countdownFill.style.width = `${progress}%`;
           if (plot.countdown <= 0) {
             plot.currentFrame++;
             plot.watered = false;
@@ -298,10 +256,10 @@ function handlePlotClick(index) {
               plotElement.classList.add('ready');
               plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
               clearInterval(countdownInterval);
-              countdownFill.style.width = '100%'; // Bar penuh saat siap panen
+              countdownFill.style.width = '100%';
             } else {
               plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-              countdownFill.style.width = '0%'; // Reset bar untuk siklus berikutnya
+              countdownFill.style.width = '0%';
             }
           } else {
             plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
@@ -309,7 +267,7 @@ function handlePlotClick(index) {
         } else {
           plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
           clearInterval(countdownInterval);
-          countdownFill.style.width = '0%'; // Reset bar kalau gak disiram
+          countdownFill.style.width = '0%';
         }
       }, 1000);
 
@@ -317,6 +275,45 @@ function handlePlotClick(index) {
     } else {
       showNotification(langData[currentLang].notEnoughWater);
     }
+  } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
+    inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+
+    // Tambah animasi panen
+    const flyImage = document.createElement('img');
+    flyImage.src = plot.vegetable.shopImage;
+    flyImage.classList.add('plant-fly');
+    flyImage.style.width = '60px';
+    flyImage.style.bottom = '0';
+    flyImage.style.left = '50%';
+    flyImage.style.transform = 'translateX(-50%)';
+    plotContent.appendChild(flyImage);
+
+    // Setelah animasi selesai, kosongkan plot
+    setTimeout(() => {
+      flyImage.remove();
+      plotContent.innerHTML = '';
+      plotStatus.innerHTML = '';
+      countdownFill.style.width = '0%';
+      plotElement.classList.remove('ready');
+    }, 800);
+
+    plot.planted = false;
+    plot.vegetable = null;
+    plot.progress = 0;
+    plot.watered = false;
+    plot.currentFrame = 1;
+    plot.countdown = 0;
+    plot.totalCountdown = 0;
+
+    harvestCount++;
+    localStorage.setItem('harvestCount', harvestCount);
+    checkHarvestAchievement();
+    showNotification(langData[currentLang].harvested);
+    playHarvestSound();
+    renderInventory();
+    renderSellSection();
+    console.log(`Harvested plot ${index}, added to inventory:`, inventory);
   }
 }
 
