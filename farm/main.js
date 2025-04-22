@@ -448,14 +448,17 @@ function buyVegetable(id, currency) {
 
 // Render inventory
 function renderInventory() {
+function renderInventory() {
   const inventoryContent = document.getElementById('inventory-content');
   inventoryContent.innerHTML = '';
   inventory.forEach((item, index) => {
     if (typeof item === 'string' && item.includes('Seed')) {
+      const vegName = item.split(' ')[0]; // Ambil nama sayuran dari benih
+      const veg = vegetables.find(v => v.name[currentLang] === vegName);
       const invItem = document.createElement('div');
       invItem.classList.add('inventory-item');
       invItem.innerHTML = `
-        <img src="assets/img/ui/seed.png" alt="Seed" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+        <img src="${veg ? veg.shopImage : 'assets/img/ui/seed.png'}" alt="${item}" class="shop-item-img">
         <h3>${item}</h3>
         <p>${langData[currentLang].quantityLabel || 'Quantity'}: 1</p>
       `;
@@ -464,7 +467,7 @@ function renderInventory() {
       const invItem = document.createElement('div');
       invItem.classList.add('inventory-item');
       invItem.innerHTML = `
-        <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
+        <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
         <h3>${item.vegetable.name[currentLang]}</h3>
         <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
       `;
