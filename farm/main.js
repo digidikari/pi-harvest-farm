@@ -195,7 +195,7 @@ function handlePlotClick(index) {
       showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
     }
   } else if (plot.planted && !plot.watered) {
-  console.log('Entering watering block, frame:', plot.currentFrame, 'watered:', plot.watered);
+    console.log('Entering watering block, frame:', plot.currentFrame, 'watered:', plot.watered);
     
     if (water >= waterNeeded) {
       water -= waterNeeded;
@@ -260,7 +260,7 @@ function handlePlotClick(index) {
       showNotification(langData[currentLang].notEnoughWater);
     }
   } else if (plot.currentFrame >= plot.vegetable.frames || plotElement.classList.contains('ready')) {
-  console.log('Entering harvest block, frame:', plot.currentFrame, 'frames:', plot.vegetable.frames);
+    console.log('Entering harvest block, frame:', plot.currentFrame, 'frames:', plot.vegetable.frames);
     const yieldAmount = plot.vegetable.yield;
     inventory.push({ vegetable: plot.vegetable, quantity: yieldAmount });
     localStorage.setItem('inventory', JSON.stringify(inventory));
