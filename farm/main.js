@@ -64,17 +64,38 @@ function updateVolumes() {
 
 // Load data from JSON files
 async function loadData() {
-async function loadData() {
-  const langRes = await fetch('./data/lang.json');
-  langData = await langRes.json();
+  console.log('Loading data...');
+  try {
+    const langRes = await fetch('./data/lang.json');
+    if (!langRes.ok) throw new Error(`Failed to load lang.json (status: ${langRes.status})`);
+    langData = await langRes.json();
+    console.log('Language data loaded:', langData);
+  } catch (e) {
+    console.error('Lang JSON load failed:', e.message);
+    throw new Error('Cannot proceed without language data. Please check lang.json.');
+  }
 
-  const vegRes = await fetch('./data/vegetables.json');
-  const vegData = await vegRes.json();
-  vegetables = vegData.vegetables || vegData;
+  try {
+    const vegRes = await fetch('./data/vegetables.json');
+    if (!vegRes.ok) throw new Error(`Failed to load vegetables.json (status: ${vegRes.status})`);
+    const vegData = await vegRes.json();
+    vegetables = vegData.vegetables || vegData;
+    console.log('Vegetables data loaded:', vegetables);
+  } catch (e) {
+    console.error('Vegetables JSON load failed:', e.message);
+    throw new Error('Cannot proceed without vegetables data. Please check vegetables.json.');
+  }
 
-  const invRes = await fetch('./data/inventory.json');
-  const initialInventory = await invRes.json();
-  inventory = JSON.parse(localStorage.getItem('inventory')) || initialInventory;
+  try {
+    const invRes = await fetch('./data/inventory.json');
+    if (!invRes.ok) throw new Error(`Failed to load inventory.json (status: ${invRes.status})`);
+    const initialInventory = await invRes.json();
+    inventory = JSON.parse(localStorage.getItem('inventory')) || initialInventory;
+    console.log('Inventory data loaded:', inventory);
+  } catch (e) {
+    console.error('Inventory JSON load failed:', e.message);
+    throw new Error('Cannot proceed without inventory data. Please check inventory.json.');
+  }
 
   initializeGame();
 }
@@ -142,6 +163,7 @@ function initializePlots() {
   updateUIText();
 }
 
+// Handle plot click with manual growth
 function handlePlotClick(index) {
   console.log(`Plot ${index} clicked...`);
   const plot = farmPlots[index];
@@ -153,142 +175,29 @@ function handlePlotClick(index) {
   if (!plot.planted) {
     const seedIndex = inventory.findIndex(item => item && typeof item === 'string' && item.includes('Seed'));
     if (seedIndex !== -1) {
-      const seed = inventory[seedIndex];
-      const vegId = seed.split(' ')[0].toLowerCase(); // Ambil ID sayuran dari nama benih (misalnya, "Beet" jadi "beet")
-      const vegetable = vegetables.find(v => v.id === vegId) || vegetables[Math.floor(Math.random() * vegetables.length)];
+      const randomVegetable = vegetables[Math.floor(Math.random() * vegetables.length)];
       plot.planted = true;
-      plot.vegetable = vegetable;
+      plot.vegetable = randomVegetable;
       plot.progress = 0;
       plot.watered = false;
       plot.currentFrame = 1;
-      plot.countdown = vegetable.growthTime;
-      plot.totalCountdown = vegetable.growthTime;
-
-      // Animasi tanaman terbang ke atas + teks -1
-      const flyImage = document.createElement('img');
-      flyImage.src = vegetable.shopImage;
-      flyImage.classList.add('plant-fly');
-      flyImage.style.width = '60px';
-      plotContent.appendChild(flyImage);
-
-      const amountText = document.createElement('div');
-      amountText.textContent = '-1';
-      amountText.classList.add('amount-text', 'negative');
-      plotContent.appendChild(amountText);
-
-      // Setelah animasi selesai, render sprite tanaman
-      setTimeout(() => {
-        flyImage.remove();
-        amountText.remove();
-        plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
-      }, 800);
-
+      plot.countdown = randomVegetable.growthTime;
+      plot.totalCountdown = randomVegetable.growthTime;
+      plotContent.innerHTML = `<img src="${randomVegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-      countdownFill.style.width = '0%';
+      countdownFill.style.width = '0%'; // Reset bar saat tanam
 
       inventory.splice(seedIndex, 1);
       localStorage.setItem('inventory', JSON.stringify(inventory));
       showNotification(langData[currentLang].planted);
       playBuyingSound();
-      console.log(`Planted ${vegetable.name[currentLang]} at plot ${index}`);
+      console.log(`Planted ${randomVegetable.name[currentLang]} at plot ${index}`);
     } else {
       showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
     }
-  } else if (plot.planted && !plot.watered) {
-    const waterNeeded = plot.vegetable.waterNeeded || 1;
-
-    if (water >= waterNeeded) {
-      water -= waterNeeded;
-      plot.watered = true;
-
-      // Animasi air turun ke bawah + teks -jumlah air
-      const waterImage = document.createElement('img');
-      waterImage.src = 'assets/img/ui/water_icon.png';
-      waterImage.classList.add('water-fly');
-      waterImage.style.width = '40px';
-      plotContent.appendChild(waterImage);
-
-      const amountText = document.createElement('div');
-      amountText.textContent = `-${waterNeeded}`;
-      amountText.classList.add('amount-text', 'negative');
-      plotContent.appendChild(amountText);
-
-      // Hapus gambar air dan teks setelah animasi selesai
-      setTimeout(() => {
-        waterImage.remove();
-        amountText.remove();
-      }, 800);
-
-      updateWallet();
-      showNotification(langData[currentLang].watered);
-      playWateringSound();
-
-      const countdownInterval = setInterval(() => {
-        if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
-          clearInterval(countdownInterval);
-          countdownFill.style.width = '0%';
-          return;
-        }
-        if (plot.watered) {
-          plot.countdown--;
-          const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
-          countdownFill.style.width = `${progress}%`;
-          if (plot.countdown <= 0) {
-            plot.currentFrame++;
-            plot.watered = false;
-            plot.countdown = plot.vegetable.growthTime;
-            plot.totalCountdown = plot.vegetable.growthTime;
-            plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
-            if (plot.currentFrame >= plot.vegetable.frames) {
-              plotElement.classList.add('ready');
-              plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
-              clearInterval(countdownInterval);
-              countdownFill.style.width = '100%';
-            } else {
-              plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-              countdownFill.style.width = '0%';
-            }
-          } else {
-            plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
-          }
-        } else {
-          plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-          clearInterval(countdownInterval);
-          countdownFill.style.width = '0%';
-        }
-      }, 1000);
-
-      console.log(`Watered plot ${index}, used ${waterNeeded} water`);
-    } else {
-      showNotification(langData[currentLang].notEnoughWater);
-    }
   } else if (plot.planted && plot.currentFrame >= plot.vegetable.frames) {
-    const yieldAmount = plot.vegetable.yield;
-    inventory.push({ vegetable: plot.vegetable, quantity: yieldAmount });
+    inventory.push({ vegetable: plot.vegetable, quantity: plot.vegetable.yield });
     localStorage.setItem('inventory', JSON.stringify(inventory));
-
-    // Animasi panen terbang ke atas + teks +jumlah yield
-    const flyImage = document.createElement('img');
-    flyImage.src = plot.vegetable.shopImage;
-    flyImage.classList.add('plant-fly');
-    flyImage.style.width = '60px';
-    plotContent.appendChild(flyImage);
-
-    const amountText = document.createElement('div');
-    amountText.textContent = `+${yieldAmount}`;
-    amountText.classList.add('amount-text', 'positive');
-    plotContent.appendChild(amountText);
-
-    // Setelah animasi selesai, kosongkan plot
-    setTimeout(() => {
-      flyImage.remove();
-      amountText.remove();
-      plotContent.innerHTML = '';
-      plotStatus.innerHTML = '';
-      countdownFill.style.width = '0%';
-      plotElement.classList.remove('ready');
-    }, 800);
-
     plot.planted = false;
     plot.vegetable = null;
     plot.progress = 0;
@@ -296,7 +205,10 @@ function handlePlotClick(index) {
     plot.currentFrame = 1;
     plot.countdown = 0;
     plot.totalCountdown = 0;
-
+    plotContent.innerHTML = '';
+    plotStatus.innerHTML = '';
+    countdownFill.style.width = '0%'; // Reset bar saat panen
+    plotElement.classList.remove('ready');
     harvestCount++;
     localStorage.setItem('harvestCount', harvestCount);
     checkHarvestAchievement();
@@ -305,6 +217,55 @@ function handlePlotClick(index) {
     renderInventory();
     renderSellSection();
     console.log(`Harvested plot ${index}, added to inventory:`, inventory);
+  } else if (plot.planted && !plot.watered) {
+    const waterNeeded = plot.vegetable.waterNeeded || 1;
+
+    if (water >= waterNeeded) {
+      water -= waterNeeded;
+      plot.watered = true;
+      updateWallet();
+      showNotification(langData[currentLang].watered);
+      playWateringSound();
+
+      const countdownInterval = setInterval(() => {
+        if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
+          clearInterval(countdownInterval);
+          countdownFill.style.width = '0%'; // Reset bar kalau tanaman dihapus atau selesai
+          return;
+        }
+        if (plot.watered) {
+          plot.countdown--;
+          const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
+          countdownFill.style.width = `${progress}%`; // Update lebar bar
+          if (plot.countdown <= 0) {
+            plot.currentFrame++;
+            plot.watered = false;
+            plot.countdown = plot.vegetable.growthTime;
+            plot.totalCountdown = plot.vegetable.growthTime;
+            plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img" onerror="this.src='assets/img/ui/placeholder.png';">`;
+            if (plot.currentFrame >= plot.vegetable.frames) {
+              plotElement.classList.add('ready');
+              plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
+              clearInterval(countdownInterval);
+              countdownFill.style.width = '100%'; // Bar penuh saat siap panen
+            } else {
+              plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+              countdownFill.style.width = '0%'; // Reset bar untuk siklus berikutnya
+            }
+          } else {
+            plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
+          }
+        } else {
+          plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+          clearInterval(countdownInterval);
+          countdownFill.style.width = '0%'; // Reset bar kalau gak disiram
+        }
+      }, 1000);
+
+      console.log(`Watered plot ${index}, used ${waterNeeded} water`);
+    } else {
+      showNotification(langData[currentLang].notEnoughWater);
+    }
   }
 }
 
@@ -403,7 +364,7 @@ function buyVegetable(id, currency) {
   if (currency === 'farm') {
     if (farmCoins >= veg.farmPrice) {
       farmCoins -= veg.farmPrice;
-      inventory.push(`${veg.name[currentLang]} ${langData[currentLang].seedLabel || 'Seed'}`);
+      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.farmPrice}`, false, document.querySelector(`.buy-btn[data-id="${id}"]`));
@@ -414,7 +375,7 @@ function buyVegetable(id, currency) {
   } else {
     if (pi >= veg.piPrice) {
       pi -= veg.piPrice;
-      inventory.push(`${veg.name[currentLang]} ${langData[currentLang].seedLabel || 'Seed'}`);
+      inventory.push(`${langData[currentLang].seedLabel || 'Seed'} x1`);
       localStorage.setItem('inventory', JSON.stringify(inventory));
       updateWallet();
       showTransactionAnimation(`-${veg.piPrice} PI`, false, document.querySelector(`.buy-pi-btn[data-id="${id}"]`));
@@ -427,17 +388,14 @@ function buyVegetable(id, currency) {
 
 // Render inventory
 function renderInventory() {
-function renderInventory() {
   const inventoryContent = document.getElementById('inventory-content');
   inventoryContent.innerHTML = '';
   inventory.forEach((item, index) => {
     if (typeof item === 'string' && item.includes('Seed')) {
-      const vegName = item.split(' ')[0]; // Ambil nama sayuran dari benih
-      const veg = vegetables.find(v => v.name[currentLang] === vegName);
       const invItem = document.createElement('div');
       invItem.classList.add('inventory-item');
       invItem.innerHTML = `
-        <img src="${veg ? veg.shopImage : 'assets/img/ui/seed.png'}" alt="${item}" class="shop-item-img">
+        <img src="assets/img/ui/seed.png" alt="Seed" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
         <h3>${item}</h3>
         <p>${langData[currentLang].quantityLabel || 'Quantity'}: 1</p>
       `;
@@ -446,7 +404,7 @@ function renderInventory() {
       const invItem = document.createElement('div');
       invItem.classList.add('inventory-item');
       invItem.innerHTML = `
-        <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img">
+        <img src="${item.vegetable.shopImage}" alt="${item.vegetable.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
         <h3>${item.vegetable.name[currentLang]}</h3>
         <p>${langData[currentLang].quantityLabel || 'Quantity'}: ${item.quantity}</p>
       `;
@@ -590,20 +548,13 @@ document.getElementById('claim-reward-btn').addEventListener('click', () => {
   playMenuSound();
 });
 
-document.getElementById('claim-reward-btn').addEventListener('click', () => {
-  rewardModal.style.display = 'block';
-  playMenuSound();
-});
-
 claimModalBtn.addEventListener('click', () => {
   farmCoins += 100;
-  water += 50;
   localStorage.setItem('farmCoins', farmCoins);
-  localStorage.setItem('water', water);
   localStorage.setItem('lastClaim', Date.now());
   document.getElementById('claim-reward-btn').disabled = true;
   updateWallet();
-  showTransactionAnimation('+100 Coins, +50 Water', true, claimModalBtn);
+  showTransactionAnimation('+100', true, claimModalBtn);
   playCoinSound();
   rewardModal.style.display = 'none';
 });
@@ -817,23 +768,113 @@ function initializeGame() {
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', () => {
-  const loadingScreen = document.getElementById('loading-screen');
-  const startScreen = document.getElementById('start-screen');
-
-  if (loadingScreen && startScreen) {
-    setTimeout(() => {
-      loadingScreen.style.opacity = '0';
+  console.log('DOM loaded, initializing game...');
+  try {
+    // Handle loading screen
+    const loadingScreen = document.getElementById('loading-screen');
+    const startScreen = document.getElementById('start-screen');
+    if (loadingScreen && startScreen) {
       setTimeout(() => {
-        loadingScreen.style.display = 'none';
-        startScreen.style.display = 'block';
-      }, 500);
-    }, 2000); // Kurangin ke 2 detik biar cepet
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          startScreen.style.display = 'block';
+        }, 500); // Tunggu fade-out selesai
+      }, 3000); // 3 detik
+    } else {
+      console.warn('Loading or start screen element not found');
+      if (startScreen) startScreen.style.display = 'block';
+    }
+
+    const startText = document.getElementById('start-text');
+    const langToggle = document.getElementById('lang-toggle');
+    const settingsBtn = document.getElementById('settings-btn');
+    const claimRewardBtn = document.getElementById('claim-reward-btn');
+    const gameLangToggle = document.getElementById('game-lang-toggle');
+    const gameSettingsBtn = document.getElementById('game-settings-btn');
+    const exitGameBtn = document.getElementById('exit-game-btn');
+    const exchangeBtn = document.getElementById('exchange-btn');
+    const exchangeAmount = document.getElementById('exchange-amount');
+
+    console.log('Start Text Element:', startText);
+    console.log('Lang Toggle Element:', langToggle);
+    console.log('Settings Button Element:', settingsBtn);
+    console.log('Game Lang Toggle Element:', gameLangToggle);
+
+    if (startText) {
+      startText.addEventListener('click', startGame);
+      console.log('Start Text listener attached');
+    } else {
+      console.warn('Start Text element not found');
+    }
+
+    if (langToggle) {
+      langToggle.addEventListener('click', toggleLanguage);
+      console.log('Lang Toggle listener attached');
+    } else {
+      console.warn('Lang Toggle element not found');
+    }
+
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', openSettings);
+      console.log('Settings Button listener attached');
+    } else {
+      console.warn('Settings Button element not found');
+    }
+
+    if (claimRewardBtn) {
+      claimRewardBtn.addEventListener('click', claimDailyReward);
+      console.log('Claim Reward listener attached');
+    } else {
+      console.warn('Claim Reward button not found');
+    }
+
+    if (gameLangToggle) {
+      gameLangToggle.addEventListener('click', toggleLanguage);
+      console.log('Game Lang Toggle listener attached');
+    } else {
+      console.warn('Game Lang Toggle element not found');
+    }
+
+    if (gameSettingsBtn) {
+      gameSettingsBtn.addEventListener('click', openSettings);
+      console.log('Game Settings Button listener attached');
+    } else {
+      console.warn('Game Settings Button element not found');
+    }
+
+    if (exitGameBtn) {
+      exitGameBtn.addEventListener('click', exitGame);
+      console.log('Exit Game Button listener attached');
+    } else {
+      console.warn('Exit Game Button element not found');
+    }
+
+    if (exchangeBtn) {
+      exchangeBtn.addEventListener('click', exchangePi);
+      console.log('Exchange Button listener attached');
+    } else {
+      console.warn('Exchange Button element not found');
+    }
+
+    if (exchangeAmount) {
+      exchangeAmount.addEventListener('input', updateExchangeResult);
+      console.log('Exchange Amount listener attached');
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab');
+        switchTab(tab);
+      });
+    });
+
+    loadData().catch(err => {
+      console.error('Load data failed:', err);
+      alert('Failed to load game data. Please check the required JSON files and try again.');
+    });
+  } catch (e) {
+    console.error('Initialization failed:', e.message);
+    alert('Failed to initialize game. Check console for errors.');
   }
-
-  document.getElementById('start-text')?.addEventListener('click', startGame);
-  document.getElementById('lang-toggle')?.addEventListener('click', toggleLanguage);
-  document.getElementById('settings-btn')?.addEventListener('click', openSettings);
-  document.getElementById('claim-reward-btn')?.addEventListener('click', claimDailyReward);
-
-  loadData();
 });
