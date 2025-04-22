@@ -122,6 +122,8 @@ async function loadData() {
         needsWater: 'Needs Water',
         growing: 'Growing',
         readyToHarvest: 'Ready to Harvest',
+        locked: 'Locked',
+        unlockAtLevel: 'Unlock at Level {level}',
       },
       id: {
         title: 'Pi Harvest Farm',
@@ -172,6 +174,8 @@ async function loadData() {
         needsWater: 'Butuh Air',
         growing: 'Sedang Tumbuh',
         readyToHarvest: 'Siap Dipanen',
+        locked: 'Terkunci',
+        unlockAtLevel: 'Buka di Level {level}',
       },
     };
     showNotification('Failed to load lang.json, using fallback');
@@ -197,6 +201,21 @@ async function loadData() {
         piPrice: 0.0001,
         yield: 2,
         waterNeeded: 1,
+        unlockLevel: 1,
+      },
+      // Contoh sayur terkunci (bisa lu tambah 2-17)
+      {
+        id: 'potato',
+        name: { en: 'Potato', id: 'Kentang' },
+        shopImage: 'assets/img/vegetables/potato.png',
+        baseImage: 'assets/img/vegetables/potato',
+        frames: 3,
+        growthTime: 80,
+        farmPrice: 150,
+        piPrice: 0.00015,
+        yield: 3,
+        waterNeeded: 2,
+        unlockLevel: 2,
       },
     ];
     showNotification('Failed to load vegetables.json, using fallback');
@@ -411,7 +430,7 @@ function handlePlotClick(index) {
   }
 }
 
-// Render shop with Water item
+// Render shop with Water item and unlock logic
 function renderShop() {
   console.log('Rendering shop...');
   const shopContent = document.getElementById('shop-content');
@@ -430,21 +449,28 @@ function renderShop() {
 
   // Render vegetables
   vegetables.forEach(veg => {
+    const isUnlocked = level >= (veg.unlockLevel || 1); // Default unlock di level 1
     const vegItem = document.createElement('div');
     vegItem.classList.add('shop-item');
+    if (!isUnlocked) vegItem.classList.add('locked');
     const farmPrice = veg.farmPrice !== undefined ? veg.farmPrice : 0;
     vegItem.innerHTML = `
       <img src="${veg.shopImage}" alt="${veg.name[currentLang]}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
       <h3>${veg.name[currentLang]}</h3>
-      <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: ${farmPrice} ${langData[currentLang].coinLabel}</p>
-      <p>${langData[currentLang].piPriceLabel || 'PI Price'}: ${veg.piPrice} PI</p>
-      <button class="buy-btn" data-id="${veg.id}">${langData[currentLang].buyLabel || 'Buy'} (Farm)</button>
-      <button class="buy-pi-btn" data-id="${veg.id}">${langData[currentLang].buyLabel || 'Buy'} (PI)</button>
+      ${isUnlocked ? `
+        <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: ${farmPrice} ${langData[currentLang].coinLabel}</p>
+        <p>${langData[currentLang].piPriceLabel || 'PI Price'}: ${veg.piPrice} PI</p>
+        <button class="buy-btn" data-id="${veg.id}">${langData[currentLang].buyLabel || 'Buy'} (Farm)</button>
+        <button class="buy-pi-btn" data-id="${veg.id}">${langData[currentLang].buyLabel || 'Buy'} (PI)</button>
+      ` : `
+        <p>${langData[currentLang].locked || 'Locked'}</p>
+        <p>${langData[currentLang].unlockAtLevel.replace('{level}', veg.unlockLevel) || `Unlock at Level ${veg.unlockLevel}`}</p>
+      `}
     `;
     shopContent.appendChild(vegItem);
   });
 
-  // Add Water item
+  // Add Water item (selalu unlocked)
   const waterItem = document.createElement('div');
   waterItem.classList.add('shop-item');
   waterItem.innerHTML = `
@@ -505,6 +531,11 @@ function buyVegetable(id, currency) {
   if (!veg) {
     console.error(`Vegetable with id ${id} not found`);
     showNotification(langData[currentLang].error || 'Error purchasing item!');
+    return;
+  }
+
+  if (level < (veg.unlockLevel || 1)) {
+    showNotification(langData[currentLang].locked || 'Item is locked!');
     return;
   }
 
@@ -635,6 +666,7 @@ function checkLevelUp() {
     xp -= xpRequired;
     level++;
     showNotification(`${langData[currentLang].levelUp || 'Level Up!'} ${level}`);
+    renderShop(); // Update shop untuk unlock sayur baru
   }
   updateWallet();
 }
@@ -768,6 +800,7 @@ function checkHarvestAchievement() {
       achievement.classList.add('completed');
       showNotification(langData[currentLang].achievementUnlocked || 'Achievement Unlocked!');
       playCoinSound();
+      renderShop(); // Update shop untuk unlock sayur berdasarkan achievement
     }
   }
 }
@@ -780,6 +813,7 @@ function checkCoinAchievement() {
       achievement.classList.add('completed');
       showNotification(langData[currentLang].achievementUnlocked || 'Achievement Unlocked!');
       playCoinSound();
+      renderShop(); // Update shop untuk unlock sayur berdasarkan achievement
     }
   }
 }
@@ -1047,7 +1081,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     loadData().catch(err => {
-Xm
       console.error('Load data failed:', err);
       showNotification(langData[currentLang]?.error || 'Failed to load game data!');
     });
