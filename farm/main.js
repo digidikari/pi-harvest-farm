@@ -859,7 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startScreen.style.display = 'block';
         console.log('Start screen shown');
       }, 500);
-    }, 3000);
+    }, 1000);
   } else {
     console.error('Loading or start screen missing:', { loadingScreen, startScreen });
     if (startScreen) startScreen.style.display = 'block';
