@@ -682,3 +682,20 @@ button:hover {
     min-width: 150px;
   }
 }
+
+/* Animasi tanaman terbang saat ditanam */
+.plant-fly {
+  position: absolute;
+  animation: fly-up 0.8s ease-out forwards;
+  z-index: 10;
+}
+@keyframes fly-up {
+  0% {
+    transform: translateY(20px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+}
