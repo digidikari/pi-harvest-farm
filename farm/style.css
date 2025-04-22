@@ -682,3 +682,63 @@ button:hover {
     min-width: 150px;
   }
 }
+
+/* Animasi tanaman/panen terbang ke atas */
+.plant-fly {
+  position: absolute;
+  animation: fly-up 0.8s ease-out forwards;
+  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+}
+
+/* Animasi air turun ke bawah */
+.water-fly {
+  position: absolute;
+  animation: fly-down 0.8s ease-out forwards;
+  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+}
+
+/* Animasi teks jumlah (merah/hijau) */
+.amount-text {
+  position: absolute;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 11;
+  animation: fly-up 0.8s ease-out forwards;
+  left: 70%; /* Geser ke sisi kanan gambar */
+  transform: translateX(-50%);
+  bottom: 0;
+}
+.amount-text.negative {
+  color: #f44336; /* Merah untuk minus */
+}
+.amount-text.positive {
+  color: #4caf50; /* Hijau untuk plus */
+}
+
+@keyframes fly-up {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-50px);
+    opacity: 0;
+  }
+}
+
+@keyframes fly-down {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(50px);
+    opacity: 0;
+  }
+}
