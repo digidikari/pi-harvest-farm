@@ -260,7 +260,7 @@ function handlePlotClick(index) {
       showNotification(langData[currentLang].notEnoughWater);
     }
   } 
-  
+}
     const flyImage = document.createElement('img');
     flyImage.src = plot.vegetable.shopImage;
     flyImage.classList.add('plant-fly');
