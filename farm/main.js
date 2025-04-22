@@ -259,11 +259,8 @@ function handlePlotClick(index) {
     } else {
       showNotification(langData[currentLang].notEnoughWater);
     }
-  } else if (plot.currentFrame >= plot.vegetable.frames || plotElement.classList.contains('ready')) {
-    const yieldAmount = plot.vegetable.yield;
-    inventory.push({ vegetable: plot.vegetable, quantity: yieldAmount });
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-
+  } 
+  
     const flyImage = document.createElement('img');
     flyImage.src = plot.vegetable.shopImage;
     flyImage.classList.add('plant-fly');
