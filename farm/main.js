@@ -64,46 +64,19 @@ function updateVolumes() {
 
 // Load data from JSON files
 async function loadData() {
-  console.log('Starting loadData...');
-  try {
-    const langRes = await fetch('./data/lang.json');
-    console.log('Lang JSON fetched:', langRes.status);
-    if (!langRes.ok) {
-      console.error('Lang JSON failed:', langRes.status);
-      alert('Failed to load lang.json. Check file path or format.');
-      return;
-    }
-    langData = await langRes.json();
-    console.log('Lang data loaded:', Object.keys(langData));
+async function loadData() {
+  const langRes = await fetch('./data/lang.json');
+  langData = await langRes.json();
 
-    const vegRes = await fetch('./data/vegetables.json');
-    console.log('Vegetables JSON fetched:', vegRes.status);
-    if (!vegRes.ok) {
-      console.error('Vegetables JSON failed:', vegRes.status);
-      alert('Failed to load vegetables.json. Check file path or format.');
-      return;
-    }
-    const vegData = await vegRes.json();
-    vegetables = vegData.vegetables || vegData;
-    console.log('Vegetables loaded:', vegetables.length);
+  const vegRes = await fetch('./data/vegetables.json');
+  const vegData = await vegRes.json();
+  vegetables = vegData.vegetables || vegData;
 
-    const invRes = await fetch('./data/inventory.json');
-    console.log('Inventory JSON fetched:', invRes.status);
-    if (!invRes.ok) {
-      console.error('Inventory JSON failed:', invRes.status);
-      alert('Failed to load inventory.json. Check file path or format.');
-      return;
-    }
-    const initialInventory = await invRes.json();
-    inventory = JSON.parse(localStorage.getItem('inventory')) || initialInventory;
-    console.log('Inventory loaded:', inventory);
+  const invRes = await fetch('./data/inventory.json');
+  const initialInventory = await invRes.json();
+  inventory = JSON.parse(localStorage.getItem('inventory')) || initialInventory;
 
-    console.log('loadData done, initializing game...');
-    initializeGame();
-  } catch (e) {
-    console.error('loadData error:', e.message);
-    alert('Error loading game data. Check console for details.');
-  }
+  initializeGame();
 }
 
 // Load player data
@@ -844,113 +817,23 @@ function initializeGame() {
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, initializing game...');
-  try {
-    // Handle loading screen
-    const loadingScreen = document.getElementById('loading-screen');
-    const startScreen = document.getElementById('start-screen');
-    if (loadingScreen && startScreen) {
+  const loadingScreen = document.getElementById('loading-screen');
+  const startScreen = document.getElementById('start-screen');
+
+  if (loadingScreen && startScreen) {
+    setTimeout(() => {
+      loadingScreen.style.opacity = '0';
       setTimeout(() => {
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-          startScreen.style.display = 'block';
-        }, 500); // Tunggu fade-out selesai
-      }, 3000); // 3 detik
-    } else {
-      console.warn('Loading or start screen element not found');
-      if (startScreen) startScreen.style.display = 'block';
-    }
-
-    const startText = document.getElementById('start-text');
-    const langToggle = document.getElementById('lang-toggle');
-    const settingsBtn = document.getElementById('settings-btn');
-    const claimRewardBtn = document.getElementById('claim-reward-btn');
-    const gameLangToggle = document.getElementById('game-lang-toggle');
-    const gameSettingsBtn = document.getElementById('game-settings-btn');
-    const exitGameBtn = document.getElementById('exit-game-btn');
-    const exchangeBtn = document.getElementById('exchange-btn');
-    const exchangeAmount = document.getElementById('exchange-amount');
-
-    console.log('Start Text Element:', startText);
-    console.log('Lang Toggle Element:', langToggle);
-    console.log('Settings Button Element:', settingsBtn);
-    console.log('Game Lang Toggle Element:', gameLangToggle);
-
-    if (startText) {
-      startText.addEventListener('click', startGame);
-      console.log('Start Text listener attached');
-    } else {
-      console.warn('Start Text element not found');
-    }
-
-    if (langToggle) {
-      langToggle.addEventListener('click', toggleLanguage);
-      console.log('Lang Toggle listener attached');
-    } else {
-      console.warn('Lang Toggle element not found');
-    }
-
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', openSettings);
-      console.log('Settings Button listener attached');
-    } else {
-      console.warn('Settings Button element not found');
-    }
-
-    if (claimRewardBtn) {
-      claimRewardBtn.addEventListener('click', claimDailyReward);
-      console.log('Claim Reward listener attached');
-    } else {
-      console.warn('Claim Reward button not found');
-    }
-
-    if (gameLangToggle) {
-      gameLangToggle.addEventListener('click', toggleLanguage);
-      console.log('Game Lang Toggle listener attached');
-    } else {
-      console.warn('Game Lang Toggle element not found');
-    }
-
-    if (gameSettingsBtn) {
-      gameSettingsBtn.addEventListener('click', openSettings);
-      console.log('Game Settings Button listener attached');
-    } else {
-      console.warn('Game Settings Button element not found');
-    }
-
-    if (exitGameBtn) {
-      exitGameBtn.addEventListener('click', exitGame);
-      console.log('Exit Game Button listener attached');
-    } else {
-      console.warn('Exit Game Button element not found');
-    }
-
-    if (exchangeBtn) {
-      exchangeBtn.addEventListener('click', exchangePi);
-      console.log('Exchange Button listener attached');
-    } else {
-      console.warn('Exchange Button element not found');
-    }
-
-    if (exchangeAmount) {
-      exchangeAmount.addEventListener('input', updateExchangeResult);
-      console.log('Exchange Amount listener attached');
-    }
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.getAttribute('data-tab');
-        switchTab(tab);
-      });
-    });
-
-    loadData().catch(err => {
-      console.error('Load data failed:', err);
-      alert('Failed to load game data. Please check the required JSON files and try again.');
-    });
-  } catch (e) {
-    console.error('Initialization failed:', e.message);
-    alert('Failed to initialize game. Check console for errors.');
+        loadingScreen.style.display = 'none';
+        startScreen.style.display = 'block';
+      }, 500);
+    }, 2000); // Kurangin ke 2 detik biar cepet
   }
+
+  document.getElementById('start-text')?.addEventListener('click', startGame);
+  document.getElementById('lang-toggle')?.addEventListener('click', toggleLanguage);
+  document.getElementById('settings-btn')?.addEventListener('click', openSettings);
+  document.getElementById('claim-reward-btn')?.addEventListener('click', claimDailyReward);
+
+  loadData();
 });
