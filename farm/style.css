@@ -700,7 +700,7 @@ button:hover {
   z-index: 10;
   left: 50%;
   transform: translateX(-50%);
-  top: -160;
+  top: 20;
 }
 
 /* Animasi teks jumlah (merah/hijau) */
