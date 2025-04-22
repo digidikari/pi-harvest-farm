@@ -205,6 +205,7 @@ function handlePlotClick(index) {
       waterImage.src = 'assets/img/ui/water_icon.png';
       waterImage.classList.add('water-fly');
       waterImage.style.width = '40px';
+      waterImage.style.top = '-40px'; /* Force posisi awal */
       plotContent.appendChild(waterImage);
 
       const amountText = document.createElement('div');
@@ -332,8 +333,8 @@ function renderShop() {
   waterItem.innerHTML = `
     <img src="assets/img/ui/water.png" alt="${langData[currentLang].waterLabel || 'Water'}" class="shop-item-img" onerror="this.src='assets/img/ui/placeholder.png';">
     <h3>${langData[currentLang].waterLabel || 'Water'}</h3>
-    <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: 50 ${langData[currentLang].coinLabel}</p>
-    <p>${langData[currentLang].piPriceLabel || 'PI Price'}: 0.00005 PI</p>
+    <p>${langData[currentLang].farmPriceLabel || 'Farm Price'}: 100 ${langData[currentLang].coinLabel}</p>
+    <p>${langData[currentLang].piPriceLabel || 'PI Price'}: 0.0001 PI</p>
     <button class="buy-btn" data-id="water">${langData[currentLang].buyLabel} (Farm)</button>
     <button class="buy-pi-btn" data-id="water">${langData[currentLang].buyLabel} (PI)</button>
   `;
@@ -358,21 +359,21 @@ function renderShop() {
 function buyVegetable(id, currency) {
   if (id === 'water') {
     if (currency === 'farm') {
-      if (farmCoins >= 50) {
-        farmCoins -= 50;
+      if (farmCoins >= 100) {
+        farmCoins -= 100;
         water += 10;
         updateWallet();
-        showTransactionAnimation(`-50`, false, document.querySelector(`.buy-btn[data-id="water"]`));
+        showTransactionAnimation(`-100`, false, document.querySelector(`.buy-btn[data-id="water"]`));
         playBuyingSound();
       } else {
         showNotification(langData[currentLang].notEnoughCoins);
       }
     } else {
-      if (pi >= 0.00005) {
-        pi -= 0.00005;
+      if (pi >= 0.0001) {
+        pi -= 0.0001;
         water += 10;
         updateWallet();
-        showTransactionAnimation(`-0.00005 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
+        showTransactionAnimation(`-0.0001 PI`, false, document.querySelector(`.buy-pi-btn[data-id="water"]`));
         playBuyingSound();
       } else {
         showNotification(langData[currentLang].notEnoughPi);
