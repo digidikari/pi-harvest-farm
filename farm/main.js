@@ -181,18 +181,15 @@ function handlePlotClick(index) {
       setTimeout(() => {
         flyImage.remove();
         amountText.remove();
-        let plantImg = plotContent.querySelector('.plant-img');
-        if (!plantImg) {
-          plantImg = document.createElement('img');
-          plantImg.classList.add('plant-img');
-          plotContent.appendChild(plantImg);
-        }
-        plantImg.classList.remove('loaded');
+        plotContent.innerHTML = '';
+        const plantImg = document.createElement('img');
+        plantImg.classList.add('plant-img');
         plantImg.src = `${vegetable.baseImage}${plot.currentFrame}.png`;
+        plotContent.appendChild(plantImg);
         setTimeout(() => {
           plantImg.classList.add('loaded');
-          console.log('Plant image added - frame:', plot.currentFrame, 'src:', vegetable.baseImage + plot.currentFrame + '.png');
-        }, 10);
+          console.log('Plant image added - frame:', plot.currentFrame, 'src:', vegetable.baseImage + plot.currentFrame + '.png', 'plotContent children:', plotContent.children.length);
+        }, 50);
       }, 800);
 
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
@@ -258,7 +255,19 @@ function handlePlotClick(index) {
             plot.watered = false;
             plot.countdown = plot.vegetable.growthTime;
             plot.totalCountdown = plot.vegetable.growthTime;
-            plotContent.innerHTML = `<img src="${plot.vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
+            let plantImg = plotContent.querySelector('.plant-img');
+            if (!plantImg) {
+              console.log('No plant-img found, creating new - frame:', plot.currentFrame);
+              plantImg = document.createElement('img');
+              plantImg.classList.add('plant-img');
+              plotContent.appendChild(plantImg);
+            }
+            plantImg.classList.remove('loaded');
+            plantImg.src = `${plot.vegetable.baseImage}${plot.currentFrame}.png`;
+            setTimeout(() => {
+              plantImg.classList.add('loaded');
+              console.log('Frame updated - frame:', plot.currentFrame, 'src:', plot.vegetable.baseImage + plot.currentFrame + '.png', 'plotContent children:', plotContent.children.length);
+            }, 50);
             if (plot.currentFrame >= plot.vegetable.frames) {
               plotElement.classList.add('ready');
               plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
