@@ -181,17 +181,8 @@ function handlePlotClick(index) {
       setTimeout(() => {
         flyImage.remove();
         amountText.remove();
-        let plantImg = plotContent.querySelector('.plant-img');
-        if (!plantImg) {
-          plantImg = document.createElement('img');
-          plantImg.classList.add('plant-img');
-          plotContent.appendChild(plantImg);
-       }
-          plantImg.src = `${plot.vegetable.baseImage}${plot.currentFrame}.png`;
-          plantImg.classList.remove('active');
-          setTimeout(() => {
-          plantImg.classList.add('active');
-       }, 10);
+        plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
+      }, 800);
 
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
       countdownFill.style.width = '0%';
