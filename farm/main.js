@@ -242,6 +242,13 @@ function handlePlotClick(index) {
           countdownFill.style.width = '100%';
           plotElement.classList.add('ready');
           plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
+          // Tambah sparkle
+          let sparkle = plotContent.querySelector('.sparkle');
+          if (!sparkle) {
+            sparkle = document.createElement('span');
+            sparkle.classList.add('sparkle');
+            plotContent.appendChild(sparkle);
+          }
           console.log('Plot ready - stopping interval');
           return;
         }
@@ -290,22 +297,28 @@ function handlePlotClick(index) {
       showNotification(langData[currentLang].notEnoughWater);
     }
   } else if (plot.currentFrame >= plot.vegetable.frames || plotElement.classList.contains('ready')) {
-    console.log('Harvest block - frame:', plot.currentFrame, 'frames:', plot.vegetable.frames, 'ready:', plotElement.classList.contains('ready'), 'watered:', plot.watered);
-    const yieldAmount = plot.vegetable.yield;
-    inventory.push({ vegetable: plot.vegetable, quantity: yieldAmount });
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-  
-    const flyImage = document.createElement('img');
-    flyImage.src = plot.vegetable.shopImage;
-    flyImage.classList.add('plant-fly');
-    flyImage.style.width = '60px';
-    plotContent.appendChild(flyImage);
+      console.log('Harvest block - frame:', plot.currentFrame, 'frames:', plot.vegetable.frames, 'ready:', plotElement.classList.contains('ready'), 'watered:', plot.watered);
+      const yieldAmount = plot.vegetable.yield;
+      inventory.push({ vegetable: plot.vegetable, quantity: yieldAmount });
+      localStorage.setItem('inventory', JSON.stringify(inventory));
 
-    const amountText = document.createElement('div');
-    amountText.textContent = `+${yieldAmount}`;
-    amountText.classList.add('amount-text', 'positive');
-    plotContent.appendChild(amountText);
+      // Hapus plant-img dan sparkle
+      const currentPlant = plotContent.querySelector('.plant-img');
+      if (currentPlant) currentPlant.remove();
+      const sparkle = plotContent.querySelector('.sparkle');
+      if (sparkle) sparkle.remove();
 
+      const flyImage = document.createElement('img');
+      flyImage.src = plot.vegetable.shopImage;
+      flyImage.classList.add('plant-fly');
+      flyImage.style.width = '60px';
+      plotContent.appendChild(flyImage);
+
+      const amountText = document.createElement('div');
+      amountText.textContent = `+${yieldAmount}`;
+      amountText.classList.add('amount-text', 'positive');
+      plotContent.appendChild(amountText);
+    }
     setTimeout(() => {
       flyImage.remove();
       amountText.remove();
