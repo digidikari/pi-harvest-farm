@@ -328,6 +328,7 @@ function handlePlotClick(index) {
       if (currentPlant) currentPlant.remove();
       const sparkle = plotContent.querySelector('.sparkle');
       if (sparkle) sparkle.remove();
+      console.log('Harvest - plant removed:', !!currentPlant, 'sparkle removed:', !!sparkle);
 
       const flyImage = document.createElement('img');
       flyImage.src = plot.vegetable.shopImage;
