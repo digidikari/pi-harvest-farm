@@ -223,11 +223,20 @@ function handlePlotClick(index) {
       playWateringSound();
 
       const countdownInterval = setInterval(() => {
-        if (!plot.planted || plot.currentFrame >= plot.vegetable.frames) {
-          clearInterval(countdownInterval);
-          countdownFill.style.width = '0%';
-          return;
-        }
+        if (!plot.planted) {
+              clearInterval(countdownInterval);
+              countdownFill.style.width = '0%';
+              return;
+            }
+            if (plot.currentFrame >= plot.vegetable.frames) {
+              clearInterval(countdownInterval);
+              countdownFill.style.width = '100%';
+              plotElement.classList.add('ready');
+              plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
+              console.log('Plot ready, frame:', plot.currentFrame, 'watered:', plot.watered);
+              return;
+            }
+        
         if (plot.watered) {
           plot.countdown--;
           const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
