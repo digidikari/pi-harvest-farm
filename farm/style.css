@@ -191,74 +191,85 @@ h1 {
   opacity: 1;
 }
 
-/* Kunci posisi tanaman pas ready */
 .plot.ready .plant-img {
   position: absolute !important;
   bottom: 0 !important;
   z-index: 1;
 }
 
-/* Efek bintang */
+/* Pastiin parent */
+.plot-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Efek bintang utama */
 .plot.ready .sparkle {
   position: absolute;
   width: 60px;
   height: 60px;
-  top: -20px; /* Naikkan biar kelihatan */
+  top: -40px; /* Lebih atas */
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10; /* Pastiin di atas */
+  z-index: 100; /* Ekstra tinggi */
+  display: block !important;
 }
 
 /* Bintang 1 */
 .plot.ready .sparkle::before {
   content: '';
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 1) 20%, rgba(255, 255, 200, 0.6) 60%, transparent);
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, white 30%, rgba(255, 255, 200, 1) 70%, transparent);
   border-radius: 50%;
   top: 0;
-  left: 30%; /* Sedikit geser */
-  animation: star-sparkle 1s ease-in-out infinite;
+  left: 20%;
+  animation: star-sparkle 0.7s ease-in-out infinite;
 }
 
 /* Bintang 2 */
 .plot.ready .sparkle::after {
   content: '';
   position: absolute;
-  width: 3px;
-  height: 3px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 200, 0.5) 60%, transparent);
+  width: 5px;
+  height: 5px;
+  background: radial-gradient(circle, white 30%, rgba(255, 255, 200, 0.9) 70%, transparent);
   border-radius: 50%;
-  top: 5px;
-  left: 60%;
-  animation: star-sparkle 1s ease-in-out infinite 0.3s;
+  top: 10px;
+  left: 70%;
+  animation: star-sparkle 0.7s ease-in-out infinite 0.35s;
 }
 
-/* Bintang 3 */
-.plot.ready .sparkle > span::before {
+/* Fallback di plant-img */
+.plot.ready .plant-img {
+  position: relative; /* Biar ::before jalan */
+}
+
+.plot.ready .plant-img::before {
   content: '';
   position: absolute;
   width: 5px;
   height: 5px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 20%, rgba(255, 255, 200, 0.4) 60%, transparent);
+  background: radial-gradient(circle, white 30%, rgba(255, 255, 200, 0.8) 70%, transparent);
   border-radius: 50%;
-  top: 10px;
-  left: 45%;
-  animation: star-sparkle 1s ease-in-out infinite 0.6s;
+  top: -15px;
+  left: 50%;
+  animation: star-sparkle 0.7s ease-in-out infinite 0.2s;
+  z-index: 50;
 }
 
 @keyframes star-sparkle {
   0% {
     transform: translateY(0) scale(1);
-    opacity: 0.7;
+    opacity: 0.9;
   }
   50% {
-    transform: translateY(-40px) scale(1.8); /* Lebih dinamis */
+    transform: translateY(-60px) scale(2.2);
     opacity: 1;
   }
   100% {
-    transform: translateY(-60px) scale(0.3); /* Lebih jauh */
+    transform: translateY(-90px) scale(0.2);
     opacity: 0;
   }
 }
