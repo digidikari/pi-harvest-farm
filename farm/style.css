@@ -198,54 +198,67 @@ h1 {
   z-index: 1;
 }
 
-/* Efek bintang di span.sparkle */
-.sparkle {
+/* Efek bintang */
+.plot.ready .sparkle {
   position: absolute;
   width: 60px;
   height: 60px;
-  top: -10px;
+  top: -20px; /* Naikkan biar kelihatan */
   left: 50%;
   transform: translateX(-50%);
-  z-index: 5;
+  z-index: 10; /* Pastiin di atas */
 }
 
 /* Bintang 1 */
-.sparkle::before {
+.plot.ready .sparkle::before {
   content: '';
   position: absolute;
   width: 4px;
   height: 4px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 200, 0.5) 60%, transparent);
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 20%, rgba(255, 255, 200, 0.6) 60%, transparent);
   border-radius: 50%;
   top: 0;
-  left: 40%;
-  animation: star-sparkle 1.2s ease-in-out infinite;
+  left: 30%; /* Sedikit geser */
+  animation: star-sparkle 1s ease-in-out infinite;
 }
 
 /* Bintang 2 */
-.sparkle::after {
+.plot.ready .sparkle::after {
   content: '';
   position: absolute;
   width: 3px;
   height: 3px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 20%, rgba(255, 255, 200, 0.4) 60%, transparent);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 200, 0.5) 60%, transparent);
   border-radius: 50%;
   top: 5px;
   left: 60%;
-  animation: star-sparkle 1.2s ease-in-out infinite 0.4s;
+  animation: star-sparkle 1s ease-in-out infinite 0.3s;
+}
+
+/* Bintang 3 */
+.plot.ready .sparkle > span::before {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 20%, rgba(255, 255, 200, 0.4) 60%, transparent);
+  border-radius: 50%;
+  top: 10px;
+  left: 45%;
+  animation: star-sparkle 1s ease-in-out infinite 0.6s;
 }
 
 @keyframes star-sparkle {
   0% {
     transform: translateY(0) scale(1);
-    opacity: 0.8;
+    opacity: 0.7;
   }
   50% {
-    transform: translateY(-30px) scale(1.5);
+    transform: translateY(-40px) scale(1.8); /* Lebih dinamis */
     opacity: 1;
   }
   100% {
-    transform: translateY(-50px) scale(0.5);
+    transform: translateY(-60px) scale(0.3); /* Lebih jauh */
     opacity: 0;
   }
 }
