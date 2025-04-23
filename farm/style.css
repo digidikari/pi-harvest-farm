@@ -692,10 +692,37 @@ button:hover {
 .plant-fly {
   position: absolute;
   animation: fly-up 0.8s ease-out forwards;
-  z-index: 10;
+  z-index: 15;
   left: 50%;
   transform: translateX(-50%);
   bottom: 0;
+}
+
+@keyframes harvest-shake {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(-55%) translateY(-10px); /* Geser kiri */
+    opacity: 0.95;
+  }
+  40% {
+    transform: translateX(-45%) translateY(-15px); /* Geser kanan */
+    opacity: 0.9;
+  }
+  60% {
+    transform: translateX(-52%) translateY(-20px); /* Kembali kiri */
+    opacity: 0.85;
+  }
+  80% {
+    transform: translateX(-48%) translateY(-30px); /* Kembali kanan */
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-40px); /* Selesai naik */
+    opacity: 0;
+  }
 }
 
 /* Animasi air turun ke bawah */
@@ -744,21 +771,6 @@ button:hover {
   }
   100% {
     transform: translateX(-50%) translateY(50px);
-    opacity: 0;
-  }
-}
-
-@keyframes harvest-pulse {
-  0% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translateX(-50%) translateY(-20px) scale(1.1); /* Membesar, naik sedikit */
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateX(-50%) translateY(-40px) scale(1); /* Balik normal, keluar */
     opacity: 0;
   }
 }
