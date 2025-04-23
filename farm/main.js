@@ -231,10 +231,12 @@ function handlePlotClick(index) {
       playWateringSound();
 
       const countdownInterval = setInterval(() => {
-        console.log('Countdown tick - frame:', plot.currentFrame, 'countdown:', plot.countdown, 'watered:', plot.watered);
+        console.log('Countdown tick - frame:', plot.currentFrame, 'countdown:', plot.countdown, 'watered:', plot.watered, 'planted:', plot.planted);
         if (!plot.planted) {
           clearInterval(countdownInterval);
           countdownFill.style.width = '0%';
+          plotStatus.innerHTML = langData[currentLang].empty || 'Empty';
+          console.log('Plot not planted - stopping interval');
           return;
         }
         if (plot.currentFrame >= plot.vegetable.frames) {
@@ -243,16 +245,16 @@ function handlePlotClick(index) {
           plotElement.classList.add('ready');
           plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
           // Tambah sparkle
+          const plantImg = plotContent.querySelector('.plant-img');
           let sparkle = plotContent.querySelector('.sparkle');
-          if (!sparkle) {
+          if (!sparkle && plantImg) {
             sparkle = document.createElement('span');
             sparkle.classList.add('sparkle');
             plotContent.appendChild(sparkle);
           }
-          console.log('Plot ready - stopping interval');
+          console.log('Plot ready - stopping interval, plantImg exists:', !!plantImg, 'sparkle exists:', !!sparkle);
           return;
         }
-        
         if (plot.watered) {
           plot.countdown--;
           const progress = (1 - plot.countdown / plot.totalCountdown) * 100;
@@ -270,29 +272,48 @@ function handlePlotClick(index) {
               plotContent.appendChild(plantImg);
             }
             plantImg.classList.remove('loaded');
-            plantImg.src = `${plot.vegetable.baseImage}${plot.currentFrame}.png`;
-            setTimeout(() => {
-              plantImg.classList.add('loaded');
-              console.log('Frame updated - frame:', plot.currentFrame, 'src:', plot.vegetable.baseImage + plot.currentFrame + '.png', 'plotContent children:', plotContent.children.length);
-            }, 50);
-            if (plot.currentFrame >= plot.vegetable.frames) {
-              plotElement.classList.add('ready');
-              plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
-              clearInterval(countdownInterval);
-              countdownFill.style.width = '100%';
-            } else {
-              plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-              countdownFill.style.width = '0%';
-            }
-          } else {
-            plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
-          }
-        } else {
-          plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
-          clearInterval(countdownInterval);
-          countdownFill.style.width = '0%';
+            const newSrc = `${plot.vegetable.baseImage}${plot.currentFrame}.png`;
+            // Cek image load
+            const imgTest = new Image();
+            imgTest.src = newSrc;
+            imgTest.onload = () => {
+              plantImg.src = newSrc;
+              setTimeout(() => {
+                plantImg.classList.add('loaded');
+                console.log('Frame updated - frame:', plot.currentFrame, 'src:', newSrc, 'plotContent children:', plotContent.children.length);
+              }, 50);
+            };
+            imgTest.onerror = () => {
+              console.error('Failed to load image:', newSrc);
+              plantImg.src = 'assets/img/plants/placeholder.png'; // Fallback image
+      };
+      if (plot.currentFrame >= plot.vegetable.frames) {
+        plotElement.classList.add('ready');
+        plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
+        clearInterval(countdownInterval);
+        countdownFill.style.width = '100%';
+        // Tambah sparkle lagi
+        let sparkle = plotContent.querySelector('.sparkle');
+        if (!sparkle && plantImg) {
+          sparkle = document.createElement('span');
+          sparkle.classList.add('sparkle');
+          plotContent.appendChild(sparkle);
         }
-      }, 1000);
+        console.log('Plot ready (inner) - sparkle exists:', !!sparkle);
+      } else {
+        plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+        countdownFill.style.width = '0%';
+      }
+    } else {
+      plotStatus.innerHTML = langData[currentLang].growing || 'Growing';
+    }
+  } else {
+    plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
+    countdownFill.style.width = '0%';
+    // Jangan stop interval, biar bisa disiram lagi
+    console.log('Plot needs water - keeping interval');
+  }
+}, 1000);
     } else {
       showNotification(langData[currentLang].notEnoughWater);
     }
