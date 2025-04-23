@@ -182,7 +182,7 @@ function handlePlotClick(index) {
         flyImage.remove();
         amountText.remove();
         plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
-      }, 800);
+      }, 100);
 
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
       countdownFill.style.width = '0%';
