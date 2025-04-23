@@ -196,6 +196,7 @@ function handlePlotClick(index) {
     }
   } else if (plot.planted && !plot.watered && plot.currentFrame < plot.vegetable.frames) {
     console.log('Watering block - frame:', plot.currentFrame, 'watered:', plot.watered, 'water:', water);
+    const waterNeeded = plot.vegetable.waterNeeded || 1;
     if (water >= waterNeeded) {
       water -= waterNeeded;
       plot.watered = true;
@@ -233,6 +234,7 @@ function handlePlotClick(index) {
           countdownFill.style.width = '100%';
           plotElement.classList.add('ready');
           plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
+          console.log('Plot ready - stopping interval');
           return;
         }
         
