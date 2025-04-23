@@ -187,6 +187,54 @@ h1 {
   transition: opacity 0.5s ease-in-out;
 }
 
+/* Efek bintang saat siap panen */
+.plot.ready .plant-img {
+  position: relative; /* Untuk pseudo-element */
+}
+
+/* Bintang 1 */
+.plot.ready .plant-img::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 200, 0.5) 60%, transparent);
+  border-radius: 50%;
+  top: -10px;
+  left: 40%;
+  animation: star-sparkle 1.2s ease-in-out infinite;
+  z-index: 5;
+}
+
+/* Bintang 2 (offset biar acak) */
+.plot.ready .plant-img::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 20%, rgba(255, 255, 200, 0.4) 60%, transparent);
+  border-radius: 50%;
+  top: -5px;
+  left: 60%;
+  animation: star-sparkle 1.2s ease-in-out infinite 0.4s; /* Delay biar acak */
+  z-index: 5;
+}
+
+@keyframes star-sparkle {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-30px) scale(1.5); /* Naik dan sedikit membesar */
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) scale(0.5); /* Ilang di atas */
+    opacity: 0;
+  }
+}
+
 .plant-img.loaded {
   opacity: 1;
 }
@@ -696,33 +744,6 @@ button:hover {
   left: 50%;
   transform: translateX(-50%);
   bottom: 0;
-}
-
-@keyframes harvest-shake {
-  0% {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-  20% {
-    transform: translateX(-55%) translateY(-10px); /* Geser kiri */
-    opacity: 0.95;
-  }
-  40% {
-    transform: translateX(-45%) translateY(-15px); /* Geser kanan */
-    opacity: 0.9;
-  }
-  60% {
-    transform: translateX(-52%) translateY(-20px); /* Kembali kiri */
-    opacity: 0.85;
-  }
-  80% {
-    transform: translateX(-48%) translateY(-30px); /* Kembali kanan */
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateX(-50%) translateY(-40px); /* Selesai naik */
-    opacity: 0;
-  }
 }
 
 /* Animasi air turun ke bawah */
