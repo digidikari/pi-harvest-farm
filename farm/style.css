@@ -184,16 +184,11 @@ h1 {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  animation: fade-in 0.4s ease-in-out forwards;
+  transition: opacity 0.4s ease-in-out;
 }
 
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.plant-img.loaded {
+  opacity: 1;
 }
 
 .countdown-bar {
