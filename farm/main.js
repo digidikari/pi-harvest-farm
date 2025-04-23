@@ -181,8 +181,19 @@ function handlePlotClick(index) {
       setTimeout(() => {
         flyImage.remove();
         amountText.remove();
-        plotContent.innerHTML = `<img src="${vegetable.baseImage}${plot.currentFrame}.png" class="plant-img">`;
-      }, 100);
+        let plantImg = plotContent.querySelector('.plant-img');
+        if (!plantImg) {
+          plantImg = document.createElement('img');
+          plantImg.classList.add('plant-img');
+          plotContent.appendChild(plantImg);
+        }
+        plantImg.classList.remove('loaded');
+        plantImg.src = `${vegetable.baseImage}${plot.currentFrame}.png`;
+        setTimeout(() => {
+          plantImg.classList.add('loaded');
+          console.log('Plant image added - frame:', plot.currentFrame, 'src:', vegetable.baseImage + plot.currentFrame + '.png');
+        }, 10);
+      }, 800);
 
       plotStatus.innerHTML = langData[currentLang].needsWater || 'Needs Water';
       countdownFill.style.width = '0%';
