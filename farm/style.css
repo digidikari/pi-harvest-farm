@@ -184,6 +184,11 @@ h1 {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+  transition: opacity 0.5s ease-in-out;
+}
+
+.plant-img.loaded {
+  opacity: 1;
 }
 
 .countdown-bar {
@@ -680,5 +685,80 @@ button:hover {
   #notification {
     font-size: 12px;
     min-width: 150px;
+  }
+}
+
+/* Animasi tanaman/panen terbang ke atas */
+.plant-fly {
+  position: absolute;
+  animation: fly-up 0.8s ease-out forwards;
+  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+}
+
+/* Animasi air turun ke bawah */
+.water-fly {
+  position: absolute;
+  animation: fly-down 0.8s ease-out forwards;
+  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+}
+
+/* Animasi teks jumlah (merah/hijau) */
+.amount-text {
+  position: absolute;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 11;
+  animation: fly-up 0.8s ease-out forwards;
+  left: 70%; /* Geser ke sisi kanan gambar */
+  transform: translateX(-50%);
+  bottom: 0;
+}
+.amount-text.negative {
+  color: #f44336; /* Merah untuk minus */
+}
+.amount-text.positive {
+  color: #4caf50; /* Hijau untuk plus */
+}
+
+@keyframes fly-up {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-50px);
+    opacity: 0;
+  }
+}
+
+@keyframes fly-down {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(50px);
+    opacity: 0;
+  }
+}
+
+@keyframes harvest-pulse {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-20px) scale(1.1); /* Membesar, naik sedikit */
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-40px) scale(1); /* Balik normal, keluar */
+    opacity: 0;
   }
 }
