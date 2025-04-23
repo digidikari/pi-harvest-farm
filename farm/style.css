@@ -758,3 +758,18 @@ button:hover {
     opacity: 0;
   }
 }
+
+@keyframes harvest-pulse {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-20px) scale(1.3); /* Membesar, naik sedikit */
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-40px) scale(1); /* Balik normal, keluar */
+    opacity: 0;
+  }
+}
