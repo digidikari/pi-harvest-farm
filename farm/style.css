@@ -191,37 +191,48 @@ h1 {
   opacity: 1;
 }
 
-/* Efek bintang saat siap panen */
+/* Kunci posisi tanaman pas ready */
 .plot.ready .plant-img {
-  position: relative; /* Untuk pseudo-element */
+  position: absolute !important;
+  bottom: 0 !important;
+  z-index: 1;
+}
+
+/* Efek bintang di span.sparkle */
+.sparkle {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
 }
 
 /* Bintang 1 */
-.plot.ready .plant-img::before {
+.sparkle::before {
   content: '';
   position: absolute;
   width: 4px;
   height: 4px;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 200, 0.5) 60%, transparent);
   border-radius: 50%;
-  top: -10px;
+  top: 0;
   left: 40%;
   animation: star-sparkle 1.2s ease-in-out infinite;
-  z-index: 5;
 }
 
-/* Bintang 2 (offset biar acak) */
-.plot.ready .plant-img::after {
+/* Bintang 2 */
+.sparkle::after {
   content: '';
   position: absolute;
   width: 3px;
   height: 3px;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 20%, rgba(255, 255, 200, 0.4) 60%, transparent);
   border-radius: 50%;
-  top: -5px;
+  top: 5px;
   left: 60%;
-  animation: star-sparkle 1.2s ease-in-out infinite 0.4s; /* Delay biar acak */
-  z-index: 5;
+  animation: star-sparkle 1.2s ease-in-out infinite 0.4s;
 }
 
 @keyframes star-sparkle {
@@ -230,11 +241,11 @@ h1 {
     opacity: 0.8;
   }
   50% {
-    transform: translateY(-30px) scale(1.5); /* Naik dan sedikit membesar */
+    transform: translateY(-30px) scale(1.5);
     opacity: 1;
   }
   100% {
-    transform: translateY(-50px) scale(0.5); /* Ilang di atas */
+    transform: translateY(-50px) scale(0.5);
     opacity: 0;
   }
 }
