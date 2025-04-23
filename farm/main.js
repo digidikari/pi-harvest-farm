@@ -194,9 +194,8 @@ function handlePlotClick(index) {
     } else {
       showNotification(langData[currentLang].noSeeds || 'No Seeds in inventory!');
     }
-  } else if (plot.planted && !plot.watered) {
-    console.log('Entering watering block, frame:', plot.currentFrame, 'watered:', plot.watered);
-    
+  } else if (plot.planted && !plot.watered && plot.currentFrame < plot.vegetable.frames) {
+    console.log('Watering block - frame:', plot.currentFrame, 'watered:', plot.watered, 'water:', water);
     if (water >= waterNeeded) {
       water -= waterNeeded;
       plot.watered = true;
@@ -223,19 +222,19 @@ function handlePlotClick(index) {
       playWateringSound();
 
       const countdownInterval = setInterval(() => {
+        console.log('Countdown tick - frame:', plot.currentFrame, 'countdown:', plot.countdown, 'watered:', plot.watered);
         if (!plot.planted) {
-              clearInterval(countdownInterval);
-              countdownFill.style.width = '0%';
-              return;
-            }
-            if (plot.currentFrame >= plot.vegetable.frames) {
-              clearInterval(countdownInterval);
-              countdownFill.style.width = '100%';
-              plotElement.classList.add('ready');
-              plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
-              console.log('Plot ready, frame:', plot.currentFrame, 'watered:', plot.watered);
-              return;
-            }
+          clearInterval(countdownInterval);
+          countdownFill.style.width = '0%';
+          return;
+        }
+        if (plot.currentFrame >= plot.vegetable.frames) {
+          clearInterval(countdownInterval);
+          countdownFill.style.width = '100%';
+          plotElement.classList.add('ready');
+          plotStatus.innerHTML = langData[currentLang].readyToHarvest || 'Ready to Harvest';
+          return;
+        }
         
         if (plot.watered) {
           plot.countdown--;
@@ -269,7 +268,7 @@ function handlePlotClick(index) {
       showNotification(langData[currentLang].notEnoughWater);
     }
   } else if (plot.currentFrame >= plot.vegetable.frames || plotElement.classList.contains('ready')) {
-    console.log('Entering harvest block, frame:', plot.currentFrame, 'frames:', plot.vegetable.frames);
+    console.log('Harvest block - frame:', plot.currentFrame, 'frames:', plot.vegetable.frames, 'ready:', plotElement.classList.contains('ready'), 'watered:', plot.watered);
     const yieldAmount = plot.vegetable.yield;
     inventory.push({ vegetable: plot.vegetable, quantity: yieldAmount });
     localStorage.setItem('inventory', JSON.stringify(inventory));
