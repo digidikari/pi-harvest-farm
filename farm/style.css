@@ -187,6 +187,10 @@ h1 {
   transition: opacity 0.5s ease-in-out;
 }
 
+.plant-img.loaded {
+  opacity: 1;
+}
+
 /* Efek bintang saat siap panen */
 .plot.ready .plant-img {
   position: relative; /* Untuk pseudo-element */
@@ -233,10 +237,6 @@ h1 {
     transform: translateY(-50px) scale(0.5); /* Ilang di atas */
     opacity: 0;
   }
-}
-
-.plant-img.loaded {
-  opacity: 1;
 }
 
 .countdown-bar {
